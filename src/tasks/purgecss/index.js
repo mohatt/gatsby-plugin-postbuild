@@ -58,7 +58,7 @@ async function writePurged (file, data, purged) {
   ]
   sizes.push(sizes[1] - sizes[0])
   // Write the actual file
-  // await fs.writeFile(file, data)
+  await fs.writeFile(file, data)
   // Write purged log if enabled
   const rejected = Array.isArray(purged)
   if (rejected) {
