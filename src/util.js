@@ -33,7 +33,6 @@ export function initializeOptions (args) {
   // Cache the final options object
   debug('Options', options)
 
-  process.exit()
   initializeOptions.options = options
   return options
 }

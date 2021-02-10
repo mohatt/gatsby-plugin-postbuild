@@ -25,7 +25,7 @@ export function pluginOptionsSchema ({ Joi }) {
  * @param {Object} args
  * @param {Object} pluginOptions
  */
-export async function onPreInit (args, pluginOptions) {
+export function onPreBootstrap (args, pluginOptions) {
   initializeReporter(args.reporter)
   const defaultOptions = {
     ...defaults,
@@ -37,9 +37,6 @@ export async function onPreInit (args, pluginOptions) {
     defaultOptions,
     pluginOptions
   })
-
-  await onPostBuild(args)
-  process.exit()
 }
 
 /**
