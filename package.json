@@ -1,0 +1,118 @@
+{
+  "name": "gatsby-plugin-postbuild",
+  "version": "1.0.0",
+  "description": "Gatsby plugin for optimizing HTML/CSS files after build",
+  "files": [
+    "dist",
+    "index.js",
+    "gatsby-node.js"
+  ],
+  "scripts": {
+    "prepare": "cross-env NODE_ENV=production npm run build",
+    "prebuild": "rimraf 'dist/*'",
+    "build": "babel src --out-dir dist --copy-files --ignore '**/__tests__,**/*.test.js'",
+    "postbuild": "rimraf 'dist/**/__tests__' 'dist/**/*.test.js'",
+    "watch": "babel -w src --out-dir dist --copy-files --ignore '**/__tests__,**/*.test.js'",
+    "test": "jest --runInBand",
+    "test:coverage": "jest --runInBand --coverage",
+    "test:watch": "jest --watch --runInBand",
+    "release": "semantic-release",
+    "release:inspect": "semantic-release --dry-run",
+    "release:manual": "semantic-release --no-ci",
+    "lint": "standard src",
+    "lint:fix": "standard src --fix"
+  },
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "gatsby-component",
+    "routing",
+    "pagination"
+  ],
+  "author": "Mohamed Elkholy <mohatt@pm.me>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohatt/gatsby-plugin-postbuild.git"
+  },
+  "homepage": "https://github.com/mohatt/gatsby-plugin-postbuild",
+  "bugs": "https://github.com/mohatt/gatsby-plugin-postbuild/issues",
+  "dependencies": {
+    "@babel/runtime": "^7.12.5",
+    "bluebird": "^3.7.2",
+    "lodash": "^4.17.20",
+    "debug": "^3.2.6",
+    "glob": "^7.0.0",
+    "parse5": "^6.0.0",
+    "parse5-htmlparser2-tree-adapter": "^6.0.0",
+    "purgecss": "^4.0.0",
+    "filesize": "^6.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.12.13",
+    "@babel/core": "7.12.13",
+    "@babel/eslint-parser": "7.12.13",
+    "@semantic-release/changelog": "5.0.1",
+    "@semantic-release/git": "9.0.0",
+    "babel-preset-gatsby-package": "0.12.0",
+    "cross-env": "7.0.3",
+    "gatsby-plugin-utils": "0.9.0",
+    "jest": "26.6.3",
+    "metro-memory-fs": "0.65.0",
+    "rimraf": "3.0.2",
+    "semantic-release": "17.3.7",
+    "standard": "16.0.3"
+  },
+  "peerDependencies": {
+    "gatsby": ">=2.25.0"
+  },
+  "engines": {
+    "node": ">=10.13.0"
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/test/",
+      "<rootDir>/src/"
+    ],
+    "testPathIgnorePatterns": [
+      "/__tests__/__fixtures__/.*$"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ]
+  },
+  "standard": {
+    "parser": "@babel/eslint-parser",
+    "env": [
+      "jest"
+    ]
+  },
+  "babel": {
+    "presets": [
+      [
+        "babel-preset-gatsby-package",
+        {
+          "browser": false,
+          "nodeVersion": "10.13.0"
+        }
+      ]
+    ]
+  },
+  "release": {
+    "verifyConditions": [
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/git"
+    ],
+    "prepare": [
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/git"
+    ]
+  },
+  "renovate": {
+    "extends": [
+      "config:js-lib"
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+# Logs
+logs
+*.log
+
+# Dependencies
+/node_modules
+
+# Build artifacts
+dist
+
+# Output of 'npm pack'
+*.tgz
+
+# Test stuff
+coverage
+
+# IDE stuff
+.idea
+*.sublime-project
+*.sublime-workspace
+
+# Mac files
+.DS_Store
+
+# Example site
+/example
