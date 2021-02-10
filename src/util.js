@@ -138,7 +138,7 @@ export function reportSuccess (message) {
  * @param {string} message
  * @param {any} data
  */
-export function debug(message, data = null) {
+export function debug (message, data = null) {
   debug.create()(...arguments)
 }
 
@@ -150,21 +150,24 @@ export function debug(message, data = null) {
  */
 debug.create = function (namespace = '') {
   let ns = 'gatsby-plugin-postbuild'
-  if(namespace) {
+  if (namespace) {
     ns += ':' + namespace
   }
+
   debug.cache ??= {}
-  if(debug.cache[ns]){
+  if (debug.cache[ns]) {
     return debug.cache[ns]
   }
 
   const dbg = Debug(ns)
-  return debug.cache[ns] = function (message) {
+  debug.cache[ns] = function (message) {
     arguments[0] = arguments.length > 1
       ? `${message} %O \n`
       : `${message} \n`
     dbg(...arguments)
   }
+
+  return debug.cache[ns]
 }
 
 /**
@@ -191,4 +194,4 @@ export function getOption (optionName) {
  *
  * @type {Object}
  */
-export var options
+export let options
