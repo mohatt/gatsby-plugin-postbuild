@@ -1,16 +1,9 @@
 # Gatsby Postbuild
 [![][npm-img]][npm-url] [![][ci-img]][ci-url] [![][gatsby-img]][gatsby-url] [![][license-img]][license-url]
 
-Gatsby plugin for optimizing HTML/CSS files after build through:
-- [x] Optimizing CSS files with [PurgeCSS](https://purgecss.com/) to remove unused CSS
-- [x] Optimizing HTML files by removing unused inline CSS rules
-- [ ] Minifying HTML/CSS files
+Gatsby plugin for optimizing HTML/CSS files after build through removing unused CSS rules (with [PurgeCSS](https://purgecss.com/)) from both inline and external style definitions.
 
-The plugin works diffrently than other plugins/techniques that utilize [PurgeCSS](https://purgecss.com/) in conjunction
-with [PostCSS](https://postcss.org/) to acheive the same goal. The main diffrence is that the plugin only runs after
-Gatsby builds the site, then optimizes the generated HTML/CSS files.
-
-<img width="350" src=".github/console-screen.png" alt="Console Screen">
+<img width="380" src=".github/console-screen.png" alt="Console Screen">
 
 ---
 - [How it works](#how-it-works)
@@ -21,12 +14,18 @@ Gatsby builds the site, then optimizes the generated HTML/CSS files.
 
 
 ## How it works
-The plugin uses [Parse5](https://github.com/inikulin/parse5) library to parse the generated HTML files into AST then:
-- Removes all inline CSS defined in `<style>` tags
-- Writes a temporary naked HTML files (without CSS)
-- Optimizes both inline and external CSS by running PurgeCSS against the naked HTML files
-- Serializes AST trees back to HTML using Parse5
-- Writes optimized HTML/CSS files
+The plugin works diffrently than other plugins/techniques that utilize [PurgeCSS](https://purgecss.com/) in conjunction
+with [PostCSS](https://postcss.org/) to acheive the same goal. The main diffrence is that the plugin only runs after
+Gatsby builds the site, then optimizes the generated HTML/CSS files.
+
+The plugin uses [Parse5](https://github.com/inikulin/parse5) library to parse the generated HTML files into ASTs then:
+- [x] Removes all `<style>` tags and their CSS from the tree
+- [x] Store a temporary naked HTML without CSS
+- [x] Walks over the orginal tree and removes unused CSS rules by running PurgeCSS against the naked HTML files (only the ones that included those styles), that includes:
+    - [x] Inline CSS rules defined under `<style>` tags
+    - [ ] External CSS files defines as `<link>` tags
+- [x] Serializes tree back to HTML
+- [x] Writes optimized HTML/CSS files
 
 ## Installation
 Install with [npm](https://www.npmjs.com/)
