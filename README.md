@@ -9,7 +9,7 @@ Gatsby plugin for optimizing/minifying generated HTML/CSS files after build thro
 - [How it works](#how-it-works)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
-- [Configuration](#configuration)
+- [Options](#options)
 - [License](#license)
 
 
@@ -49,7 +49,7 @@ plugins: [
 
 
 ## Options
-Here is the list of options with their default values.
+Here is the list of options with their defaults.
 
 ### General options
 
