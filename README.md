@@ -1,7 +1,7 @@
 # Gatsby Postbuild
 [![][npm-img]][npm-url] [![][ci-img]][ci-url] [![][gatsby-img]][gatsby-url] [![][license-img]][license-url]
 
-Gatsby plugin for optimizing/minifying generated HTML/CSS files after build through removing unused CSS rules (with [PurgeCSS](https://purgecss.com/)).
+Gatsby plugin for optimizing/minifying generated HTML/CSS files after build through removing unused CSS rules.
 
 <img width="380" src=".github/console-screen.png" alt="Console Screen">
 
