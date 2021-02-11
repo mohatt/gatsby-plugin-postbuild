@@ -1,7 +1,7 @@
 # Gatsby Postbuild
 [![][npm-img]][npm-url] [![][ci-img]][ci-url] [![][gatsby-img]][gatsby-url] [![][license-img]][license-url]
 
-Gatsby plugin for optimizing HTML/CSS files after build through removing unused CSS rules (with [PurgeCSS](https://purgecss.com/)) from both inline and external style definitions.
+Gatsby plugin for optimizing/minifying generated HTML/CSS files after build through removing unused CSS rules (with [PurgeCSS](https://purgecss.com/)).
 
 <img width="380" src=".github/console-screen.png" alt="Console Screen">
 
@@ -18,8 +18,8 @@ The plugin works diffrently than other plugins/techniques that utilize [PurgeCSS
 with [PostCSS](https://postcss.org/) to acheive the same goal. The main diffrence is that the plugin only runs after
 Gatsby builds the site, then optimizes the generated HTML/CSS files.
 
-The plugin uses [Parse5](https://github.com/inikulin/parse5) library to parse the generated HTML files into ASTs then:
-- [x] Removes all `<style>` tags and their CSS from the tree
+The plugin uses [Parse5](https://github.com/inikulin/parse5) library to compile the generated HTML files into ASTs then:
+- [x] Removes all `<style>` nodes and their CSS from the tree
 - [x] Store a temporary naked HTML without CSS
 - [x] Walks through the orginal tree and removes unused CSS rules by running PurgeCSS against the naked HTML files (only the ones that included those styles), that includes:
     - [x] Inline CSS rules defined under `<style>` tags
@@ -48,45 +48,28 @@ plugins: [
 ```
 
 
-## Configuration
-
-### Defaults
+## Options
 Here is the list of options with their default values.
 
-```javascript
-// gatsby-config.js
-plugins: [
-  {
-    resolve: `gatsby-plugin-postbuild`,
-    options: {
-      purgecss: {
-        enabled: true,
-        report: true,
-        reportConsole: true,
-        tailwind: false,
-        // [...]
-        // PurgeCss default options
-        // See https://purgecss.com/configuration.html
-      }
-    }
-  }
-]
-```
+### General options
 
-#### purgecss.enabled
+#### enabled
 > Type: `Boolean` Default: `true`
 
-Whether to run the purgecss task or not.
+Whether to run postbuild or not.
 
-#### purgecss.report
+#### report
 > Type: `Boolean` Default: `true`
 
-Write a `purgecss.log.json` file in `/public` directory with all the changes made.
+Write a `postbuild.log.json` file in `/public` directory with all the changes made.
 
-#### purgecss.reportConsole
+#### reportConsole
 > Type: `Boolean` Default: `true`
 
 Print a summary report during build with all the changes made.
+
+### PurgeCSS options
+The following options are passed to PurgeCSS while optimizing CSS. See [PurgeCSS Config][purgecss-config] for more info.
 
 #### purgecss.allowSymbols
 > Type: `Boolean` Default: `false`
@@ -96,7 +79,7 @@ Allow CSS selectors to contain symbols (e.g [TailwindCSS](https://tailwindcss.co
 #### purgecss.rejected
 > Type: `Boolean` Default: `true`
 
-Write a log file in `/public` directory with the rejected selectors for every file.
+Write a `*.rejected.log` file in `/public` with the rejected selectors for every file.
 
 #### purgecss.defaultExtractor
 > Type: `Function` Default: [`PurgeCSS.defaultExtractor`][purgecss-config]
@@ -106,30 +89,30 @@ A custom PurgeCSS extractor to be used instead of the default one.
 #### purgecss.extractors
 > Type: `Array` Default: [`PurgeCSS.extractors`][purgecss-config]
 
-A list of custom PurgeCSS extractors to be used for certain file types.
+A list of custom PurgeCSS extractors to be used for certain file types. 
 
 #### purgecss.safelist
-> Type: `(Array|Object)` Default: [`PurgeCSS.safelist`][purgecss-config]
+> Type: `(Array|Object)` Default: `[]`
 
 Selectors that are safe to leave in the final CSS.
 
 #### purgecss.blocklist
-> Type: `Array|Object` Default: [`PurgeCSS.blocklist`][purgecss-config]
+> Type: `Array|Object` Default: `[]`
 
 Selectors that are blocked from appearing in the final CSS.
 
 #### purgecss.fontFace
-> Type: `Boolean` Default: [`PurgeCSS.fontFace`][purgecss-config]
+> Type: `Boolean` Default: `false`
 
 Remove any unused @font-face rules in your css.
 
 #### purgecss.variables
-> Type: `Boolean` Default: [`PurgeCSS.variables`][purgecss-config]
+> Type: `Boolean` Default: `false`
 
 Remove any unused @keyframes rules in your css.
 
 #### purgecss.keyframes
-> Type: `Boolean` Default: [`PurgeCSS.keyframes`][purgecss-config]
+> Type: `Boolean` Default: `false`
 
 Remove any unused variables in your css.
 
