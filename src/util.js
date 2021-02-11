@@ -16,7 +16,7 @@ export let options
  */
 const store = new Map([
   ['reporter', null],
-  ['debug', new Map]
+  ['debug', new Map()]
 ])
 
 /**

@@ -54,6 +54,6 @@ export async function onPostBuild (gatsby) {
   try {
     await purgecss({ assets })
   } catch (e) {
-    reporter.error(`Error occured while running purgecss`, e)
+    reporter.error('Error occured while running purgecss', e)
   }
 }

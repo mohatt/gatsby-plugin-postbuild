@@ -7,7 +7,7 @@ export const defaults = {
     rejected: true,
     fontFace: false,
     keyframes: false,
-    variables: false,
+    variables: false
   }
 }
 
