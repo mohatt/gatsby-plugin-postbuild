@@ -47,6 +47,22 @@ plugins: [
 ]
 ```
 
+### TailwindCSS
+If you use [Tailwind](https://tailwindcss.com/)  in your site you need to set `purgecss.allowSymbols` to true like this:
+
+```javascript
+plugins: [
+  {
+    resolve: `gatsby-plugin-postbuild`,
+    options: {
+      purgecss: {
+        allowSymbols: true
+      }
+    },
+  }
+]
+```
+
 
 ## Options
 Here is the list of options with their defaults.
@@ -69,7 +85,7 @@ Write a `postbuild.log.json` file in `/public` directory with all the changes ma
 Print a summary report during build with all the changes made.
 
 ### PurgeCSS options
-The following options are passed to PurgeCSS while optimizing CSS. See [PurgeCSS Config][purgecss-config] for more info.
+The following options are passed to PurgeCSS while optimizing CSS. See [PurgeCSS Options][purgecss-config] for more info.
 
 #### purgecss.allowSymbols
 > Type: `Boolean` Default: `false`
