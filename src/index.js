@@ -1,7 +1,7 @@
 import glob from 'glob'
-import { bootstrap, options } from './util'
+import { bootstrap, options, reporter } from './util'
 import { defaults, schema } from './options'
-import tasks from './tasks'
+import { purgecss } from './tasks'
 
 /**
  * Validates user-defined options against schema.
@@ -11,29 +11,20 @@ import tasks from './tasks'
  * @return {Object}
  */
 export function pluginOptionsSchema ({ Joi }) {
-  const taskSchemas = tasks.getFields('options.schema')
-  Object.keys(taskSchemas).forEach(function (t) {
-    taskSchemas[t] = taskSchemas[t](Joi)
-  })
-
-  return schema(Joi, taskSchemas)
+  return schema(Joi)
 }
 
 /**
  * Initializes the plugin.
  *
- * @param {Object} args
+ * @param {Object} gatsby
  * @param {Object} pluginOptions
  */
-export function onPreBootstrap (args, pluginOptions) {
-  const defaultOptions = {
-    ...defaults,
-    ...tasks.getFields('options.defaults')
-  }
+export function onPreBootstrap (gatsby, pluginOptions) {
   // Initializes and validates options
   bootstrap({
-    gatsby: args,
-    defaultOptions,
+    gatsby,
+    defaultOptions: defaults,
     pluginOptions
   })
 }
@@ -41,10 +32,14 @@ export function onPreBootstrap (args, pluginOptions) {
 /**
  * Run plugin tasks after build is complete.
  *
- * @param {Object} args
+ * @param {Object} gatsby
  * @return {Promise<void>}
  */
-export async function onPostBuild (args) {
+export async function onPostBuild (gatsby) {
+  if (!options.enabled) {
+    return
+  }
+
   const build = options._public
   const assets = {
     html: '**/*.html',
@@ -56,10 +51,9 @@ export async function onPostBuild (args) {
     assets[a] = glob.sync(`${build}/${assets[a]}`, { nodir: true })
   })
 
-  // Invoke tasks' "run" api
-  await tasks.run({
-    api: 'run',
-    params: { assets },
-    gatsby: args
-  })
+  try {
+    await purgecss({ assets })
+  } catch (e) {
+    reporter.error(`Error occured while running purgecss`, e)
+  }
 }

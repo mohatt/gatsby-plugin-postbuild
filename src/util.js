@@ -28,19 +28,19 @@ const store = new Map([
  * @param   {Object} args.gatsby - Gatsby's onPreBootstrap event object
  * @return {Object} Plugin options
  */
-export function bootstrap (args) {
+export function bootstrap ({ defaultOptions, pluginOptions, gatsby }) {
   // Merge user-defined options with defaults
-  options = _.merge(args.defaultOptions, args.pluginOptions)
+  options = _.merge(defaultOptions, pluginOptions)
   // set private options
   options._plugin = 'gatsby-plugin-postbuild'
-  options._root = args.gatsby.store.getState().program.directory
+  options._root = gatsby.store.getState().program.directory
   options._public = path.join(options._root, 'public')
-  options._cache = args.gatsby.cache.directory
+  options._cache = gatsby.cache.directory
   // Prevent mutations on options object
   Object.freeze(options)
 
   // Initialize reporter
-  const reporter = args.gatsby.reporter
+  const reporter = gatsby.reporter
   const errorMap = {
     10000: {
       text: context => context.message,

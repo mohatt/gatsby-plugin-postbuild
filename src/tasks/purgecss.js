@@ -7,7 +7,7 @@ import parse5 from 'parse5'
 import PurgeCSS from 'purgecss'
 import * as htmlparser2 from 'parse5-htmlparser2-tree-adapter'
 import filesize from 'filesize'
-import { options, reporter } from '../../util'
+import { options, reporter } from '../util'
 
 /**
  * Recursively walks over a htmlparser2 node tree invoking a callback
@@ -71,7 +71,7 @@ async function writePurged (file, data, purged) {
   }
 
   // Ignore reporting to console if specified
-  if (!options.purgecss.reportConsole) {
+  if (!options.reportConsole) {
     return r
   }
 
@@ -88,36 +88,18 @@ async function writePurged (file, data, purged) {
 }
 
 /**
- * Returns a copy of options with non PurgeCSS options removed
+ * Runs task on the provided asset files
  *
- * @param {Object} options
- * @return {Object}
+ * @param {Object} assets Absolute file paths
+ * @param   {[string]} assets.html
+ * @param   {[string]} assets.css
+ * @param   {[string]} assets.js
  */
-function getPurgeCssOptions (options) {
-  const opts = { ...options };
-  ['enabled', 'report', 'reportConsole', 'allowSymbols'].forEach(key => {
-    delete opts[key]
-  })
-  return opts
-}
-
-/**
- * Runs the task on the provided asset files
- *
- * @param {Object} assets
- * @param   {[string]} assets.html - HTML absolute file paths
- * @param   {[string]} assets.css - CSS absolute file paths
- * @param {Object} options - Task options
- */
-export async function run ({ assets, options }) {
-  if (!options.enabled) {
-    return
-  }
-
+export default async function ({ assets }) {
   const purgeCSS = new PurgeCSS()
-  const purgeOptions = getPurgeCssOptions(options)
-  // Tailwind requires a special extractor
-  if (options.allowSymbols) {
+  const purgeOptions = { ...options.purgecss }
+  if (purgeOptions.allowSymbols) {
+    delete purgeOptions.allowSymbols
     purgeOptions.defaultExtractor = content => content.match(/[\w-/:]+(?<!:)/g) || []
   }
 
@@ -164,7 +146,7 @@ export async function run ({ assets, options }) {
   const htmlReports = await html.mapSeries(file => {
     const mutate = (node, { css, rejected }) => {
       node.data = css
-      return options.rejected ? rejected : null
+      return options.purgecss.rejected ? rejected : null
     }
 
     return Promise.mapSeries(file.styles, style => {
@@ -191,7 +173,7 @@ export async function run ({ assets, options }) {
       return writePurged(
         file.path,
         ndata,
-        options.rejected ? result.flat() : null
+        options.purgecss.rejected ? result.flat() : null
       ).catch((e) => {
         throw new Error(`Unable to write purged html file "${file.path}": ${e.message}`)
       })
@@ -200,7 +182,7 @@ export async function run ({ assets, options }) {
 
   // Write the full purgecss report
   if (options.report) {
-    const reportFile = path.join(options._public, 'purgecss.log.json')
+    const reportFile = path.join(options._public, 'postbuild.log.json')
     try {
       await fs.writeFile(reportFile, JSON.stringify(htmlReports, null, 2))
     } catch (e) {
