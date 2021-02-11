@@ -21,7 +21,7 @@ Gatsby builds the site, then optimizes the generated HTML/CSS files.
 The plugin uses [Parse5](https://github.com/inikulin/parse5) library to parse the generated HTML files into ASTs then:
 - [x] Removes all `<style>` tags and their CSS from the tree
 - [x] Store a temporary naked HTML without CSS
-- [x] Walks over the orginal tree and removes unused CSS rules by running PurgeCSS against the naked HTML files (only the ones that included those styles), that includes:
+- [x] Walks through the orginal tree and removes unused CSS rules by running PurgeCSS against the naked HTML files (only the ones that included those styles), that includes:
     - [x] Inline CSS rules defined under `<style>` tags
     - [ ] External CSS files defines as `<link>` tags
 - [x] Serializes tree back to HTML
@@ -88,10 +88,10 @@ Write a `purgecss.log.json` file in `/public` directory with all the changes mad
 
 Print a summary report during build with all the changes made.
 
-#### purgecss.tailwind
+#### purgecss.allowSymbols
 > Type: `Boolean` Default: `false`
 
-Use custom extractor for tailwind.
+Allow CSS selectors to contain symbols (e.g [TailwindCSS](https://tailwindcss.com/)).
 
 #### purgecss.rejected
 > Type: `Boolean` Default: `true`

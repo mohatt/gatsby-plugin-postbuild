@@ -95,7 +95,7 @@ async function writePurged (file, data, purged) {
  */
 function getPurgeCssOptions (options) {
   const opts = { ...options };
-  ['enabled', 'report', 'reportConsole', 'tailwind'].forEach(key => {
+  ['enabled', 'report', 'reportConsole', 'allowSymbols'].forEach(key => {
     delete opts[key]
   })
   return opts
@@ -117,7 +117,7 @@ export async function run ({ assets, options }) {
   const purgeCSS = new PurgeCSS()
   const purgeOptions = getPurgeCssOptions(options)
   // Tailwind requires a special extractor
-  if (options.tailwind) {
+  if (options.allowSymbols) {
     purgeOptions.defaultExtractor = content => content.match(/[\w-/:]+(?<!:)/g) || []
   }
 

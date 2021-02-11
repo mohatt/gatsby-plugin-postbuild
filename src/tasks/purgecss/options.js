@@ -3,7 +3,7 @@ export const defaults = {
   enabled: true,
   report: true,
   reportConsole: true,
-  tailwind: false,
+  allowSymbols: false,
   // Options consumend by both the task and PurgeCSS
   rejected: true
   // Options consumend by PurgeCss
@@ -18,8 +18,8 @@ export function schema (Joi) {
       .description('Write a "purgecss.log.json" file in "public" with all the changes made.'),
     reportConsole: Joi.boolean()
       .description('Print a summary report during build with all the changes made.'),
-    tailwind: Joi.boolean()
-      .description('Use custom extractor for tailwind.'),
+    allowSymbols: Joi.boolean()
+      .description('Allow CSS selectors to contain symbols (e.g TailwindCSS).'),
     rejected: Joi.boolean()
       .description('Write a log file in "public" with the rejected selectors for every file.'),
     defaultExtractor: Joi.function()
