@@ -3,10 +3,24 @@ import _ from 'lodash'
 import Debug from 'debug'
 
 /**
- * Initializes plguin options
+ * Global options object
  *
- * The function only runs when called with args to initialize and cache
- * options object. Subsequent calls without args return the cached value
+ * @type {Object}
+ */
+export let options
+
+/**
+ * Private store for internal use
+ *
+ * @type {Map<string,Object>}
+ */
+const store = new Map([
+  ['reporter', null],
+  ['debug', new Map]
+])
+
+/**
+ * Initializes plguin options and other utilities
  *
  * @param {Object=} args
  * @param   {Object} args.defaultOptions - Options defaults
@@ -14,47 +28,19 @@ import Debug from 'debug'
  * @param   {Object} args.gatsby - Gatsby's onPreBootstrap event object
  * @return {Object} Plugin options
  */
-export function initializeOptions (args) {
-  if (arguments.length === 0) {
-    if (initializeOptions.options === undefined) {
-      return reportError('Cant fetch options because they are not initialized')
-    }
-
-    return initializeOptions.options
-  }
-
+export function bootstrap (args) {
   // Merge user-defined options with defaults
-  const options = _.merge(args.defaultOptions, args.pluginOptions)
-  // set directory paths
+  options = _.merge(args.defaultOptions, args.pluginOptions)
+  // set private options
+  options._plugin = 'gatsby-plugin-postbuild'
   options._root = args.gatsby.store.getState().program.directory
   options._public = path.join(options._root, 'public')
-  // options._cache = args.gatsby.cache.directory
+  options._cache = args.gatsby.cache.directory
+  // Prevent mutations on options object
+  Object.freeze(options)
 
-  // Cache the final options object
-  debug('Options', options)
-
-  initializeOptions.options = options
-  return options
-}
-
-/**
- * Initializes plugin reporter
- *
- * The function only runs when called with args to initialize and cache
- * reporter object. Subsequent calls without args return the cached value
- *
- * @param {Object} reporter - Reporter object
- * @return {Object} Reporter object
- */
-export function initializeReporter (reporter) {
-  if (arguments.length === 0) {
-    if (initializeReporter.reporter === undefined) {
-      throw new Error('Cant fetch reporter because it is not initialized')
-    }
-
-    return initializeReporter.reporter
-  }
-
+  // Initialize reporter
+  const reporter = args.gatsby.reporter
   const errorMap = {
     10000: {
       text: context => context.message,
@@ -62,22 +48,21 @@ export function initializeReporter (reporter) {
       type: 'PLUGIN'
     }
   }
-
   if (reporter.setErrorMap) {
     reporter.setErrorMap(errorMap)
   }
-
-  initializeReporter.reporter = reporter
-  return reporter
+  store.set('reporter', reporter)
+  debug('Plugin initialized', options)
 }
 
 /**
- * Gets the initialized reporter object
+ * Prints an info message
  *
- * @return {Object}
+ * @param {string} message
  */
-export function getReporter () {
-  return initializeReporter()
+export function reporter (message) {
+  const reporter = store.get('reporter')
+  reporter.info(`${options._plugin}:\n ${message}`)
 }
 
 /**
@@ -86,9 +71,9 @@ export function getReporter () {
  * @param {string} message
  * @param {Error} e
  */
-export function reportError (message, e = null) {
-  const reporter = getReporter()
-  const prefix = '"gatsby-plugin-postbuild" threw an error while running'
+reporter.error = function (message, e = null) {
+  const reporter = store.get('reporter')
+  const prefix = `${options._plugin} threw an error while running`
 
   if (!e) {
     reporter.panic({
@@ -115,9 +100,9 @@ export function reportError (message, e = null) {
  *
  * @param {string} message
  */
-export function reportWarning (message) {
-  const reporter = getReporter()
-  const prefix = '"gatsby-plugin-postbuild" might not be working properly'
+reporter.warning = function (message) {
+  const reporter = store.get('reporter')
+  const prefix = `${options._plugin} might not be working properly`
   reporter.warn(`${prefix}:\n ${message}`)
 }
 
@@ -126,10 +111,9 @@ export function reportWarning (message) {
  *
  * @param {string} message
  */
-export function reportSuccess (message) {
-  const reporter = getReporter()
-  const prefix = '"gatsby-plugin-postbuild"'
-  reporter.success(`${prefix}:\n ${message}`)
+reporter.success = function (message) {
+  const reporter = store.get('reporter')
+  reporter.success(`${options._plugin}:\n ${message}`)
 }
 
 /**
@@ -149,49 +133,24 @@ export function debug (message, data = null) {
  * @return {Function}
  */
 debug.create = function (namespace = '') {
-  let ns = 'gatsby-plugin-postbuild'
+  let ns = options._plugin
   if (namespace) {
     ns += ':' + namespace
   }
 
-  debug.cache ??= {}
-  if (debug.cache[ns]) {
-    return debug.cache[ns]
+  const cache = store.get('debug')
+  if (cache.has(ns)) {
+    return cache.get(ns)
   }
 
-  const dbg = Debug(ns)
-  debug.cache[ns] = function (message) {
+  const realDebug = Debug(ns)
+  const debug = function (message) {
     arguments[0] = arguments.length > 1
       ? `${message} %O \n`
       : `${message} \n`
-    dbg(...arguments)
+    realDebug(...arguments)
   }
 
-  return debug.cache[ns]
+  cache.set(ns, debug)
+  return debug
 }
-
-/**
- * Gets the initialized options object
- *
- * @return {Object}
- */
-export function getOptions () {
-  return initializeOptions()
-}
-
-/**
- * Gets the value of a single option
- *
- * @param {string} optionName Dot-separated option name
- * @return {*} Option value
- */
-export function getOption (optionName) {
-  return _.get(getOptions(), optionName)
-}
-
-/**
- * Global options object
- *
- * @type {Object}
- */
-export let options

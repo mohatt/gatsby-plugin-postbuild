@@ -1,5 +1,5 @@
 import glob from 'glob'
-import { getOption, initializeOptions, initializeReporter } from './util'
+import { bootstrap, options } from './util'
 import { defaults, schema } from './options'
 import tasks from './tasks'
 
@@ -26,13 +26,12 @@ export function pluginOptionsSchema ({ Joi }) {
  * @param {Object} pluginOptions
  */
 export function onPreBootstrap (args, pluginOptions) {
-  initializeReporter(args.reporter)
   const defaultOptions = {
     ...defaults,
     ...tasks.getFields('options.defaults')
   }
   // Initializes and validates options
-  initializeOptions({
+  bootstrap({
     gatsby: args,
     defaultOptions,
     pluginOptions
@@ -46,7 +45,7 @@ export function onPreBootstrap (args, pluginOptions) {
  * @return {Promise<void>}
  */
 export async function onPostBuild (args) {
-  const build = getOption('_public')
+  const build = options._public
   const assets = {
     html: '**/*.html',
     js: '**/*.js',

@@ -2,7 +2,7 @@ import { Promise } from 'bluebird'
 import glob from 'glob'
 import path from 'path'
 import _ from 'lodash'
-import { getOption, reportError } from './util'
+import { options, reporter } from './util'
 
 /**
  * @typedef Task
@@ -86,11 +86,10 @@ export class Tasks {
    */
   run ({ api, params = {}, gatsby }) {
     return Promise.mapSeries(this.tasks, async task => {
-      const options = getOption(task.id)
       try {
-        await task.api[api]({ ...params, options }, gatsby)
+        await task.api[api]({ ...params, options: options[task.id] }, gatsby)
       } catch (e) {
-        reportError(`Error occured while running task "${task.id}"`, e)
+        reporter.error(`Error occured while running task "${task.id}"`, e)
       }
     })
   }

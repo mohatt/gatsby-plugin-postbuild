@@ -7,7 +7,7 @@ import parse5 from 'parse5'
 import PurgeCSS from 'purgecss'
 import * as htmlparser2 from 'parse5-htmlparser2-tree-adapter'
 import filesize from 'filesize'
-import { getOption, reportSuccess } from '../../util'
+import { options, reporter } from '../../util'
 
 /**
  * Recursively walks over a htmlparser2 node tree invoking a callback
@@ -65,13 +65,13 @@ async function writePurged (file, data, purged) {
     await fs.writeFile(file + '.rejected.log', purged.join(' '))
   }
   const r = {
-    file: path.relative(getOption('_public'), file),
+    file: path.relative(options._public, file),
     sizes: sizes.map(filesize.partial({ spacer: '' })),
     rejected: rejected ? purged.length : undefined
   }
 
   // Ignore reporting to console if specified
-  if (!getOption('purgecss.reportConsole')) {
+  if (!options.purgecss.reportConsole) {
     return r
   }
 
@@ -200,7 +200,7 @@ export async function run ({ assets, options }) {
 
   // Write the full purgecss report
   if (options.report) {
-    const reportFile = path.join(getOption('_public'), 'purgecss.log.json')
+    const reportFile = path.join(options._public, 'purgecss.log.json')
     try {
       await fs.writeFile(reportFile, JSON.stringify(htmlReports, null, 2))
     } catch (e) {
@@ -213,5 +213,5 @@ export async function run ({ assets, options }) {
     // Adds a margin after the last report output
     console.log('')
   }
-  reportSuccess(`Done purging ${htmlReports.length} files`)
+  reporter.success(`Done purging ${htmlReports.length} files`)
 }
