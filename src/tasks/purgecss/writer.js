@@ -4,7 +4,13 @@ import filesize from 'filesize'
 import { options } from '../../util'
 
 export class FileWriter {
+  formatSize
   reports = []
+  saving = 0
+
+  constructor () {
+    this.formatSize = filesize.partial({ spacer: '' })
+  }
 
   /**
    * Writes the purged asset file on disk
@@ -24,6 +30,7 @@ export class FileWriter {
       sizes.push((await fs.stat(file)).size)
       sizes.push(Buffer.byteLength(data))
       sizes.push(sizes[1] - sizes[0])
+      this.saving += sizes[2]
       // Write the actual file
       await fs.writeFile(file, data)
       // Write purged log if enabled
@@ -36,7 +43,7 @@ export class FileWriter {
 
     const r = {
       file: path.relative(options._public, file),
-      sizes: sizes.map(filesize.partial({ spacer: '' })),
+      sizes: sizes.map(this.formatSize),
       rejected: rejected ? purged.length : undefined
     }
     this.reports.push(r)
@@ -58,5 +65,13 @@ export class FileWriter {
 
   getReports () {
     return this.reports
+  }
+
+  getTotalSaving () {
+    const saving = this.saving * -1
+    return [
+      saving,
+      this.formatSize(saving)
+    ]
   }
 }

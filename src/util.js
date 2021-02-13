@@ -23,11 +23,10 @@ const store = new Map([
 /**
  * Initializes plguin options and other utilities
  *
- * @param {Object=} args
- * @param   {Object} args.defaultOptions - Options defaults
- * @param   {Object} args.pluginOptions - Plugin options
- * @param   {Object} args.gatsby - Gatsby's onPreBootstrap event object
- * @return {Object} Plugin options
+ * @param {Object} $0
+ * @param   {Object} $0.defaultOptions - Options defaults
+ * @param   {Object} $0.pluginOptions - Plugin options
+ * @param   {Object} $0.gatsby - Gatsby's onPreBootstrap event object
  */
 export function bootstrap ({ defaultOptions, pluginOptions, gatsby }) {
   // Merge user-defined options with defaults

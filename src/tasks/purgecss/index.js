@@ -10,10 +10,11 @@ import { createDebug, options, reporter } from '../../util'
 /**
  * Runs purgecss on the html files provided
  *
- * @param {Object} assets Absolute file paths
- * @param   {[string]} assets.html
+ * @param {Object} $0
+ * @param   {[string]} $0.html - html absolute file paths
  */
 export default async function ({ html }) {
+  if (html.length === 0) return
   const debug = createDebug('purgecss')
   const writer = new FileWriter()
   const purger = new Purger(writer)
@@ -43,8 +44,12 @@ export default async function ({ html }) {
 
   // Write success message
   if (options.reportConsole) {
-    // Adds a margin after the last report output
-    console.log('')
+    console.log('') // Adds a margin after the last report output
   }
-  reporter.success(`Done purging ${reports.length} files`)
+  const saving = writer.getTotalSaving()
+  reporter.success(`Done optimizing ${reports.length} files` + (
+    saving[0]
+      ? ` saving a total of ${saving[1]}`
+      : ''
+  ))
 }

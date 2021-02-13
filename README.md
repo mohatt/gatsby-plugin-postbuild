@@ -3,7 +3,7 @@
 
 Gatsby plugin for optimizing/minifying generated HTML/CSS files after build through removal of unused CSS rules.
 
-<img width="380" src=".github/console-screen.png" alt="Console Screen">
+<img width="450" src=".github/console-screen.png" alt="Console Screen">
 
 ---
 - [How it works](#how-it-works)
