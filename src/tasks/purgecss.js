@@ -7,7 +7,9 @@ import parse5 from 'parse5'
 import PurgeCSS from 'purgecss'
 import * as htmlparser2 from 'parse5-htmlparser2-tree-adapter'
 import filesize from 'filesize'
-import { options, reporter } from '../util'
+import { createDebug, options, reporter } from '../util'
+
+const debug = createDebug('purgecss')
 
 /**
  * Recursively walks over a htmlparser2 node tree invoking a callback
@@ -342,6 +344,7 @@ export default async function ({ assets }) {
     const file = new HtmlFile(filename, purger, writer)
     return file.load().then(() => {
       file.loadAssets()
+      debug(`Loaded html file`, _.pick(file, ['path', 'styles', 'scripts']))
       return file
     })
   })

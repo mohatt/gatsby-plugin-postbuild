@@ -1,7 +1,6 @@
 import glob from 'glob'
 import { bootstrap, options, reporter } from './util'
 import { defaults, schema } from './options'
-import { purgecss } from './tasks'
 
 /**
  * Validates user-defined options against schema.
@@ -51,8 +50,9 @@ export async function onPostBuild (gatsby) {
     assets[a] = glob.sync(`${build}/${assets[a]}`, { nodir: true })
   })
 
+  const tasks = require('./tasks')
   try {
-    await purgecss({ assets })
+    await tasks.purgecss({ assets })
   } catch (e) {
     reporter.error('Error occured while running purgecss', e)
   }
