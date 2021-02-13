@@ -36,6 +36,7 @@ export function bootstrap ({ defaultOptions, pluginOptions, gatsby }) {
   options._root = gatsby.store.getState().program.directory
   options._public = path.join(options._root, 'public')
   options._cache = gatsby.cache.directory
+  options._pathPrefix = gatsby.pathPrefix
   // Prevent mutations on options object
   Object.freeze(options)
 
@@ -123,7 +124,7 @@ reporter.success = function (message) {
  * @param {any} data
  */
 export function debug (message, data = null) {
-  debug.create()(...arguments)
+  createDebug()(...arguments)
 }
 
 /**
@@ -132,7 +133,7 @@ export function debug (message, data = null) {
  * @param {string} namespace
  * @return {Function}
  */
-debug.create = function (namespace = '') {
+export function createDebug (namespace = '') {
   let ns = options._plugin
   if (namespace) {
     ns += ':' + namespace
