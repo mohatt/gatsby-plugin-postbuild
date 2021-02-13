@@ -39,7 +39,6 @@
     "bluebird": "^3.7.2",
     "lodash": "^4.17.20",
     "debug": "^3.2.6",
-    "glob": "^7.0.0",
     "parse5": "^6.0.0",
     "parse5-htmlparser2-tree-adapter": "^6.0.0",
     "purgecss": "^4.0.0",

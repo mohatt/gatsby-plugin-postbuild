@@ -1,4 +1,5 @@
-import glob from 'glob'
+import path from 'path'
+import { promises as fs } from 'fs'
 import { bootstrap, options, reporter } from './util'
 import { defaults, schema } from './options'
 
@@ -38,21 +39,19 @@ export async function onPostBuild (gatsby) {
   if (!options.enabled) {
     return
   }
-
-  const build = options._public
-  const assets = {
-    html: '**/*.html',
-    js: '**/*.js',
-    css: '**/*.css'
+  const pages = gatsby.getNodesByType('SitePage')
+  const html = []
+  for (const page of pages) {
+    const filename = path.join(options._public, page.path, 'index.html')
+    try {
+      await fs.access(filename)
+      html.push(filename)
+    } catch (e) {}
   }
-
-  Object.keys(assets).forEach(function (a) {
-    assets[a] = glob.sync(`${build}/${assets[a]}`, { nodir: true })
-  })
 
   const tasks = require('./tasks')
   try {
-    await tasks.purgecss({ assets })
+    await tasks.purgecss({ html })
   } catch (e) {
     reporter.error('Error occured while running purgecss', e)
   }

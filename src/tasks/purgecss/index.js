@@ -8,18 +8,16 @@ import { FileWriter } from './writer'
 import { createDebug, options, reporter } from '../../util'
 
 /**
- * Runs task on the provided asset files
+ * Runs purgecss on the html files provided
  *
  * @param {Object} assets Absolute file paths
  * @param   {[string]} assets.html
- * @param   {[string]} assets.css
- * @param   {[string]} assets.js
  */
-export default async function ({ assets }) {
+export default async function ({ html }) {
   const debug = createDebug('purgecss')
   const writer = new FileWriter()
   const purger = new Purger(writer)
-  const html = Promise.map(assets.html, filename => {
+  const files = Promise.map(html, filename => {
     const file = new HtmlFile(filename, purger, writer)
     return file.load().then(() => {
       file.loadAssets()
@@ -28,7 +26,7 @@ export default async function ({ assets }) {
     })
   })
 
-  await html.mapSeries(file => {
+  await files.mapSeries(file => {
     return file.purgeStyles()
   })
 
