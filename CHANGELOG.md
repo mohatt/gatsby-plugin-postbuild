@@ -1,3 +1,20 @@
+# [1.1.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.0.3...v1.1.0) (2021-02-13)
+
+
+### Bug Fixes
+
+* **plugin:** lazy-load tasks module to allow utils to load first ([5edeb2d](https://github.com/mohatt/gatsby-plugin-postbuild/commit/5edeb2d20d3009e796bb9f8fdd467cf277e2c1c4))
+
+
+### Features
+
+* **plugin:** add support for local `link` and `script` files ([da21e3e](https://github.com/mohatt/gatsby-plugin-postbuild/commit/da21e3e84c4baf7a00c51e0f7ddd925d1df2a0dc))
+
+
+### Performance Improvements
+
+* **plugin:** split purgecss task into several submodules for better readability and testing ([fccf86a](https://github.com/mohatt/gatsby-plugin-postbuild/commit/fccf86aaac461ade15d032ad5f11571ad7f2e1b2))
+
 ## [1.0.3](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.0.2...v1.0.3) (2021-02-11)
 
 
