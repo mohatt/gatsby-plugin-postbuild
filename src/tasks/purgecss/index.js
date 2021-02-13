@@ -23,7 +23,7 @@ export default async function ({ assets }) {
     const file = new HtmlFile(filename, purger, writer)
     return file.load().then(() => {
       file.loadAssets()
-      debug(`Loaded html file`, _.pick(file, ['path', 'styles', 'scripts']))
+      debug('Loaded html file', _.pick(file, ['path', 'styles', 'scripts']))
       return file
     })
   })

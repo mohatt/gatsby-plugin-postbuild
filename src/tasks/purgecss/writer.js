@@ -16,14 +16,13 @@ export class FileWriter {
    * @return {Object} - A summary report to be printed
    */
   async write (file, data, purged) {
-    let sizes, rejected = Array.isArray(purged)
+    const sizes = []
+    const rejected = Array.isArray(purged)
     try {
       await fs.access(file)
       // Caclulate data lengths
-      sizes = [
-        (await fs.stat(file)).size,
-        Buffer.byteLength(data)
-      ]
+      sizes.push((await fs.stat(file)).size)
+      sizes.push(Buffer.byteLength(data))
       sizes.push(sizes[1] - sizes[0])
       // Write the actual file
       await fs.writeFile(file, data)
@@ -31,8 +30,7 @@ export class FileWriter {
       if (rejected) {
         await fs.writeFile(file + '.rejected.log', purged.join(' '))
       }
-    }
-    catch (e) {
+    } catch (e) {
       throw new Error(`Unable to write purged file "${file}": ${e.message}`)
     }
 
@@ -58,7 +56,7 @@ export class FileWriter {
       '\x1b[0m')
   }
 
-  getReports() {
+  getReports () {
     return this.reports
   }
 }

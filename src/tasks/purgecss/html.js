@@ -27,7 +27,6 @@ function walk (node, cb) {
 }
 
 export class HtmlFile {
-
   path
   tree
   nakedHtml
@@ -42,7 +41,7 @@ export class HtmlFile {
     this.writer = writer
   }
 
-  async load() {
+  async load () {
     const filedata = await fs.readFile(this.path, 'utf8')
     this.tree = parse5.parse(filedata, {
       treeAdapter: htmlparser2
@@ -56,49 +55,46 @@ export class HtmlFile {
     })
   }
 
-  loadAssets(){
+  loadAssets () {
     let inHead = true
     walk(this.tree, node => {
       if (node.name === 'body') {
         inHead = false
-      }
-      else if (node.name === 'style') {
+      } else if (node.name === 'style') {
         this.addStyle(node, inHead)
-      }
-      else if (node.name === 'link') {
+      } else if (node.name === 'link') {
         const rel = (node.attribs.rel || '').toLowerCase().trim()
-        if(rel === 'stylesheet') {
+        if (rel === 'stylesheet') {
           this.addStyle(node, inHead)
         }
-      }
-      else if (node.name === 'script') {
+      } else if (node.name === 'script') {
         this.addScript(node)
       }
       return true
     })
   }
 
-  addStyle(node, head = false) {
+  addStyle (node, head = false) {
     const style = {
       id: null,
       type: node.name,
       text: null,
       file: null
     }
-    if(node.name === 'style') {
+    if (node.name === 'style') {
       if (node.children.length === 0) return
       style.text = node.children[0]
       style.text.data = style.text.data.trim()
-      if(style.text.data === '') {
+      if (style.text.data === '') {
         return
       }
       if (head) {
         style.id = (node.attribs.id || '').trim() || sha1(style.text.data, true)
         this.purger.linkStyle(style, this)
       }
-    } else if(node.name === 'link') {
+    } else if (node.name === 'link') {
       style.file = this.resolveHref(node)
-      if(!style.file){
+      if (!style.file) {
         return
       }
       style.id = style.file
@@ -107,37 +103,37 @@ export class HtmlFile {
     this.styles.push(style)
   }
 
-  addScript(node) {
+  addScript (node) {
     const filename = this.resolveHref(node, 'src')
-    if(!filename){
+    if (!filename) {
       return
     }
     const relFilename = path.relative(options._public, filename)
-    if(this.purger.shouldIgnoreScript(relFilename)) {
+    if (this.purger.shouldIgnoreScript(relFilename)) {
       return
     }
     this.scripts.push(filename)
   }
 
-  resolveHref(node, attrib = 'href') {
+  resolveHref (node, attrib = 'href') {
     let href = (node.attribs[attrib] || '').trim()
-    if(!href || /^\w+:\/\//.test(href)) return false
+    if (!href || /^\w+:\/\//.test(href)) return false
     const prefix = options._pathPrefix
-    if(prefix) {
-      if(href.indexOf(prefix) === 0){
+    if (prefix) {
+      if (href.indexOf(prefix) === 0) {
         href = href.replace(prefix, '')
-      } else if (path.isAbsolute(href)){
+      } else if (path.isAbsolute(href)) {
         return false
       }
     }
 
-    if(path.isAbsolute(href)){
+    if (path.isAbsolute(href)) {
       return path.join(options._public, href)
     }
     return path.resolve(path.dirname(this.path), href)
   }
 
-  purgeStyles() {
+  purgeStyles () {
     return Promise.mapSeries(this.styles, style => {
       return this.purger.purge(style, this)
     }).then(result => {
