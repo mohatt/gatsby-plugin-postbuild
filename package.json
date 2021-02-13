@@ -24,10 +24,7 @@
   },
   "keywords": [
     "gatsby",
-    "gatsby-plugin",
-    "gatsby-component",
-    "routing",
-    "pagination"
+    "gatsby-plugin"
   ],
   "author": "Mohamed Elkholy <mohatt@pm.me>",
   "license": "MIT",
