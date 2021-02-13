@@ -1,4 +1,5 @@
 import path from 'path'
+import crypto from 'crypto'
 import _ from 'lodash'
 import Debug from 'debug'
 
@@ -154,4 +155,16 @@ export function createDebug (namespace = '') {
 
   cache.set(ns, debug)
   return debug
+}
+
+/**
+ * Creates a sha1 hash from a string.
+ *
+ * @param {string} data
+ * @param {boolean} base64
+ */
+export function sha1 (data, base64 = false) {
+  return crypto.createHash('sha1')
+    .update(data, 'utf8')
+    .digest(base64 ? 'base64' : 'hex')
 }
