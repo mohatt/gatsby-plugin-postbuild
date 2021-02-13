@@ -1,7 +1,7 @@
 # Gatsby Postbuild
 [![][npm-img]][npm-url] [![][ci-img]][ci-url] [![][gatsby-img]][gatsby-url] [![][license-img]][license-url]
 
-Gatsby plugin for optimizing/minifying generated HTML/CSS files after build through removing unused CSS rules.
+Gatsby plugin for optimizing/minifying generated HTML/CSS files after build through removal of unused CSS rules.
 
 <img width="380" src=".github/console-screen.png" alt="Console Screen">
 
@@ -18,14 +18,15 @@ The plugin works diffrently than other plugins/techniques that utilize [PurgeCSS
 with [PostCSS](https://postcss.org/) to acheive the same goal. The main diffrence is that the plugin only runs after
 Gatsby builds the site, then optimizes the generated HTML/CSS files.
 
-The plugin uses [Parse5](https://github.com/inikulin/parse5) library to compile the generated HTML files into ASTs then:
-- [x] Removes all `<style>` nodes and their CSS from the tree
-- [x] Store a temporary naked HTML without CSS
-- [x] Walks through the orginal tree and removes unused CSS rules by running PurgeCSS against the naked HTML files (only the ones that included those styles), that includes:
-    - [x] Inline CSS rules defined under `<style>` tags
-    - [ ] External CSS files defines as `<link>` tags
-- [x] Serializes tree back to HTML
-- [x] Writes optimized HTML/CSS files
+The plugin uses [Parse5](https://github.com/inikulin/parse5) library to compile the generated html files into ASTs then:
+- Removes all `<style>` nodes and their css from the tree
+- Stores a temporary naked html without css
+- Analyzes all html trees to create a map that links html files with common css/javascript assets
+- Walks through the orginal tree and removes unused CSS rules by running PurgeCSS against the naked html files (+ any scripts included) according to the linked map created in the previous step, that includes:
+  - Inline CSS rules defined under `<style>` tags
+  - Local CSS files defines as `<link>` tags
+- Serializes the tree back to HTML
+- Writes optimized HTML/CSS files
 
 ## Installation
 Install with [npm](https://www.npmjs.com/)
