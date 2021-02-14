@@ -3,7 +3,9 @@
 
 Gatsby plugin for optimizing/minifying generated HTML/CSS files after build through removal of unused CSS rules.
 
-<img width="832" src=".github/console-screen.png" alt="Console Screen">
+
+> ##### Building a Gatsby site running TailwindCSS
+<img width="832" src=".github/console-screen.png" alt="Building a Gatsby site running TailwindCSS">
 
 ---
 - [How it works](#how-it-works)
