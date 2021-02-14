@@ -77,14 +77,16 @@ export class FileWriter {
     }
 
     // Write report to console
-    console.log(`\x1b[33m
- ${r.file}\x1b[0m\x1b[2m
-  |- Size: ${r.sizes[0]} -> ${r.sizes[1]} (${r.sizes[2]})` +
+    console.log(
+      (this.reports.length === 1 ? '\n' : '') +
+      `\x1b[33m ${r.file}\x1b[0m\x1b[2m` +
+      `\n  |- Size: ${r.sizes[0]} -> ${r.sizes[1]} (${r.sizes[2]})` +
       (rejected
-        ? `
-  |- Rejected: ${r.rejected} selector${r.rejected !== 1 ? 's' : ''}`
-        : '') +
-      '\x1b[0m')
+        ? `\n  |- Rejected: ${r.rejected} selector${r.rejected !== 1 ? 's' : ''}`
+        : ''
+      ) +
+      '\x1b[0m\n'
+    )
   }
 
   /**

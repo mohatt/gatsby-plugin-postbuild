@@ -1,6 +1,6 @@
 import path from 'path'
 import { promises as fs } from 'fs'
-import { bootstrap, debug, reporter, options } from './util'
+import { bootstrap, debug, options, ReporterError } from './util'
 import { defaults, schema } from './options'
 
 /**
@@ -36,10 +36,14 @@ export function onPreBootstrap (gatsby, pluginOptions) {
  * @param {Function} $0.getNodesByType
  * @return {Promise<void>}
  */
-export async function onPostBuild ({ getNodesByType }) {
+export async function onPostBuild ({ getNodesByType, reporter, tracing }) {
   if (!options.enabled) {
     return
   }
+  const activity = reporter.activityTimer(options._plugin, {
+    parentSpan: tracing.parentSpan
+  })
+  activity.start()
   const pages = getNodesByType('SitePage')
   const html = []
   for (const page of pages) {
@@ -53,8 +57,9 @@ export async function onPostBuild ({ getNodesByType }) {
   const tasks = require('./tasks')
   try {
     debug('Running purgecss task on', html)
-    await tasks.purgecss({ html })
+    await tasks.purgecss({ html }, activity.setStatus)
   } catch (e) {
-    reporter.error('Error occured while running purgecss', e)
+    activity.panic(new ReporterError('Error occured while running purgecss', e))
   }
+  activity.end()
 }
