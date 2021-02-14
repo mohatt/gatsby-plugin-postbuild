@@ -1,7 +1,8 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import filesize from 'filesize'
-import { options } from '../../util'
+import { options, createDebug } from '../../util'
+const debug = createDebug('purgecss/writer')
 
 /**
  * Handles writing optimized files
@@ -54,6 +55,7 @@ export class FileWriter {
       sizes.push(sizes[1] - sizes[0])
       this.saving += sizes[2]
       // Write the actual file
+      debug('Writing purged file', file)
       await fs.writeFile(file, data)
       // Write purged log if enabled
       if (rejected) {

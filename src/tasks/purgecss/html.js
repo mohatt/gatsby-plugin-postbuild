@@ -4,7 +4,8 @@ import path from 'path'
 import parse5 from 'parse5'
 import * as htmlparser2 from 'parse5-htmlparser2-tree-adapter'
 import _ from 'lodash'
-import { options, sha1 } from '../../util'
+import { options, createDebug, sha1 } from '../../util'
+const debug = createDebug('purgecss/html')
 
 /**
  * Recursively walks through a htmlparser2 tree invoking a callback
@@ -102,6 +103,7 @@ export class HtmlFile {
     this.nakedHtml = parse5.serialize(nakedTree, {
       treeAdapter: htmlparser2
     })
+    debug('Loaded html file', this.path)
   }
 
   /**
@@ -124,6 +126,7 @@ export class HtmlFile {
       }
       return true
     })
+    debug('Loaded html file assets', _.pick(this, ['path', 'styles', 'scripts']))
   }
 
   /**
@@ -213,9 +216,11 @@ export class HtmlFile {
    * @return {Promise<void>}
    */
   purgeStyles () {
+    debug('Purging styles for html file', this.path)
     return Promise.mapSeries(this.styles, style => {
       return this.purger.purge(style, this)
     }).then(result => {
+      debug('Serializing purged html tree for', this.path)
       const ndata = parse5.serialize(this.tree, { treeAdapter: htmlparser2 })
       return this.writer.write(
         this.path,

@@ -1,11 +1,10 @@
 import { Promise } from 'bluebird'
 import { promises as fs } from 'fs'
 import path from 'path'
-import _ from 'lodash'
 import { HtmlFile } from './html'
 import { Purger } from './purger'
 import { FileWriter } from './writer'
-import { createDebug, options, reporter } from '../../util'
+import { options, reporter } from '../../util'
 
 /**
  * Runs purgecss on the html files provided
@@ -15,14 +14,12 @@ import { createDebug, options, reporter } from '../../util'
  */
 export default async function ({ html }) {
   if (html.length === 0) return
-  const debug = createDebug('purgecss')
   const writer = new FileWriter()
   const purger = new Purger(writer)
   const files = Promise.map(html, filename => {
     const file = new HtmlFile(filename, purger, writer)
     return file.load().then(() => {
       file.loadAssets()
-      debug('Loaded html file', _.pick(file, ['path', 'styles', 'scripts']))
       return file
     })
   })

@@ -1,8 +1,10 @@
 import { Promise } from 'bluebird'
 import { promises as fs } from 'fs'
 import path from 'path'
+import _ from 'lodash'
 import PurgeCSS from 'purgecss'
-import { options } from '../../util'
+import { createDebug, options } from '../../util'
+const debug = createDebug('purgecss/purger')
 
 /**
  * Handles purges css files and inline styles
@@ -65,6 +67,7 @@ export class Purger {
       this.purgeOptions.defaultExtractor = content => content.match(/[\w-/:]+(?<!:)/g) || []
     }
     this.writer = writer
+    debug('Purger initialized with', _.pick(this, ['ignoredScripts', 'purgeOptions']))
   }
 
   /**
@@ -77,6 +80,7 @@ export class Purger {
     this.linkedStyles[style.id] ??= { files: [], cache: null }
     if (this.linkedStyles[style.id].files.indexOf(file) === -1) {
       this.linkedStyles[style.id].files.push(file)
+      debug('Linked style with file', [style.id, file.path])
     }
   }
 
@@ -122,6 +126,7 @@ export class Purger {
    */
   async purge (style, file) {
     if (style.id && this.linkedStyles[style.id].cache !== null) {
+      debug('Retreiving cached purge result for style', style.id)
       return this.applyStyleChanges(style, this.linkedStyles[style.id].cache, true)
     }
 
@@ -159,6 +164,7 @@ export class Purger {
 
     return this.purgeCSS.purge(opts).then(([result]) => {
       if (style.id) {
+        debug('Caching purge result on style', style.id)
         this.linkedStyles[style.id].cache = result
       }
       return this.applyStyleChanges(style, result)
