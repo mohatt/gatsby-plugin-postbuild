@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.1.0...v1.1.1) (2021-02-14)
+
+
+### Performance Improvements
+
+* **plugin:** add debug messages for most tasks ([86db102](https://github.com/mohatt/gatsby-plugin-postbuild/commit/86db102537de3d7b81905d6c7dbc9853a522e837))
+* **plugin:** add total saving to final report ([fa9eca1](https://github.com/mohatt/gatsby-plugin-postbuild/commit/fa9eca1fb9f10ef9d334a7058b1f01999b701bbd))
+* **plugin:** no need for glob anymore ([72a7f72](https://github.com/mohatt/gatsby-plugin-postbuild/commit/72a7f723e0205463ece65f870d647f005784af10))
+
 # [1.1.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.0.3...v1.1.0) (2021-02-13)
 
 
