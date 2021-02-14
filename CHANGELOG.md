@@ -1,3 +1,11 @@
+## [1.1.2](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.1.1...v1.1.2) (2021-02-14)
+
+
+### Performance Improvements
+
+* **plugin:** implemented reporter.activityTimer for better console output ([490c0e0](https://github.com/mohatt/gatsby-plugin-postbuild/commit/490c0e00a2dbfbf9193a3465808bba2e1b1af7fe))
+* **plugin:** improved error reporting ([8fa4052](https://github.com/mohatt/gatsby-plugin-postbuild/commit/8fa4052c05cfdc4e7b673c732dd3fccfb5de1365))
+
 ## [1.1.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.1.0...v1.1.1) (2021-02-14)
 
 
