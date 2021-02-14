@@ -11,16 +11,6 @@ import Debug from 'debug'
 export let options
 
 /**
- * Private store for internal use
- *
- * @type {Map<string,Object>}
- */
-const store = new Map([
-  ['reporter', null],
-  ['debug', new Map()]
-])
-
-/**
  * Initializes plguin options and other utilities
  *
  * @param {Object} $0
@@ -44,7 +34,7 @@ export function bootstrap ({ defaultOptions, pluginOptions, gatsby }) {
   const reporter = gatsby.reporter
   const errorMap = {
     10000: {
-      text: context => context.message,
+      text: context => `${options._plugin} threw an error while running:\n ${context.message}`,
       level: 'ERROR',
       type: 'PLUGIN'
     }
@@ -52,69 +42,28 @@ export function bootstrap ({ defaultOptions, pluginOptions, gatsby }) {
   if (reporter.setErrorMap) {
     reporter.setErrorMap(errorMap)
   }
-  store.set('reporter', reporter)
   debug('Plugin initialized', options)
 }
 
 /**
- * Prints an info message
+ * Creates a new structured error to pass to gatsby's reporter
  *
- * @param {string} message
+ * @constructor
+ * @param {string|Object} message
+ * @param {Error|null} error
+ * @param {number} code
+ * @return {{ id: string, context: {Object}, error: error}}
  */
-export function reporter (message) {
-  const reporter = store.get('reporter')
-  reporter.info(`${options._plugin}:\n ${message}`)
-}
-
-/**
- * Prints an error message and terminates the current process
- *
- * @param {string} message
- * @param {Error} e
- */
-reporter.error = function (message, e = null) {
-  const reporter = store.get('reporter')
-  const prefix = `${options._plugin} threw an error while running`
-
-  if (!e) {
-    reporter.panic({
-      id: '10000',
-      context: {
-        message: prefix
-      },
-      error: new Error(message)
-    })
-    return
+export function ReporterError (message, error = null, code = 10000) {
+  return {
+    id: `${options._plugin}_${code}`,
+    context: typeof message === 'object'
+      ? message
+      : { message },
+    error: error && typeof error === 'object'
+      ? error
+      : undefined
   }
-
-  reporter.panic({
-    id: '10000',
-    context: {
-      message: `${prefix}:\n ${message}`
-    },
-    error: e
-  })
-}
-
-/**
- * Prints a warning message
- *
- * @param {string} message
- */
-reporter.warning = function (message) {
-  const reporter = store.get('reporter')
-  const prefix = `${options._plugin} might not be working properly`
-  reporter.warn(`${prefix}:\n ${message}`)
-}
-
-/**
- * Prints a success message
- *
- * @param {string} message
- */
-reporter.success = function (message) {
-  const reporter = store.get('reporter')
-  reporter.success(`${options._plugin}:\n ${message}`)
 }
 
 /**
@@ -139,9 +88,9 @@ export function createDebug (namespace = '') {
     ns += ':' + namespace
   }
 
-  const cache = store.get('debug')
-  if (cache.has(ns)) {
-    return cache.get(ns)
+  createDebug.cache ??= new Map()
+  if (createDebug.cache.has(ns)) {
+    return createDebug.cache.get(ns)
   }
 
   const realDebug = Debug(ns)
@@ -152,7 +101,7 @@ export function createDebug (namespace = '') {
     realDebug(...arguments)
   }
 
-  cache.set(ns, debug)
+  createDebug.cache.set(ns, debug)
   return debug
 }
 
