@@ -30,10 +30,12 @@ export function onPreBootstrap (gatsby, pluginOptions) {
 }
 
 /**
- * Run plugin tasks after build is complete.
+ * Runs postbuild tasks after build is complete.
  *
  * @param {Object} $0
  * @param {Function} $0.getNodesByType
+ * @param {Object} $0.reporter
+ * @param {Object} $0.tracing
  * @return {Promise<void>}
  */
 export async function onPostBuild ({ getNodesByType, reporter, tracing }) {
