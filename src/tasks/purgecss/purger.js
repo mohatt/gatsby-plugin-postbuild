@@ -4,14 +4,50 @@ import path from 'path'
 import PurgeCSS from 'purgecss'
 import { options } from '../../util'
 
+/**
+ * Handles purges css files and inline styles
+ */
 export class Purger {
+  /**
+   * Styles shared between multiple html files
+   * @type {Object}
+   */
   linkedStyles = {}
+
+  /**
+   * Script files that should be ignored
+   * @type {[string]}
+   */
   ignoredScripts = []
+
+  /**
+   * Cached contents of script files
+   * @type {Object}
+   */
   cachedScripts = {}
+
+  /**
+   * @type PurgeCSS
+   */
   purgeCSS
+
+  /**
+   * Options to pass to PurgeCSS
+   * @type {Object}
+   */
   purgeOptions
+
+  /**
+   * @type {FileWriter}
+   */
   writer
 
+  /**
+   * Sets ignored scripts and PurgeCSS options
+   *
+   * @constructor
+   * @param {FileWriter} writer
+   */
   constructor (writer) {
     const ignoredChunks = ['app', 'polyfill']
     const chunks = require(path.join(options._public, 'webpack.stats.json')).assetsByChunkName
@@ -31,6 +67,12 @@ export class Purger {
     this.writer = writer
   }
 
+  /**
+   * Links a given style to a html file
+   *
+   * @param {Object} style
+   * @param {HtmlFile} file
+   */
   linkStyle (style, file) {
     this.linkedStyles[style.id] ??= { files: [], cache: null }
     if (this.linkedStyles[style.id].files.indexOf(file) === -1) {
@@ -38,10 +80,24 @@ export class Purger {
     }
   }
 
+  /**
+   * Decides whether to ignore a script file or not
+   *
+   * @param {string} script
+   * @return {boolean}
+   */
   shouldIgnoreScript (script) {
     return this.ignoredScripts.indexOf(script) !== -1
   }
 
+  /**
+   * Applies PurgeCSS changes to the given style object
+   *
+   * @param {Object} style
+   * @param {Object} result
+   * @param {boolean} fromCache
+   * @return {Promise<string[]|null>}
+   */
   async applyStyleChanges (style, result, fromCache = false) {
     const rejected = options.purgecss.rejected
       ? result.rejected
@@ -57,6 +113,13 @@ export class Purger {
     return []
   }
 
+  /**
+   * Purges a style object based on its metadata
+   *
+   * @param {Object} style
+   * @param {HtmlFile} file
+   * @return {(Promise<string[]|null>|string[]|null)}
+   */
   async purge (style, file) {
     if (style.id && this.linkedStyles[style.id].cache !== null) {
       return this.applyStyleChanges(style, this.linkedStyles[style.id].cache, true)
@@ -67,7 +130,6 @@ export class Purger {
       css: [],
       ...this.purgeOptions
     }
-
     if (style.type === 'link') {
       try {
         await fs.access(style.file)

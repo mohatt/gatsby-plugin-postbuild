@@ -3,22 +3,44 @@ import path from 'path'
 import filesize from 'filesize'
 import { options } from '../../util'
 
+/**
+ * Handles writing optimized files
+ */
 export class FileWriter {
+  /**
+   * Formats a given file size
+   * @type {Function}
+   */
   formatSize
+
+  /**
+   * File write reports
+   * @type {[Object]}
+   */
   reports = []
+
+  /**
+   * Total bytes of data purged
+   * @type {number}
+   */
   saving = 0
 
+  /**
+   * Creates the filesize format function
+   *
+   * @constructor
+   */
   constructor () {
     this.formatSize = filesize.partial({ spacer: '' })
   }
 
   /**
-   * Writes the purged asset file on disk
+   * Writes the purged file to disk
    *
    * @param {string} file - File absolute path
    * @param {string} data - File data
    * @param {([string]|null)} purged - Purged selectors as array to write a rejected
-   *  log file next to the main asset file, otherwise nothing will be written
+   *  log file next to the written file, otherwise nothing will be written
    * @return {Object} - A summary report to be printed
    */
   async write (file, data, purged) {
@@ -63,10 +85,20 @@ export class FileWriter {
       '\x1b[0m')
   }
 
+  /**
+   * Returns a list of all write reports
+   *
+   * @return {Object[]}
+   */
   getReports () {
     return this.reports
   }
 
+  /**
+   * Returns the total bytes saved and its formatted form
+   *
+   * @return {(number|string)[]}
+   */
   getTotalSaving () {
     const saving = this.saving * -1
     return [
