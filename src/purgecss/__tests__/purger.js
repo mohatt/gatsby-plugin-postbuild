@@ -1,5 +1,5 @@
-import { options } from '../../../util'
-import { mountFile, mountModule, mountOptions } from '../../../../test/utils'
+import { options } from '../../util'
+import { mountFile, mountModule, mountOptions } from '../../../test/utils'
 import { Purger } from '../purger'
 
 jest.mock('fs')

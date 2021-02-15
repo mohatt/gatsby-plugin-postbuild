@@ -2,7 +2,7 @@ import path from 'path'
 import { promises as fs } from 'fs'
 import { defaults, schema } from './options'
 import { bootstrap, debug, options, ReporterError } from './util'
-import { purgecss } from './tasks'
+import purgecss from './purgecss'
 
 /**
  * Validates user-defined options against schema.
@@ -16,7 +16,7 @@ export function pluginOptionsSchema ({ Joi }) {
 }
 
 /**
- * Initializes the plugin.
+ * Initializes the plugin
  *
  * @param {Object} gatsby
  * @param {Object} pluginOptions
@@ -31,7 +31,7 @@ export function onPreBootstrap (gatsby, pluginOptions) {
 }
 
 /**
- * Runs postbuild tasks after build is complete.
+ * Runs postbuild after build is complete.
  *
  * @param {Object} $0
  * @param {Function} $0.getNodesByType
@@ -58,7 +58,7 @@ export async function onPostBuild ({ getNodesByType, reporter, tracing }) {
   }
 
   try {
-    debug('Running purgecss task on', html)
+    debug('Running purgecss on', html)
     await purgecss({ html }, activity.setStatus)
   } catch (e) {
     activity.panic(new ReporterError('Error occured while running purgecss', e))

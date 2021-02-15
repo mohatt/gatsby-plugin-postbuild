@@ -4,7 +4,7 @@ import path from 'path'
 import { HtmlFile } from './html'
 import { Purger } from './purger'
 import { FileWriter } from './writer'
-import { options } from '../../util'
+import { options } from '../util'
 
 /**
  * Runs purgecss on the html files provided

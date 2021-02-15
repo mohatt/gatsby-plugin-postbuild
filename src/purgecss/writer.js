@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import filesize from 'filesize'
-import { options, createDebug } from '../../util'
+import { options, createDebug } from '../util'
 const debug = createDebug('purgecss/writer')
 
 /**

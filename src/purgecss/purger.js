@@ -3,7 +3,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import _ from 'lodash'
 import PurgeCSS from 'purgecss'
-import { createDebug, options } from '../../util'
+import { createDebug, options } from '../util'
 const debug = createDebug('purgecss/purger')
 
 /**

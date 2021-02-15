@@ -4,7 +4,7 @@ import path from 'path'
 import parse5 from 'parse5'
 import * as htmlparser2 from 'parse5-htmlparser2-tree-adapter'
 import _ from 'lodash'
-import { options, createDebug, sha1 } from '../../util'
+import { options, createDebug, sha1 } from '../util'
 const debug = createDebug('purgecss/html')
 
 /**
