@@ -8,7 +8,9 @@ import Debug from 'debug'
  *
  * @type {Object}
  */
-export let options
+export let options = {
+  _plugin: 'gatsby-plugin-postbuild'
+}
 
 /**
  * Initializes plguin options and other utilities
@@ -20,9 +22,8 @@ export let options
  */
 export function bootstrap ({ defaultOptions, pluginOptions, gatsby }) {
   // Merge user-defined options with defaults
-  options = _.merge(defaultOptions, pluginOptions)
+  options = _.merge(options, defaultOptions, pluginOptions)
   // set private options
-  options._plugin = 'gatsby-plugin-postbuild'
   options._root = gatsby.store.getState().program.directory
   options._public = path.join(options._root, 'public')
   options._pathPrefix = gatsby.pathPrefix

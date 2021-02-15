@@ -1,7 +1,8 @@
 import path from 'path'
 import { promises as fs } from 'fs'
-import { bootstrap, debug, options, ReporterError } from './util'
 import { defaults, schema } from './options'
+import { bootstrap, debug, options, ReporterError } from './util'
+import { purgecss } from './tasks'
 
 /**
  * Validates user-defined options against schema.
@@ -56,10 +57,9 @@ export async function onPostBuild ({ getNodesByType, reporter, tracing }) {
     } catch (e) {} // ignore silently
   }
 
-  const tasks = require('./tasks')
   try {
     debug('Running purgecss task on', html)
-    await tasks.purgecss({ html }, activity.setStatus)
+    await purgecss({ html }, activity.setStatus)
   } catch (e) {
     activity.panic(new ReporterError('Error occured while running purgecss', e))
   }

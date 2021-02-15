@@ -1,5 +1,5 @@
 # Gatsby Postbuild
-[![][npm-img]][npm-url] [![][ci-img]][ci-url] [![][gatsby-img]][gatsby-url] [![][license-img]][license-url]
+[![][npm-img]][npm-url] [![][ci-img]][ci-url] [![][codecov-img]][codecov-url] [![][gatsby-img]][gatsby-url] [![][license-img]][license-url]
 
 Gatsby plugin for optimizing/minifying generated HTML/CSS files after build through removal of unused CSS rules.
 
@@ -139,6 +139,8 @@ Remove any unused variables in your css.
 [npm-img]: https://img.shields.io/npm/v/gatsby-plugin-postbuild.svg
 [ci-url]: https://github.com/mohatt/gatsby-plugin-postbuild/actions
 [ci-img]: https://img.shields.io/github/workflow/status/mohatt/gatsby-plugin-postbuild/CI/master
+[codecov-url]: https://codecov.io/github/mohatt/gatsby-plugin-postbuild
+[codecov-img]: https://img.shields.io/codecov/c/github/mohatt/gatsby-plugin-postbuild.svg
 [gatsby-url]: https://www.gatsbyjs.org/packages/gatsby-plugin-postbuild
 [gatsby-img]: https://img.shields.io/badge/gatsby-v2.25+-blueviolet.svg
 [license-url]: https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/LICENSE
