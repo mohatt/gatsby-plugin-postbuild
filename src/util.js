@@ -25,10 +25,7 @@ export function bootstrap ({ defaultOptions, pluginOptions, gatsby }) {
   options._plugin = 'gatsby-plugin-postbuild'
   options._root = gatsby.store.getState().program.directory
   options._public = path.join(options._root, 'public')
-  options._cache = gatsby.cache.directory
   options._pathPrefix = gatsby.pathPrefix
-  // Prevent mutations on options object
-  Object.freeze(options)
 
   // Initialize reporter
   const reporter = gatsby.reporter
