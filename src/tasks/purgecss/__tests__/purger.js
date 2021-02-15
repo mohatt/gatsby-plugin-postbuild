@@ -49,6 +49,18 @@ describe('Purger', () => {
     expect(writer.write.mock.calls).toMatchSnapshot()
   })
 
+  it('correctly purges styles against html with scripts', async () => {
+    mountFile('/foo/bar.js', 'function func(){ var test="foo" }')
+    const fixt = {
+      style: { type: 'style', text: { data: '.foo{} .bar{width:auto} .lorem{}' } },
+      file: { nakedHtml: '<div class="bar"></div>', scripts: ['/foo/bar.js'] }
+    }
+    let purger
+    expect(() => { purger = new Purger(writer) }).not.toThrow()
+    await expect(purger.purge(fixt.style, fixt.file)).resolves.toMatchSnapshot()
+    expect(fixt.style.text.data).toMatchSnapshot()
+  })
+
   it('correctly purges linked styles', async () => {
     const fixt = {
       style: { id: 'foo', type: 'style', text: { data: '.foo{} .bar{width:auto} .lorem{}' } },

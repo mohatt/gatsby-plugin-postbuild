@@ -48,13 +48,14 @@ export class FileWriter {
     const sizes = []
     const rejected = Array.isArray(purged)
     try {
+      // ensure we're not creating any new files
       await fs.access(file)
       // Caclulate data lengths
       sizes.push((await fs.stat(file)).size)
       sizes.push(Buffer.byteLength(data))
       sizes.push(sizes[1] - sizes[0])
       this.saving += sizes[2]
-      // Write the actual file
+      // Write the actual optimized file
       debug('Writing purged file', file)
       await fs.writeFile(file, data)
       // Write purged log if enabled
@@ -71,7 +72,7 @@ export class FileWriter {
       rejected: rejected ? purged.length : undefined
     }
     this.reports.push(r)
-    // Ignore reporting to console if specified
+    // Ignore reporting to console if disabled
     if (!options.reportConsole) {
       return
     }
