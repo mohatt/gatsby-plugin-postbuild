@@ -106,11 +106,6 @@ Write a `*.rejected.log` file in `/public` with the rejected selectors for every
 
 A custom PurgeCSS extractor to be used instead of the default one.
 
-#### purgecss.extractors
-> Type: `Array` Default: [`PurgeCSS.extractors`][purgecss-config]
-
-A list of custom PurgeCSS extractors to be used for certain file types. 
-
 #### purgecss.safelist
 > Type: `(Array|Object)` Default: `[]`
 

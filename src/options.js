@@ -26,8 +26,6 @@ export function schema (Joi) {
         .description('Write a log file in "public" with the rejected selectors for every file.'),
       defaultExtractor: Joi.function()
         .description('A custom PurgeCSS extractor to be used instead of the default one.'),
-      extractors: Joi.array().items(Joi.object({}).unknown(true))
-        .description('A list of custom PurgeCSS extractors to be used for certain file types.'),
       safelist: Joi.alternatives().try(
         Joi.object({}).unknown(true),
         Joi.array().items(Joi.string())
