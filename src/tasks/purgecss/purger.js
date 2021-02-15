@@ -55,6 +55,7 @@ export class Purger {
     const chunks = require(path.join(options._public, 'webpack.stats.json')).assetsByChunkName
     ignoredChunks.forEach(chunk => {
       chunks[chunk].forEach(file => {
+        file = path.join(options._public, file)
         if (this.ignoredScripts.indexOf(file) === -1) {
           this.ignoredScripts.push(file)
         }

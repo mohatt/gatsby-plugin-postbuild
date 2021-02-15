@@ -177,8 +177,7 @@ export class HtmlFile {
     if (!filename) {
       return
     }
-    const relFilename = path.relative(options._public, filename)
-    if (this.purger.shouldIgnoreScript(relFilename)) {
+    if (this.purger.shouldIgnoreScript(filename)) {
       return
     }
     this.scripts.push(filename)
