@@ -1,3 +1,12 @@
+## [1.1.3](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.1.2...v1.1.3) (2021-02-15)
+
+
+### Bug Fixes
+
+* **plugin:** fix a TypeError when an ignored webpack chunkName doesn't exist ([6014f80](https://github.com/mohatt/gatsby-plugin-postbuild/commit/6014f80d018ddbf55239f603fa13fdc26188b777))
+* **plugin:** fixed reading external css files ([8373021](https://github.com/mohatt/gatsby-plugin-postbuild/commit/83730211606a9dd1db289d29eeaef291fef5e128))
+* **plugin:** omit `extractors` option since its something we should handle it internally ([f846684](https://github.com/mohatt/gatsby-plugin-postbuild/commit/f8466844f03cd445140d33d2c1f66a0b689bb341))
+
 ## [1.1.2](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.1.1...v1.1.2) (2021-02-14)
 
 
