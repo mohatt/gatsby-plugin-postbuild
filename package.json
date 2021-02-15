@@ -42,7 +42,8 @@
     "parse5": "^6.0.0",
     "parse5-htmlparser2-tree-adapter": "^6.0.0",
     "purgecss": "^4.0.0",
-    "filesize": "^6.1.0"
+    "filesize": "^6.1.0",
+    "mkdirp": "^1.0.4"
   },
   "devDependencies": {
     "@babel/cli": "7.12.16",
