@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Purger correctly purges linked styles 1`] = `
+Array [
+  ".lorem",
+]
+`;
+
+exports[`Purger correctly purges linked styles 2`] = `
+Array [
+  ".lorem",
+]
+`;
+
+exports[`Purger correctly purges styles 1`] = `
+Array [
+  ".foo",
+]
+`;
+
+exports[`Purger correctly purges styles 2`] = `Array []`;
+
+exports[`Purger correctly purges styles 3`] = `".bar{width:auto}"`;
+
+exports[`Purger correctly purges styles 4`] = `
+Array [
+  Array [
+    "/foo/bar.css",
+    ".bar{width:auto}",
+    Array [
+      ".foo",
+    ],
+  ],
+]
+`;
+
+exports[`Purger correctly sets default ignored scripts 1`] = `
+Array [
+  "/virtual/project/public/foo.js",
+  "/virtual/project/public/bar.js",
+  "/virtual/project/public/lib.js",
+]
+`;

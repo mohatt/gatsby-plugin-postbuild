@@ -1,4 +1,3 @@
-import fs from 'fs'
 import { options } from '../util'
 import { mountOptions } from '../../test/utils'
 jest.mock('fs')

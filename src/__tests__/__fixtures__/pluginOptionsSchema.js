@@ -4,8 +4,8 @@ export default [
     options: {
       unknown: 5,
       foo: {
-        bar: true,
-      },
+        bar: true
+      }
     }
   },
   {
@@ -17,7 +17,7 @@ export default [
         defaultExtractor: '',
         safelist: true,
         blocklist: [{}]
-      },
+      }
     }
   },
   {
