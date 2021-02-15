@@ -139,12 +139,12 @@ export class Purger {
     if (style.type === 'link') {
       try {
         await fs.access(style.file)
-        opts.css.push({ raw: await fs.readFile(style.file) })
+        opts.css.push({ raw: await fs.readFile(style.file, 'utf-8') })
       } catch (e) {
         return []
       }
     } else {
-      opts.css.push({ raw: await style.text.data })
+      opts.css.push({ raw: style.text.data })
     }
 
     const files = style.id ? this.linkedStyles[style.id].files : [file]
