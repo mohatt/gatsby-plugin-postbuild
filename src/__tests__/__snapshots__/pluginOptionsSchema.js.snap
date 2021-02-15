@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`pluginOptionsSchema should invalidate options with incorrect data types 1`] = `false`;
+
+exports[`pluginOptionsSchema should invalidate options with incorrect data types 2`] = `
+Array [
+  "\\"enabled\\" must be a boolean",
+  "\\"report\\" must be a boolean",
+  "\\"purgecss.defaultExtractor\\" must be of type function",
+  "\\"purgecss.safelist\\" must be one of [object, array]",
+  "\\"purgecss.blocklist[0]\\" must be a string",
+]
+`;
+
+exports[`pluginOptionsSchema should invalidate unknown options 1`] = `false`;
+
+exports[`pluginOptionsSchema should invalidate unknown options 2`] = `
+Array [
+  "\\"unknown\\" is not allowed",
+  "\\"foo\\" is not allowed",
+]
+`;
+
+exports[`pluginOptionsSchema should validate correct options 1`] = `true`;
+
+exports[`pluginOptionsSchema should validate correct options 2`] = `Array []`;

@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`onPreBootstrap correctly initializes custom options 1`] = `
+Object {
+  "_pathPrefix": "",
+  "_plugin": "gatsby-plugin-postbuild",
+  "_public": "/virtual/project/public",
+  "_root": "/virtual/project",
+  "enabled": true,
+  "purgecss": Object {
+    "allowSymbols": true,
+    "fontFace": false,
+    "keyframes": false,
+    "rejected": false,
+    "variables": false,
+  },
+  "report": false,
+  "reportConsole": true,
+}
+`;
+
+exports[`onPreBootstrap correctly initializes default options 1`] = `
+Object {
+  "_pathPrefix": "",
+  "_plugin": "gatsby-plugin-postbuild",
+  "_public": "/virtual/project/public",
+  "_root": "/virtual/project",
+  "enabled": true,
+  "purgecss": Object {
+    "allowSymbols": false,
+    "fontFace": false,
+    "keyframes": false,
+    "rejected": true,
+    "variables": false,
+  },
+  "report": true,
+  "reportConsole": true,
+}
+`;
