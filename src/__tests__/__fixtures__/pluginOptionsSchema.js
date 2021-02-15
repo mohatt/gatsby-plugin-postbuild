@@ -26,8 +26,8 @@ export default [
       enabled: true,
       report: false,
       reportConsole: true,
+      allowSymbols: false,
       purgecss: {
-        allowSymbols: false,
         rejected: false,
         defaultExtractor: s => s,
         fontFace: false,

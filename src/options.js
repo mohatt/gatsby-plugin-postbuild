@@ -2,8 +2,8 @@ export const defaults = {
   enabled: true,
   report: true,
   reportConsole: true,
+  allowSymbols: false,
   purgecss: {
-    allowSymbols: false,
     rejected: true,
     fontFace: false,
     keyframes: false,
@@ -16,14 +16,14 @@ export function schema (Joi) {
     enabled: Joi.boolean()
       .description('Whether to run the purgecss task or not.'),
     report: Joi.boolean()
-      .description('Write a "postbuild.log.json" file in "public" with all the changes made.'),
+      .description('Write a "postbuild.log.json" file in "/public" with all the changes made.'),
     reportConsole: Joi.boolean()
       .description('Print a summary report during build with all the changes made.'),
+    allowSymbols: Joi.boolean()
+      .description('Sets a custom PurgeCSS extractor that allows CSS selectors to contain symbols (e.g TailwindCSS).'),
     purgecss: Joi.object({
-      allowSymbols: Joi.boolean()
-        .description('Allow CSS selectors to contain symbols (e.g TailwindCSS).'),
       rejected: Joi.boolean()
-        .description('Write a log file in "public" with the rejected selectors for every file.'),
+        .description('Write a log file in "/public" with the rejected selectors for every file.'),
       defaultExtractor: Joi.function()
         .description('A custom PurgeCSS extractor to be used instead of the default one.'),
       safelist: Joi.alternatives().try(

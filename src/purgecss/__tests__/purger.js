@@ -25,9 +25,7 @@ describe('Purger', () => {
 
   it('correctly sets default purgecss extractor', () => {
     mountOptions({
-      purgecss: {
-        allowSymbols: true
-      }
+      allowSymbols: true
     })
     let purger
     expect(() => { purger = new Purger(writer) }).not.toThrow()

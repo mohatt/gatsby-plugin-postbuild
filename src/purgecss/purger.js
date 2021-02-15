@@ -63,8 +63,7 @@ export class Purger {
     })
     this.purgeCSS = new PurgeCSS()
     this.purgeOptions = { ...options.purgecss }
-    if (this.purgeOptions.allowSymbols) {
-      delete this.purgeOptions.allowSymbols
+    if (options.allowSymbols) {
       this.purgeOptions.defaultExtractor = content => content.match(/[\w-/:]+(?<!:)/g) || []
     }
     this.writer = writer

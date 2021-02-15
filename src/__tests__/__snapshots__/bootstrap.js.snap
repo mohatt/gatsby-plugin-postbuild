@@ -6,9 +6,9 @@ Object {
   "_plugin": "gatsby-plugin-postbuild",
   "_public": "/virtual/project/public",
   "_root": "/virtual/project",
+  "allowSymbols": true,
   "enabled": true,
   "purgecss": Object {
-    "allowSymbols": true,
     "fontFace": false,
     "keyframes": false,
     "rejected": false,
@@ -25,9 +25,9 @@ Object {
   "_plugin": "gatsby-plugin-postbuild",
   "_public": "/virtual/project/public",
   "_root": "/virtual/project",
+  "allowSymbols": false,
   "enabled": true,
   "purgecss": Object {
-    "allowSymbols": false,
     "fontFace": false,
     "keyframes": false,
     "rejected": true,

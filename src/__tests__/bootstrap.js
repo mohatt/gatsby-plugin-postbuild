@@ -11,8 +11,8 @@ describe('onPreBootstrap', () => {
   it('correctly initializes custom options', () => {
     expect(() => mountOptions({
       report: false,
+      allowSymbols: true,
       purgecss: {
-        allowSymbols: true,
         rejected: false
       }
     })).not.toThrow()
