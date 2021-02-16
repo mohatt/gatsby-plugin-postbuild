@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HtmlFile correctly loads html file 1`] = `
+"<html><head>
+    
+    
+    <link rel=\\"stylesheet\\" href=\\"styles/style.css\\">
+    <link rel=\\"preload\\" href=\\"scrips/foo.js\\">
+    <script src=\\"scrips/bar.js\\"></script>
+  </head>
+  <body>
+    
+    <div>
+      
+      Hi
+    </div>
+    <script src=\\"scrips/foo.js\\"></script>
+  
+</body></html>"
+`;
+
+exports[`HtmlFile correctly resolves asset hrefs 1`] = `
+Array [
+  "/virtual/project/public/page/foo.js",
+  "/virtual/project/public/page/foo.js",
+  "/virtual/project/public/foo.js",
+  "/virtual/project/public/foo.js",
+  "/virtual/project/public/dir/foo.js",
+  "/virtual/project/public/dir/foo.js",
+  "/virtual/project/public/dir/foo.js",
+]
+`;
+
+exports[`HtmlFile correctly resolves asset hrefs 2`] = `
+Array [
+  "/virtual/project/public/page/foo.js",
+  "/virtual/project/public/page/foo.js",
+  "/virtual/project/public/foo.js",
+  false,
+  false,
+  "/virtual/project/public/dir/foo.js",
+  false,
+]
+`;
