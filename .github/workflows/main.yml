@@ -22,9 +22,9 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.pnpm-store
-          key: ${{ runner.os }}-build-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ matrix.node }}-build-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-build-
+            ${{ matrix.node }}-build-
       - run: |
           npm -g install pnpm@5.16
           pnpm set verify-store-integrity false
