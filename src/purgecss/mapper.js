@@ -122,14 +122,4 @@ export class AssetMapper {
     }
     return []
   }
-
-  /**
-   * Checks whether a style has links
-   *
-   * @param {string} id
-   * @return {boolean}
-   */
-  styleHasLinks(id) {
-    return id in this.sharedStyles
-  }
 }
