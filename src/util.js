@@ -120,3 +120,19 @@ export function sha1 (data, base64 = false) {
     .update(data, 'utf8')
     .digest(base64 ? 'base64' : 'hex')
 }
+
+/**
+ * Returns the file extension or checks if
+ * a file has a given extension
+ *
+ * @param {string} file
+ * @param {string} checkExt
+ */
+export function extName (file, checkExt = undefined) {
+  let ext = path.extname(file)
+  if (ext) {
+    ext = ext.replace('.', '').toLowerCase()
+  }
+  if (checkExt === undefined) return ext
+  return ext === checkExt
+}

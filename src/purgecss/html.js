@@ -4,7 +4,7 @@ import path from 'path'
 import parse5 from 'parse5'
 import * as htmlparser2 from 'parse5-htmlparser2-tree-adapter'
 import _ from 'lodash'
-import { options, createDebug, sha1 } from '../util'
+import { options, createDebug, sha1, extName } from '../util'
 const debug = createDebug('purgecss/html')
 
 /**
@@ -163,7 +163,8 @@ export class HtmlFile {
       }
     } else if (node.name === 'link') {
       style.file = this.resolveHref(node)
-      if (!style.file || this.mapper.shouldIgnoreFile(style.file)) {
+      if (!style.file || !extName(style.file, 'css') ||
+        this.mapper.shouldIgnoreFile(style.file)) {
         return
       }
       style.id = style.file
@@ -180,14 +181,12 @@ export class HtmlFile {
    * @param {htmlparser2.Element} node
    */
   addScript (node) {
-    const filename = this.resolveHref(node, 'src')
-    if (!filename) {
+    const script = this.resolveHref(node, 'src')
+    if (!script || !extName(script, 'js') ||
+      this.mapper.shouldIgnoreFile(script)) {
       return
     }
-    if (this.mapper.shouldIgnoreFile(filename)) {
-      return
-    }
-    this.scripts.push(filename)
+    this.scripts.push(script)
   }
 
   /**

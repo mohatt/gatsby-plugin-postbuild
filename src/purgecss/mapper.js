@@ -1,5 +1,5 @@
 import path from 'path'
-import { createDebug, options } from '../util'
+import { createDebug, extName, options } from '../util'
 import _ from 'lodash'
 const debug = createDebug('purgecss/mapper')
 
@@ -37,11 +37,11 @@ export class AssetMapper {
   /**
    * Sets scripts ignored by their webpack chunkName
    */
-  loadWebpackIgnores() {
+  loadWebpackIgnores () {
     const ignoredChunks = options.ignoreFiles.webpack
     const chunks = require(path.join(options._public, 'webpack.stats.json')).assetsByChunkName
     ignoredChunks.forEach(chunk => {
-      if(!chunks[chunk]) {
+      if (!chunks[chunk]) {
         return
       }
       chunks[chunk].forEach(file => {
@@ -53,12 +53,12 @@ export class AssetMapper {
   /**
    * Sets files ignored by their filepath and extension
    */
-  loadFileIgnores() {
-    for(let ext in _.pick(options.ignoreFiles, ['pages', 'css', 'js'])) {
-      for(const file of options.ignoreFiles[ext]) {
-        if(!file) return
+  loadFileIgnores () {
+    for (const ext in _.pick(options.ignoreFiles, ['pages', 'css', 'js'])) {
+      for (const file of options.ignoreFiles[ext]) {
+        if (!file) return
         const fileParts = [file]
-        if(ext === 'pages') {
+        if (ext === 'pages') {
           fileParts.push('index.html')
         }
         this.ignoreFile(path.join(...fileParts), ext)
@@ -73,9 +73,9 @@ export class AssetMapper {
    * @param {string} file - file path relative to /public
    * @param {string} type
    */
-  ignoreFile(file, type) {
+  ignoreFile (file, type) {
     file = path.join(options._public, file)
-    if(!this.ignoredFiles[type].includes(file)) {
+    if (!this.ignoredFiles[type].includes(file)) {
       this.ignoredFiles[type].push(file)
     }
   }
@@ -86,20 +86,17 @@ export class AssetMapper {
    * @param {string} file - absolute file path
    * @return {boolean}
    */
-  shouldIgnoreFile(file) {
-    let ext = path.extname(file)
-    if(!ext) {
-      return false
-    }
-    ext = ext.replace('.', '').toLowerCase()
-    ext = ext === 'html' ? 'pages' : ext
-    if(!(ext in this.ignoredFiles)) {
+  shouldIgnoreFile (file) {
+    let ext = extName(file)
+    if (!ext) return false
+    if (ext === 'html') ext = 'pages'
+    if (!(ext in this.ignoredFiles)) {
       debug('Unknown ignore file type', [file, ext])
       return false
     }
 
     const check = this.ignoredFiles[ext].includes(file)
-    if(check) {
+    if (check) {
       debug('Ignoring file', file)
     }
     return check
@@ -111,7 +108,7 @@ export class AssetMapper {
    * @param {string} id
    * @param {HtmlFile} file
    */
-  linkStyleToFile(id, file) {
+  linkStyleToFile (id, file) {
     this.sharedStyles[id] ??= []
     if (!this.sharedStyles[id].includes(file)) {
       this.sharedStyles[id].push(file)
@@ -126,7 +123,7 @@ export class AssetMapper {
    * @param {string} id
    * @return {HtmlFile[]}
    */
-  getStyleLinks(id) {
+  getStyleLinks (id) {
     if (id in this.sharedStyles) {
       return this.sharedStyles[id]
     }

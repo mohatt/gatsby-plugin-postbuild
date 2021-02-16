@@ -27,7 +27,7 @@ describe('Mapper', () => {
         webpack: ['polyfill'],
         pages: ['/about'],
         css: ['foo.css'],
-        js: ['scripts/bar.js'],
+        js: ['scripts/bar.js']
       }
     })
     let mapper
@@ -36,12 +36,12 @@ describe('Mapper', () => {
     expect(mapper.shouldIgnoreFile(`${_pub}/about/index.html`)).toBe(true)
     expect(mapper.shouldIgnoreFile(`${_pub}/scripts/bar.js`)).toBe(true)
     expect(mapper.shouldIgnoreFile(`${_pub}/foo.png`)).toBe(false)
-    expect(mapper.shouldIgnoreFile(`foo.css`)).toBe(false)
-    expect(mapper.shouldIgnoreFile(`foo`)).toBe(false)
+    expect(mapper.shouldIgnoreFile('foo.css')).toBe(false)
+    expect(mapper.shouldIgnoreFile('foo')).toBe(false)
   })
 
   it('correctly links styles with file objects', () => {
-    const files = [{a: 1}, {b: 2}]
+    const files = [{ a: 1 }, { b: 2 }]
     let mapper
     expect(() => {
       mapper = new AssetMapper()

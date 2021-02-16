@@ -29,7 +29,7 @@ export default [
         pages: [''],
         css: [''],
         js: ['']
-      },
+      }
     }
   },
   {
