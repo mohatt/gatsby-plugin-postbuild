@@ -1,3 +1,21 @@
+# [1.2.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.1.3...v1.2.0) (2021-02-16)
+
+
+### Bug Fixes
+
+* **plugin:** remove unused class method ([daa1ec3](https://github.com/mohatt/gatsby-plugin-postbuild/commit/daa1ec314ef5b30a017b83e3e35805de30101bef))
+* **plugin:** use _.mergeWith with a customizer to avoid merging arrays by index ([ee4a3cd](https://github.com/mohatt/gatsby-plugin-postbuild/commit/ee4a3cda9a56d4561994434151b5f814b03fab71))
+
+
+### Features
+
+* **plugin:** add the ability to exclude webpack chunks, pages, css and js files from optimization ([ab43853](https://github.com/mohatt/gatsby-plugin-postbuild/commit/ab43853831399d0a773a9fc1950b5a38b143a3bc))
+
+
+### Performance Improvements
+
+* **plugin:** rename purgecss.allowSymbols to allowSymbols since its not being passed to purgecss ([12acc1a](https://github.com/mohatt/gatsby-plugin-postbuild/commit/12acc1a12a805c99a8c8f9ea731bdb1871ba5123))
+
 ## [1.1.3](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.1.2...v1.1.3) (2021-02-15)
 
 
