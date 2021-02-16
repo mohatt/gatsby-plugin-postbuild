@@ -61,7 +61,7 @@ export class Purger {
   }
 
   /**
-   * Applies PurgeCSS changes to the given style object
+   * Applies PurgeCSS changes on the given style object
    *
    * @param {Object} style
    * @param {Object} result

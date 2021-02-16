@@ -5,7 +5,7 @@ Gatsby plugin for optimizing/minifying generated HTML/CSS files after build thro
 
 
 > ##### Building a Gatsby site running TailwindCSS
-<img width="832" src=".github/console-screen.png" alt="Building a Gatsby site running TailwindCSS">
+<img width="832" src="https://raw.githubusercontent.com/mohatt/gatsby-plugin-postbuild/master/.github/console-screen.png" alt="Building a Gatsby site running TailwindCSS">
 
 ---
 - [How it works](#how-it-works)
