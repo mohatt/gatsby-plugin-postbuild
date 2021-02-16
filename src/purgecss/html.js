@@ -163,7 +163,7 @@ export class HtmlFile {
       }
     } else if (node.name === 'link') {
       style.file = this.resolveHref(node)
-      if (!style.file || this.mapper.shouldIgnoreFile(style.file, 'css')) {
+      if (!style.file || this.mapper.shouldIgnoreFile(style.file)) {
         return
       }
       style.id = style.file
@@ -184,7 +184,7 @@ export class HtmlFile {
     if (!filename) {
       return
     }
-    if (this.mapper.shouldIgnoreFile(filename, 'js')) {
+    if (this.mapper.shouldIgnoreFile(filename)) {
       return
     }
     this.scripts.push(filename)

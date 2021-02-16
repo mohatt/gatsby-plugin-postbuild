@@ -20,7 +20,7 @@ export default async function ({ html }, setStatus) {
   const writer = new FileWriter()
   const purger = new Purger(mapper, writer)
   // Exclude ignored pages
-  html = html.filter(filename => !mapper.shouldIgnoreFile(filename, 'pages'))
+  html = html.filter(filename => !mapper.shouldIgnoreFile(filename))
   const status = {
     total: html.length,
     htmlLoaded: 0,

@@ -84,11 +84,21 @@ export class AssetMapper {
    * Decides whether a file is ignored or not
    *
    * @param {string} file - absolute file path
-   * @param {string} type
    * @return {boolean}
    */
-  shouldIgnoreFile(file, type) {
-    const check = this.ignoredFiles[type].includes(file)
+  shouldIgnoreFile(file) {
+    let ext = path.extname(file)
+    if(!ext) {
+      return false
+    }
+    ext = ext.replace('.', '').toLowerCase()
+    ext = ext === 'html' ? 'pages' : ext
+    if(!(ext in this.ignoredFiles)) {
+      debug('Unknown ignore file type', [file, ext])
+      return false
+    }
+
+    const check = this.ignoredFiles[ext].includes(file)
     if(check) {
       debug('Ignoring file', file)
     }
