@@ -69,9 +69,35 @@ plugins: [
 
 
 ## Options
-Here is the list of options with their defaults.
 
-### General options
+### Defaults
+These are the default plugin options defined in [`src/options.js`](src/options.js).
+
+```javascript
+plugins: [
+  {
+    resolve: 'gatsby-plugin-postbuild',
+    options: {
+      enabled: true,
+      report: true,
+      reportConsole: true,
+      ignoreFiles: {
+        webpack: ['app', 'polyfill'],
+        pages: [],
+        css: [],
+        js: []
+      },
+      allowSymbols: false,
+      purgecss: {
+        rejected: true,
+        fontFace: false,
+        keyframes: false,
+        variables: false
+      }
+    },
+  }
+]
+```
 
 #### enabled
 > Type: `Boolean` Default: `true`
@@ -88,13 +114,35 @@ Write a `postbuild.log.json` file in `/public` directory with all the changes ma
 
 Print a summary report during build with all the changes made.
 
-### PurgeCSS options
-The following options are passed to PurgeCSS while optimizing CSS. See [PurgeCSS Options][purgecss-config] for more info.
+#### ignoreFiles.webpack
+> Type: `Array` Default: `['app', 'polyfill']`
 
-#### purgecss.allowSymbols
+Webpack chunck names to ignore while purging CSS. You can find these at `/public/webpack.stats.json`.
+
+*Note: This option will exclude all assetes under the given chunck names*
+
+#### ignoreFiles.pages
+> Type: `Array` Default: `[]`
+
+Pages to exclude from optimiztion. This will also exclude all style assets defined in those page.
+
+#### ignoreFiles.css
+> Type: `Array` Default: `[]`
+
+CSS files to exclude from optimiztion. *Paths should be relative to `/public` directory.*
+
+#### ignoreFiles.js
+> Type: `Array` Default: `[]`
+
+Javascript files to ignore while purging CSS. *Paths should be relative to `/public` directory.*
+
+#### allowSymbols
 > Type: `Boolean` Default: `false`
 
-Allow CSS selectors to contain symbols (e.g [TailwindCSS](https://tailwindcss.com/)).
+Sets a custom PurgeCSS extractor that allows CSS selectors to contain symbols (e.g [TailwindCSS](https://tailwindcss.com/)).
+
+### PurgeCSS options
+The following options are passed to PurgeCSS while optimizing CSS. See [PurgeCSS Options][purgecss-config] for more info.
 
 #### purgecss.rejected
 > Type: `Boolean` Default: `true`

@@ -94,8 +94,8 @@ export function createDebug (namespace = '') {
   const realDebug = Debug(ns)
   const debug = function (message) {
     arguments[0] = arguments.length > 1
-      ? `${message} %O \n`
-      : `${message} \n`
+      ? `${message} %O \n\n`
+      : `${message} \n\n`
     realDebug(...arguments)
   }
 

@@ -1,7 +1,5 @@
 import { Promise } from 'bluebird'
 import { promises as fs } from 'fs'
-import path from 'path'
-import _ from 'lodash'
 import PurgeCSS from 'purgecss'
 import { createDebug, options } from '../util'
 const debug = createDebug('purgecss/purger')
@@ -11,16 +9,11 @@ const debug = createDebug('purgecss/purger')
  */
 export class Purger {
   /**
-   * Styles shared between multiple html files
+   * Cache repository for styles shared between
+   * multiple html files
    * @type {Object}
    */
-  linkedStyles = {}
-
-  /**
-   * Script files that should be ignored
-   * @type {[string]}
-   */
-  ignoredScripts = []
+  cachedStyles = {}
 
   /**
    * Cached contents of script files
@@ -40,58 +33,31 @@ export class Purger {
   purgeOptions
 
   /**
+   * @type {AssetMapper}
+   */
+  mapper
+
+  /**
    * @type {FileWriter}
    */
   writer
 
   /**
-   * Sets ignored scripts and PurgeCSS options
+   * Sets PurgeCSS options
    *
    * @constructor
+   * @param {AssetMapper} mapper
    * @param {FileWriter} writer
    */
-  constructor (writer) {
-    const ignoredChunks = ['app', 'polyfill']
-    const chunks = require(path.join(options._public, 'webpack.stats.json')).assetsByChunkName
-    ignoredChunks.forEach(chunk => {
-      chunks[chunk]?.forEach(file => {
-        file = path.join(options._public, file)
-        if (this.ignoredScripts.indexOf(file) === -1) {
-          this.ignoredScripts.push(file)
-        }
-      })
-    })
+  constructor (mapper, writer) {
     this.purgeCSS = new PurgeCSS()
     this.purgeOptions = { ...options.purgecss }
     if (options.allowSymbols) {
       this.purgeOptions.defaultExtractor = content => content.match(/[\w-/:]+(?<!:)/g) || []
     }
+    this.mapper = mapper
     this.writer = writer
-    debug('Purger initialized with', _.pick(this, ['ignoredScripts', 'purgeOptions']))
-  }
-
-  /**
-   * Links a given style to a html file
-   *
-   * @param {Object} style
-   * @param {HtmlFile} file
-   */
-  linkStyle (style, file) {
-    this.linkedStyles[style.id] ??= { files: [], cache: null }
-    if (this.linkedStyles[style.id].files.indexOf(file) === -1) {
-      this.linkedStyles[style.id].files.push(file)
-      debug('Linked style with file', [style.id, file.path])
-    }
-  }
-
-  /**
-   * Decides whether to ignore a script file or not
-   *
-   * @param {string} script
-   * @return {boolean}
-   */
-  shouldIgnoreScript (script) {
-    return this.ignoredScripts.indexOf(script) !== -1
+    debug('Purger initialized with purgeOptions', this.purgeOptions)
   }
 
   /**
@@ -125,9 +91,9 @@ export class Purger {
    * @return {(Promise<string[]|null>|string[]|null)}
    */
   async purge (style, file) {
-    if (style.id && this.linkedStyles[style.id].cache !== null) {
+    if (style.id && style.id in this.cachedStyles) {
       debug('Retreiving cached purge result for style', style.id)
-      return this.applyStyleChanges(style, this.linkedStyles[style.id].cache, true)
+      return this.applyStyleChanges(style, this.cachedStyles[style.id], true)
     }
 
     const opts = {
@@ -146,7 +112,7 @@ export class Purger {
       opts.css.push({ raw: style.text.data })
     }
 
-    const files = style.id ? this.linkedStyles[style.id].files : [file]
+    const files = style.id ? this.mapper.getStyleLinks(style.id) : [file]
     for (const sfile of files) {
       opts.content.push({ raw: sfile.nakedHtml, extension: 'html' })
       await Promise.map(sfile.scripts, async script => {
@@ -165,7 +131,7 @@ export class Purger {
     return this.purgeCSS.purge(opts).then(([result]) => {
       if (style.id) {
         debug('Caching purge result on style', style.id)
-        this.linkedStyles[style.id].cache = result
+        this.cachedStyles[style.id] = result
       }
       return this.applyStyleChanges(style, result)
     })

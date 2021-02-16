@@ -2,6 +2,12 @@ export const defaults = {
   enabled: true,
   report: true,
   reportConsole: true,
+  ignoreFiles: {
+    webpack: ['app', 'polyfill'],
+    pages: [],
+    css: [],
+    js: []
+  },
   allowSymbols: false,
   purgecss: {
     rejected: true,
@@ -19,6 +25,16 @@ export function schema (Joi) {
       .description('Write a "postbuild.log.json" file in "/public" with all the changes made.'),
     reportConsole: Joi.boolean()
       .description('Print a summary report during build with all the changes made.'),
+    ignoreFiles: Joi.object({
+      webpack: Joi.array().items(Joi.string())
+        .description('Webpack chunck names to ignore while purging CSS.'),
+      pages: Joi.array().items(Joi.string())
+        .description('Pages to exclude from optimiztion.'),
+      css: Joi.array().items(Joi.string())
+        .description('Webpack chunck names to ignore while purging CSS.'),
+      js: Joi.array().items(Joi.string())
+        .description('Webpack chunck names to ignore while purging CSS.')
+    }).description('CSS/JavaScript files to ignore during optimization. File names should be relative to "/public" directory'),
     allowSymbols: Joi.boolean()
       .description('Sets a custom PurgeCSS extractor that allows CSS selectors to contain symbols (e.g TailwindCSS).'),
     purgecss: Joi.object({

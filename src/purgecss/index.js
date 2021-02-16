@@ -2,6 +2,7 @@ import { Promise } from 'bluebird'
 import { promises as fs } from 'fs'
 import path from 'path'
 import { HtmlFile } from './html'
+import { AssetMapper } from './mapper'
 import { Purger } from './purger'
 import { FileWriter } from './writer'
 import { options } from '../util'
@@ -15,8 +16,11 @@ import { options } from '../util'
  */
 export default async function ({ html }, setStatus) {
   if (html.length === 0) return
+  const mapper = new AssetMapper()
   const writer = new FileWriter()
-  const purger = new Purger(writer)
+  const purger = new Purger(mapper, writer)
+  // Exclude ignored pages
+  html = html.filter(filename => !mapper.shouldIgnoreFile(filename, 'pages'))
   const status = {
     total: html.length,
     htmlLoaded: 0,
@@ -24,7 +28,7 @@ export default async function ({ html }, setStatus) {
   }
   setStatus(`Loading ${status.total} html files`)
   const files = await Promise.map(html, filename => {
-    const file = new HtmlFile(filename, purger, writer)
+    const file = new HtmlFile(filename, mapper, purger, writer)
     return file.load().then(() => {
       file.loadAssets()
       status.htmlLoaded++

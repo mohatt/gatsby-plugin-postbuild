@@ -62,6 +62,11 @@ export class HtmlFile {
   scripts = []
 
   /**
+   * @type {AssetMapper}
+   */
+  mapper
+
+  /**
    * @type {Purger}
    */
   purger
@@ -76,11 +81,13 @@ export class HtmlFile {
    *
    * @constructor
    * @param {string} path
+   * @param {AssetMapper} mapper
    * @param {Purger} purger
    * @param {FileWriter} writer
    */
-  constructor (path, purger, writer) {
+  constructor (path, mapper, purger, writer) {
     this.path = path
+    this.mapper = mapper
     this.purger = purger
     this.writer = writer
   }
@@ -152,15 +159,15 @@ export class HtmlFile {
       }
       if (head) {
         style.id = (node.attribs.id || '').trim() || sha1(style.text.data, true)
-        this.purger.linkStyle(style, this)
+        this.mapper.linkStyleToFile(style.id, this)
       }
     } else if (node.name === 'link') {
       style.file = this.resolveHref(node)
-      if (!style.file) {
+      if (!style.file || this.mapper.shouldIgnoreFile(style.file, 'css')) {
         return
       }
       style.id = style.file
-      this.purger.linkStyle(style, this)
+      this.mapper.linkStyleToFile(style.id, this)
     }
     this.styles.push(style)
   }
@@ -177,7 +184,7 @@ export class HtmlFile {
     if (!filename) {
       return
     }
-    if (this.purger.shouldIgnoreScript(filename)) {
+    if (this.mapper.shouldIgnoreFile(filename, 'js')) {
       return
     }
     this.scripts.push(filename)
