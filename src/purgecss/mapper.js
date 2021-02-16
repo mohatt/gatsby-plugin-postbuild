@@ -45,7 +45,7 @@ export class AssetMapper {
         return
       }
       chunks[chunk].forEach(file => {
-        path.extname(file) === '.js' && this.ignoreFile(file, 'js')
+        extName(file) === 'js' && this.ignoreFile(file, 'js')
       })
     })
   }
