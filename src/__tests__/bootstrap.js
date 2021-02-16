@@ -12,8 +12,8 @@ describe('onPreBootstrap', () => {
     expect(() => mountOptions({
       report: false,
       allowSymbols: true,
-      purgecss: {
-        rejected: false
+      ignoreFiles: {
+        css: ['foo.css']
       }
     })).not.toThrow()
     expect(options).toMatchSnapshot()

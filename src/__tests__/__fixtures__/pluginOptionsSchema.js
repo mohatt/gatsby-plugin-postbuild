@@ -13,11 +13,23 @@ export default [
     options: {
       enabled: 5,
       report: [],
+      ignoreFiles: [],
       purgecss: {
         defaultExtractor: '',
         safelist: true,
         blocklist: [{}]
       }
+    }
+  },
+  {
+    title: 'should invalidate empty options',
+    options: {
+      ignoreFiles: {
+        webpack: [''],
+        pages: [''],
+        css: [''],
+        js: ['']
+      },
     }
   },
   {
@@ -27,6 +39,12 @@ export default [
       report: false,
       reportConsole: true,
       allowSymbols: false,
+      ignoreFiles: {
+        webpack: ['a'],
+        pages: ['b'],
+        css: [],
+        js: []
+      },
       purgecss: {
         rejected: false,
         defaultExtractor: s => s,

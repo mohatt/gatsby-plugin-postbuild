@@ -8,10 +8,21 @@ Object {
   "_root": "/virtual/project",
   "allowSymbols": true,
   "enabled": true,
+  "ignoreFiles": Object {
+    "css": Array [
+      "foo.css",
+    ],
+    "js": Array [],
+    "pages": Array [],
+    "webpack": Array [
+      "app",
+      "polyfill",
+    ],
+  },
   "purgecss": Object {
     "fontFace": false,
     "keyframes": false,
-    "rejected": false,
+    "rejected": true,
     "variables": false,
   },
   "report": false,
@@ -27,6 +38,15 @@ Object {
   "_root": "/virtual/project",
   "allowSymbols": false,
   "enabled": true,
+  "ignoreFiles": Object {
+    "css": Array [],
+    "js": Array [],
+    "pages": Array [],
+    "webpack": Array [
+      "app",
+      "polyfill",
+    ],
+  },
   "purgecss": Object {
     "fontFace": false,
     "keyframes": false,

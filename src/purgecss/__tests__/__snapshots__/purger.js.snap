@@ -41,11 +41,3 @@ Array [
 `;
 
 exports[`Purger correctly purges styles against html with scripts 2`] = `".foo{} .bar{width:auto}"`;
-
-exports[`Purger correctly sets default ignored scripts 1`] = `
-Array [
-  "/virtual/project/public/foo.js",
-  "/virtual/project/public/bar.js",
-  "/virtual/project/public/lib.js",
-]
-`;

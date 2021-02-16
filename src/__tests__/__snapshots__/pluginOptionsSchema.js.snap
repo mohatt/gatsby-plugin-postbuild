@@ -1,11 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`pluginOptionsSchema should invalidate empty options 1`] = `false`;
+
+exports[`pluginOptionsSchema should invalidate empty options 2`] = `
+Array [
+  "\\"ignoreFiles.webpack[0]\\" is not allowed to be empty",
+  "\\"ignoreFiles.pages[0]\\" is not allowed to be empty",
+  "\\"ignoreFiles.css[0]\\" is not allowed to be empty",
+  "\\"ignoreFiles.js[0]\\" is not allowed to be empty",
+]
+`;
+
 exports[`pluginOptionsSchema should invalidate options with incorrect data types 1`] = `false`;
 
 exports[`pluginOptionsSchema should invalidate options with incorrect data types 2`] = `
 Array [
   "\\"enabled\\" must be a boolean",
   "\\"report\\" must be a boolean",
+  "\\"ignoreFiles\\" must be of type object",
   "\\"purgecss.defaultExtractor\\" must be of type function",
   "\\"purgecss.safelist\\" must be one of [object, array]",
   "\\"purgecss.blocklist[0]\\" must be a string",

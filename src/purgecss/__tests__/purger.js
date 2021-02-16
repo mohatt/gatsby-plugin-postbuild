@@ -1,34 +1,19 @@
-import { options } from '../../util'
-import { mountFile, mountModule, mountOptions } from '../../../test/utils'
+import { mountFile, mountOptions } from '../../../test/utils'
 import { Purger } from '../purger'
 
 jest.mock('fs')
 mountOptions()
 
 describe('Purger', () => {
-  const _public = options._public
   const writer = { write: jest.fn() }
-  mountModule(`${_public}/webpack.stats.json`, {
-    assetsByChunkName: {
-      app: ['foo.js'],
-      polyfill: ['bar.js', '/lib.js']
-    }
-  })
-
-  it('correctly sets default ignored scripts', () => {
-    let purger
-    expect(() => { purger = new Purger(writer) }).not.toThrow()
-    expect(purger.ignoredScripts).toMatchSnapshot()
-    expect(purger.shouldIgnoreScript(`${_public}/bar.js`)).toBe(true)
-    expect(purger.shouldIgnoreScript(`${_public}/other/bar.js`)).toBe(false)
-  })
+  const mapper = {}
 
   it('correctly sets default purgecss extractor', () => {
     mountOptions({
       allowSymbols: true
     })
     let purger
-    expect(() => { purger = new Purger(writer) }).not.toThrow()
+    expect(() => { purger = new Purger(mapper, writer) }).not.toThrow()
     expect(purger.purgeOptions.defaultExtractor('.sel:ec to/r')).toMatchObject(['sel:ec', 'to/r'])
   })
 
@@ -40,7 +25,7 @@ describe('Purger', () => {
       file: { nakedHtml: '<div class="bar"></div>', scripts: [] }
     }
     let purger
-    expect(() => { purger = new Purger(writer) }).not.toThrow()
+    expect(() => { purger = new Purger(mapper, writer) }).not.toThrow()
     await expect(purger.purge(fixt.style1, fixt.file)).resolves.toMatchSnapshot()
     await expect(purger.purge(fixt.style2, fixt.file)).resolves.toMatchSnapshot()
     expect(fixt.style1.text.data).toMatchSnapshot()
@@ -54,7 +39,7 @@ describe('Purger', () => {
       file: { nakedHtml: '<div class="bar"></div>', scripts: ['/foo/bar.js'] }
     }
     let purger
-    expect(() => { purger = new Purger(writer) }).not.toThrow()
+    expect(() => { purger = new Purger(mapper, writer) }).not.toThrow()
     await expect(purger.purge(fixt.style, fixt.file)).resolves.toMatchSnapshot()
     expect(fixt.style.text.data).toMatchSnapshot()
   })
@@ -66,11 +51,8 @@ describe('Purger', () => {
       file2: { nakedHtml: '<div class="bar"></div>', scripts: [] }
     }
     let purger
-    expect(() => {
-      purger = new Purger(writer)
-      purger.linkStyle(fixt.style, fixt.file1)
-      purger.linkStyle(fixt.style, fixt.file2)
-    }).not.toThrow()
+    mapper.getStyleLinks = () => [fixt.file1, fixt.file2]
+    expect(() => { purger = new Purger(mapper, writer) }).not.toThrow()
     await expect(purger.purge(fixt.style, fixt.file1)).resolves.toMatchSnapshot()
     await expect(purger.purge(fixt.style, fixt.file2)).resolves.toMatchSnapshot()
   })
