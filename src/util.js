@@ -22,7 +22,13 @@ export let options = {
  */
 export function bootstrap ({ defaultOptions, pluginOptions, gatsby }) {
   // Merge user-defined options with defaults
-  options = _.merge(options, defaultOptions, pluginOptions)
+  options = _.mergeWith(
+    options,
+    defaultOptions,
+    pluginOptions,
+    // Ensure arrays aren't merged by index
+    (to, from) => _.isArray(from) ? from : undefined
+  )
   // set private options
   options._root = gatsby.store.getState().program.directory
   options._public = path.join(options._root, 'public')
