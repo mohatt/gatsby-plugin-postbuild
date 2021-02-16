@@ -18,7 +18,7 @@ export class AssetMapper {
    * @type {Object}
    */
   ignoredFiles = {
-    pages: [],
+    html: [],
     css: [],
     js: []
   }
@@ -45,7 +45,7 @@ export class AssetMapper {
         return
       }
       chunks[chunk].forEach(file => {
-        extName(file) === 'js' && this.ignoreFile(file, 'js')
+        extName(file) === 'js' && this.ignoreFile(file)
       })
     })
   }
@@ -55,13 +55,12 @@ export class AssetMapper {
    */
   loadFileIgnores () {
     for (const ext in _.pick(options.ignoreFiles, ['pages', 'css', 'js'])) {
-      for (const file of options.ignoreFiles[ext]) {
-        if (!file) return
-        const fileParts = [file]
+      for (let file of options.ignoreFiles[ext]) {
+        if (!file) continue
         if (ext === 'pages') {
-          fileParts.push('index.html')
+          file = path.join(file, 'index.html')
         }
-        this.ignoreFile(path.join(...fileParts), ext)
+        this.ignoreFile(file)
       }
     }
   }
@@ -71,12 +70,13 @@ export class AssetMapper {
    * of the given extension
    *
    * @param {string} file - file path relative to /public
-   * @param {string} type
    */
-  ignoreFile (file, type) {
+  ignoreFile (file) {
     file = path.join(options._public, file)
-    if (!this.ignoredFiles[type].includes(file)) {
-      this.ignoredFiles[type].push(file)
+    const ext = extName(file)
+    if (!ext || !(ext in this.ignoredFiles)) return
+    if (!this.ignoredFiles[ext].includes(file)) {
+      this.ignoredFiles[ext].push(file)
     }
   }
 
@@ -87,9 +87,8 @@ export class AssetMapper {
    * @return {boolean}
    */
   shouldIgnoreFile (file) {
-    let ext = extName(file)
+    const ext = extName(file)
     if (!ext) return false
-    if (ext === 'html') ext = 'pages'
     if (!(ext in this.ignoredFiles)) {
       debug('Unknown ignore file type', [file, ext])
       return false
