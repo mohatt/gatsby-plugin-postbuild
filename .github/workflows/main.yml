@@ -10,21 +10,17 @@ jobs:
   test:
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        node: [ '10', '12' ]
-    name: Node ${{ matrix.node }} test
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 12
       - uses: actions/cache@v2
         with:
           path: ~/.pnpm-store
-          key: ${{ matrix.node }}-build-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-build-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ matrix.node }}-build-
+            ${{ runner.os }}-build-
       - run: |
           npm -g install pnpm@5.16
           pnpm set verify-store-integrity false
