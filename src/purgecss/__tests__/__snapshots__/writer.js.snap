@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FileWriter correctly writes files 1`] = `
+Array [
+  Object {
+    "file": "page/index.html",
+    "rejected": undefined,
+    "sizes": Array [
+      "6B",
+      "4B",
+      "-2B",
+    ],
+  },
+]
+`;
+
+exports[`FileWriter correctly writes files 2`] = `
+Array [
+  2,
+  "2B",
+]
+`;

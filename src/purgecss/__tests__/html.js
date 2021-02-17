@@ -1,16 +1,15 @@
-import fs from 'fs'
 import { options } from '../../util'
-import { mountFile, mountModule, mountOptions } from '../../../test/utils'
+import { mountFile, mountOptions } from '../../../test/utils'
 import { HtmlFile } from '../html'
 
 jest.mock('fs')
 mountOptions()
 
-const { AssetMapper } = jest.createMockFromModule('../mapper')
-const { FileWriter } = jest.createMockFromModule('../writer')
-const { Purger } = jest.createMockFromModule('../purger')
-
 describe('HtmlFile', () => {
+  const { AssetMapper } = jest.createMockFromModule('../mapper')
+  const { FileWriter } = jest.createMockFromModule('../writer')
+  const { Purger } = jest.createMockFromModule('../purger')
+
   const mapper = new AssetMapper()
   const writer = new FileWriter()
   const purger = new Purger()
@@ -47,7 +46,7 @@ describe('HtmlFile', () => {
     expect(file.styles.length).toBe(5)
     expect(file.scripts.length).toBe(2)
     expect(mapper.linkStyleToFile.mock.calls.length).toBe(3)
-    await expect(() => { file.purgeStyles() }).not.toThrow()
+    await expect(() => file.purgeStyles()).not.toThrow()
     expect(purger.purge.mock.calls.length).toBe(5)
     expect(writer.write.mock.calls.length).toBe(1)
   })

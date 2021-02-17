@@ -42,7 +42,6 @@ export class FileWriter {
    * @param {string} data - File data
    * @param {([string]|null)} purged - Purged selectors as array to write a rejected
    *  log file next to the written file, otherwise nothing will be written
-   * @return {Object} - A summary report to be printed
    */
   async write (file, data, purged) {
     const sizes = []
