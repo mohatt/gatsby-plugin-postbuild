@@ -16,18 +16,18 @@ Gatsby plugin for optimizing/minifying generated HTML/CSS files after build thro
 
 
 ## How it works
-The plugin works diffrently than other plugins/techniques that utilize [PurgeCSS](https://purgecss.com/) in conjunction
+The plugin works diffrently than other plugins/techniques that utilize [PurgeCSS](https://purgecss.com/)
 with [PostCSS](https://postcss.org/) to acheive the same goal. The main diffrence is that the plugin only runs after
 Gatsby builds the site, then optimizes the generated HTML/CSS files.
 
 ### Under the hood
 The plugin uses [Parse5](https://github.com/inikulin/parse5) library to compile the generated html files into ASTs then:
-- Removes all `<style>` nodes and their css from the tree
-- Stores a temporary naked html without css
-- Analyzes all html trees to create a map that links html files with common css/javascript assets
-- Walks through the orginal tree and removes unused css rules by running PurgeCSS against the naked html files (+ any scripts included) according to the linked map created in the previous step, that includes:
-  - Inline css rules defined under `<style>` tags
-  - Local css files defines as `<link>` tags
+- Removes all `<style>` nodes and their CSS from the tree
+- Stores a temporary pure HTML string without CSS
+- Analyzes all HTML trees to create a map that links HTML files with CSS/JavaScript assets
+- Walks through the orginal tree and removes unused CSS rules by running PurgeCSS against the pure HTML files (+ any scripts included) according to the linked map created in the previous step, that includes:
+  - Inline CSS rules defined under `<style>` tags
+  - Local CSS files defines as `<link>` tags
 - Serializes the tree back to HTML
 - Writes optimized HTML/CSS files
 
@@ -52,7 +52,7 @@ plugins: [
 ```
 
 ### TailwindCSS
-If you use [Tailwind](https://tailwindcss.com/)  in your site you need to set `purgecss.allowSymbols` to true like this:
+If you're using [Tailwind](https://tailwindcss.com/) in your site you need to set `purgecss.allowSymbols` to true like this:
 
 ```javascript
 plugins: [
@@ -112,7 +112,7 @@ Write a `postbuild.log.json` file in `/public` directory with all the changes ma
 #### reportConsole
 > Type: `Boolean` Default: `true`
 
-Print a summary report during build with all the changes made.
+Print a summary report during build for every changed file.
 
 #### ignoreFiles.webpack
 > Type: `Array` Default: `['app', 'polyfill']`

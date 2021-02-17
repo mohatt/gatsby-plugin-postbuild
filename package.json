@@ -24,7 +24,10 @@
   },
   "keywords": [
     "gatsby",
-    "gatsby-plugin"
+    "gatsby-plugin",
+    "optimization",
+    "purgecss",
+    "tailwindcss"
   ],
   "author": "Mohamed Elkholy <mohatt@pm.me>",
   "license": "MIT",

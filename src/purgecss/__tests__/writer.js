@@ -48,6 +48,6 @@ describe('FileWriter', () => {
     let writer
     expect(() => { writer = new FileWriter() }).not.toThrow()
     await expect(writer.write(filename, data, ['a', 'b'])).resolves.not.toThrow()
-    expect(fs.readFileSync(filename+ '.rejected.log', 'utf-8')).toBe('a b')
+    expect(fs.readFileSync(filename + '.rejected.log', 'utf-8')).toBe('a b')
   })
 })
