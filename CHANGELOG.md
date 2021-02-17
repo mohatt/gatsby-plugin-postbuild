@@ -1,3 +1,21 @@
+## [1.2.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.2.0...v1.2.1) (2021-02-17)
+
+
+### Bug Fixes
+
+* **plugin:** check for assets extension before adding them ([fcfd24b](https://github.com/mohatt/gatsby-plugin-postbuild/commit/fcfd24b4987454bb08259266c27e5acd2cbecf2e))
+* **plugin:** fix a minor bug when loading ignored files ([77dd129](https://github.com/mohatt/gatsby-plugin-postbuild/commit/77dd129824aa55dd48267308bb45e386e2b7f6d7))
+
+
+### Performance Improvements
+
+* **plugin:** ignore loading webpack chunks if no webpack ignores is defined ([d116e4c](https://github.com/mohatt/gatsby-plugin-postbuild/commit/d116e4c65a026343ee166226e3a7c9a2dea335b8))
+
+
+### Reverts
+
+* "chore(test): setup tests to run on both node 10 and 12" ([e1faad9](https://github.com/mohatt/gatsby-plugin-postbuild/commit/e1faad919691fbcccb27aa2cdedd8677a49b59bc))
+
 # [1.2.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.1.3...v1.2.0) (2021-02-16)
 
 
