@@ -71,9 +71,6 @@
       "<rootDir>/test/",
       "<rootDir>/src/"
     ],
-    "testPathIgnorePatterns": [
-      "/__tests__/__fixtures__/.*$"
-    ],
     "collectCoverageFrom": [
       "src/**/*.js"
     ]
