@@ -39,7 +39,18 @@ export class AssetMapper {
    */
   loadWebpackIgnores () {
     const ignoredChunks = options.ignoreFiles.webpack
-    const chunks = require(path.join(options._public, 'webpack.stats.json')).assetsByChunkName
+    if (!ignoredChunks.length) {
+      return
+    }
+
+    let chunks
+    const statsFile = path.join(options._public, 'webpack.stats.json')
+    try {
+      chunks = require(statsFile).assetsByChunkName
+    } catch (e) {
+      throw new Error(`Unable to load "webpack.stats.json" from "${statsFile}"`)
+    }
+
     ignoredChunks.forEach(chunk => {
       if (!chunks[chunk]) {
         return
