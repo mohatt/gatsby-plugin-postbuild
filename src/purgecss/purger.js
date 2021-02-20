@@ -1,5 +1,6 @@
 import { Promise } from 'bluebird'
 import { promises as fs } from 'fs'
+import { cloneDeep } from 'lodash'
 import PurgeCSS from 'purgecss'
 import { createDebug, options } from '../util'
 const debug = createDebug('purgecss/purger')
@@ -51,7 +52,7 @@ export class Purger {
    */
   constructor (mapper, writer) {
     this.purgeCSS = new PurgeCSS()
-    this.purgeOptions = { ...options.purgecss }
+    this.purgeOptions = cloneDeep(options.purgecss)
     if (options.allowSymbols) {
       this.purgeOptions.defaultExtractor = content => content.match(/[\w-/:]+(?<!:)/g) || []
     }
@@ -97,9 +98,9 @@ export class Purger {
     }
 
     const opts = {
+      ...this.purgeOptions,
       content: [],
-      css: [],
-      ...this.purgeOptions
+      css: []
     }
     if (style.type === 'link') {
       try {
