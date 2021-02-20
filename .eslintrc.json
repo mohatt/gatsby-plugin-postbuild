@@ -1,0 +1,26 @@
+{
+  "root": true,
+  "extends": [
+    "standard",
+    "plugin:import/errors",
+    "plugin:import/typescript"
+  ],
+  "parser": "@babel/eslint-parser",
+  "rules": {},
+  "env": {
+    "es6": true,
+    "node": true,
+    "jest": true
+  },
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "extends": ["standard-with-typescript"],
+      "rules": {},
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      }
+    }
+  ]
+}
+
