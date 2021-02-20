@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.2.1...v1.2.2) (2021-02-20)
+
+
+### Bug Fixes
+
+* **plugin:** avoid mutating options.purgecss ([230c4c6](https://github.com/mohatt/gatsby-plugin-postbuild/commit/230c4c6908d296e74c425466b0296d601b2ebb22))
+
 ## [1.2.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.2.0...v1.2.1) (2021-02-17)
 
 
