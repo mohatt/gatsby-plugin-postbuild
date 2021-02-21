@@ -6,7 +6,7 @@ export type GatsbyPluginOptions = IPluginRefOptions
 export interface GatsbyNodeHelpers extends NodePluginArgs {
   Joi?: GatsbyJoi
 }
-export type GatsbyReporterErrorMeta = Parameters<Reporter['error']>[0]
+export type GatsbyReporterErrorMeta = Parameters<GatsbyReporter['error']>[0]
 export interface GatsbyReporterErrorMap {
-  [code: string]: Reporter['errorMap'][string]
+  [code: string]: GatsbyReporter['errorMap'][string]
 }
