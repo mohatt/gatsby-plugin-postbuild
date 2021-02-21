@@ -27,7 +27,7 @@ Object {
     "extractors": Array [],
     "fontFace": false,
     "keyframes": false,
-    "rejected": true,
+    "rejected": false,
     "safelist": Object {
       "deep": Array [],
       "greedy": Array [],
@@ -41,6 +41,7 @@ Object {
   },
   "report": false,
   "reportConsole": true,
+  "reportRejected": true,
 }
 `;
 
@@ -69,7 +70,7 @@ Object {
     "extractors": Array [],
     "fontFace": false,
     "keyframes": false,
-    "rejected": true,
+    "rejected": false,
     "safelist": Object {
       "deep": Array [],
       "greedy": Array [],
@@ -83,5 +84,6 @@ Object {
   },
   "report": true,
   "reportConsole": true,
+  "reportRejected": true,
 }
 `;

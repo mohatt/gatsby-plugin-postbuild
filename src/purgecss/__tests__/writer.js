@@ -21,7 +21,7 @@ describe('FileWriter', () => {
     mountOptions({ reportConsole: true })
     let writer
     expect(() => { writer = new FileWriter() }).not.toThrow()
-    await expect(writer.write(filename, data)).resolves.not.toThrow()
+    await expect(writer.write(filename, data, [])).resolves.not.toThrow()
     expect(fs.readFileSync(filename, 'utf-8')).toBe(data)
     expect(console.log).toHaveBeenCalledTimes(1)
     expect(writer.getReports()).toMatchSnapshot()
@@ -33,14 +33,14 @@ describe('FileWriter', () => {
     mountFile(filename, '//noop')
     let writer
     expect(() => { writer = new FileWriter() }).not.toThrow()
-    await expect(writer.write(filename, data)).resolves.not.toThrow()
+    await expect(writer.write(filename, data, [])).resolves.not.toThrow()
     expect(console.log).not.toHaveBeenCalled()
   })
 
   it('correctly ignores non-existing files', async () => {
     let writer
     expect(() => { writer = new FileWriter() }).not.toThrow()
-    await expect(writer.write(filename, data)).rejects.toThrow()
+    await expect(writer.write(filename, data, [])).rejects.toThrow()
   })
 
   it('correctly writes rejected log file', async () => {
@@ -49,5 +49,17 @@ describe('FileWriter', () => {
     expect(() => { writer = new FileWriter() }).not.toThrow()
     await expect(writer.write(filename, data, ['a', 'b'])).resolves.not.toThrow()
     expect(fs.readFileSync(filename + '.rejected.log', 'utf-8')).toBe('a b')
+  })
+
+  it('correctly ignores writing rejected log file', async () => {
+    mountFile(filename, '//noop')
+    mountOptions({
+      reportRejected: false
+    })
+    let writer
+    expect(() => { writer = new FileWriter() }).not.toThrow()
+    await expect(writer.write(filename, data, ['a', 'b'])).resolves.not.toThrow()
+    expect(fs.readFileSync(filename, 'utf-8')).toBe(data)
+    expect(fs.existsSync(filename + '.rejected.log')).toBe(false)
   })
 })

@@ -39,6 +39,7 @@ export default [
       report: false,
       reportConsole: true,
       allowSymbols: false,
+      reportRejected: false,
       ignoreFiles: {
         webpack: ['a'],
         pages: ['b'],
@@ -46,7 +47,6 @@ export default [
         js: []
       },
       purgecss: {
-        rejected: false,
         defaultExtractor: s => s,
         fontFace: false,
         keyframes: true,

@@ -305,7 +305,7 @@ export class HtmlFile {
       return await this.writer.write(
         this.path,
         ndata,
-        options.purgecss.rejected ? result.flat() : null
+        result.flat()
       )
     })
   }

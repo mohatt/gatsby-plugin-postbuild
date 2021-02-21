@@ -45,12 +45,10 @@ export class FileWriter {
    *
    * @param file - File absolute path
    * @param data - File data
-   * @param purged - Purged selectors as array to write a rejected
-   *  log file next to the written file, otherwise nothing will be written
+   * @param purged - Purged selectors as array
    */
-  async write (file: string, data: string, purged: string[]|null): Promise<void> {
+  async write (file: string, data: string, purged: string[]): Promise<void> {
     const sizes = []
-    const rejected = Array.isArray(purged)
     try {
       // ensure we're not creating any new files
       await fs.access(file)
@@ -63,7 +61,7 @@ export class FileWriter {
       debug('Writing purged file', file)
       await fs.writeFile(file, data)
       // Write purged log if enabled
-      if (rejected) {
+      if (options.reportRejected) {
         await fs.writeFile(file + '.rejected.log', purged.join(' '))
       }
     } catch (e) {
@@ -73,7 +71,7 @@ export class FileWriter {
     const r = {
       file: path.relative(options._public, file),
       sizes: sizes.map(this.formatSize),
-      rejected: rejected ? purged.length : undefined
+      rejected: purged.length
     }
     this.reports.push(r)
     // Ignore reporting to console if disabled
@@ -86,10 +84,7 @@ export class FileWriter {
       (this.reports.length === 1 ? '\n' : '') +
       `\x1b[33m ${r.file}\x1b[0m\x1b[2m` +
       `\n  |- Size: ${r.sizes[0]} -> ${r.sizes[1]} (${r.sizes[2]})` +
-      (rejected
-        ? `\n  |- Rejected: ${r.rejected} selector${r.rejected !== 1 ? 's' : ''}`
-        : ''
-      ) +
+      `\n  |- Rejected: ${r.rejected} selector${r.rejected !== 1 ? 's' : ''}` +
       '\x1b[0m\n'
     )
   }

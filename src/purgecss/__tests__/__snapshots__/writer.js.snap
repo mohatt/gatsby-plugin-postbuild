@@ -4,7 +4,7 @@ exports[`FileWriter correctly writes files 1`] = `
 Array [
   Object {
     "file": "page/index.html",
-    "rejected": undefined,
+    "rejected": 0,
     "sizes": Array [
       "6B",
       "4B",
