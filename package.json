@@ -10,9 +10,8 @@
   "scripts": {
     "prepare": "cross-env NODE_ENV=production npm run build",
     "prebuild": "rimraf 'dist/*'",
-    "build": "babel src --out-dir dist --copy-files --ignore '**/__tests__,**/*.test.(js|ts)' --extensions \".ts,.js\" --source-maps",
-    "postbuild": "rimraf 'dist/**/__tests__' 'dist/**/*.test.(js|ts)'",
-    "watch": "babel -w src --out-dir dist --copy-files --ignore '**/__tests__,**/*.test.(js|ts)'",
+    "build": "babel src --out-dir dist --extensions '.ts,.js' --ignore '**/__tests__,**/*.test.js' --source-maps",
+    "watch": "babel -w src --out-dir dist --extensions '.ts,.js' --ignore '**/__tests__,**/*.test.js'",
     "test": "jest --runInBand",
     "test:coverage": "jest --runInBand --coverage",
     "test:watch": "jest --watch --runInBand",
@@ -91,31 +90,6 @@
     ],
     "collectCoverageFrom": [
       "src/**/*.(js|ts)"
-    ]
-  },
-  "babel": {
-    "presets": [
-      [
-        "babel-preset-gatsby-package",
-        {
-          "browser": false,
-          "nodeVersion": "10.13.0"
-        }
-      ]
-    ],
-    "plugins": [
-      [
-        "@babel/plugin-proposal-class-properties",
-        {
-          "loose": true
-        }
-      ],
-      [
-        "@babel/plugin-proposal-private-methods",
-        {
-          "loose": true
-        }
-      ]
     ]
   },
   "release": {
