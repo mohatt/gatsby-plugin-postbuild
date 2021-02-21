@@ -16,7 +16,11 @@
     {
       "files": ["*.ts"],
       "extends": ["standard-with-typescript"],
-      "rules": {},
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/promise-function-async": "warn",
+        "@typescript-eslint/return-await": "warn"
+      },
       "parserOptions": {
         "project": "./tsconfig.json"
       }

@@ -68,6 +68,7 @@ export class AssetMapper {
    */
   loadFileIgnores (): void {
     for (const ext of ['pages', 'css', 'js']) {
+      // @ts-expect-error
       for (let file of options.ignoreFiles[ext]) {
         if (file === '') file = '/'
         if (ext === 'pages') {
