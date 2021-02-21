@@ -81,6 +81,7 @@ plugins: [
       enabled: true,
       report: true,
       reportConsole: true,
+      reportRejected: true,
       ignoreFiles: {
         webpack: ['app', 'polyfill'],
         pages: [],
@@ -89,10 +90,7 @@ plugins: [
       },
       allowSymbols: false,
       purgecss: {
-        rejected: true,
-        fontFace: false,
-        keyframes: false,
-        variables: false
+        // PurgeCSS options
       }
     },
   }
@@ -113,6 +111,11 @@ Write a `postbuild.log.json` file in `/public` directory with all the changes ma
 > Type: `Boolean` Default: `true`
 
 Print a summary report during build for every changed file.
+
+#### reportRejected
+> Type: `Boolean` Default: `true`
+
+Write a `*.rejected.log` file in `/public` with the rejected selectors for every file.
 
 #### ignoreFiles.webpack
 > Type: `Array` Default: `['app', 'polyfill']`
@@ -144,11 +147,6 @@ Sets a custom PurgeCSS extractor that allows CSS selectors to contain symbols (e
 ### PurgeCSS options
 The following options are passed to PurgeCSS while optimizing CSS. See [PurgeCSS Options][purgecss-config] for more info.
 
-#### purgecss.rejected
-> Type: `Boolean` Default: `true`
-
-Write a `*.rejected.log` file in `/public` with the rejected selectors for every file.
-
 #### purgecss.defaultExtractor
 > Type: `Function` Default: [`PurgeCSS.defaultExtractor`][purgecss-config]
 
@@ -167,12 +165,12 @@ Selectors that are blocked from appearing in the final CSS.
 #### purgecss.fontFace
 > Type: `Boolean` Default: `false`
 
-Remove any unused @font-face rules in your css.
+Remove any unused `@font-face` rules in your css.
 
 #### purgecss.variables
 > Type: `Boolean` Default: `false`
 
-Remove any unused @keyframes rules in your css.
+Remove any unused `@keyframes` rules in your css.
 
 #### purgecss.keyframes
 > Type: `Boolean` Default: `false`
