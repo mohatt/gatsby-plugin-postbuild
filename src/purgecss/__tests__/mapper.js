@@ -33,6 +33,7 @@ describe('Mapper', () => {
     let mapper
     expect(() => { mapper = new AssetMapper() }).not.toThrow()
     expect(mapper.shouldIgnoreFile(`${_pub}/foo.js`)).toBe(false)
+    expect(mapper.shouldIgnoreFile(`${_pub}/lib.js`)).toBe(true)
     expect(mapper.shouldIgnoreFile(`${_pub}/about/index.html`)).toBe(true)
     expect(mapper.shouldIgnoreFile(`${_pub}/scripts/bar.js`)).toBe(true)
     expect(mapper.shouldIgnoreFile(`${_pub}/foo.png`)).toBe(false)

@@ -1,4 +1,30 @@
-export const defaults = {
+import { GatsbyJoi } from './gatsby'
+import { defaultOptions } from 'purgecss'
+export type PurgeCSSOptions = typeof defaultOptions
+
+/**
+ * Plugin options interface
+ */
+export interface IPluginOptions {
+  enabled: boolean
+  report: boolean
+  reportConsole: boolean
+  allowSymbols: boolean
+  ignoreFiles: {
+    webpack: string[]
+    pages: string[]
+    css: string[]
+    js: string[]
+  }
+  purgecss: Pick<PurgeCSSOptions, 'defaultExtractor'|'rejected'|'fontFace'|'keyframes'|'variables'|'blocklist'|'safelist'>
+}
+
+/**
+ * Default values for plugin options
+ *  we are merging purgecss defaults as well while
+ *  overridding some values
+ */
+export const defaults: IPluginOptions = {
   enabled: true,
   report: true,
   reportConsole: true,
@@ -10,14 +36,15 @@ export const defaults = {
   },
   allowSymbols: false,
   purgecss: {
-    rejected: true,
-    fontFace: false,
-    keyframes: false,
-    variables: false
+    ...defaultOptions,
+    rejected: true
   }
 }
 
-export function schema (Joi) {
+/**
+ * Plugin options schema
+ */
+export function schema (Joi: GatsbyJoi): GatsbyJoi {
   return Joi.object({
     enabled: Joi.boolean()
       .description('Whether to run the purgecss task or not.'),

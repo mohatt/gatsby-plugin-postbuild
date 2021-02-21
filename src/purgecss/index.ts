@@ -11,14 +11,14 @@ import { options } from '../util'
  * Runs purgecss on the html files provided
  *
  * @param {Object} $0
- * @param   {[string]} $0.html - html absolute file paths
- * @param {Function} setStatus - callback to update activity status
+ * @param   $0.html - html absolute file paths
+ * @param setStatus - callback to update activity status
  */
-export default async function ({ html }, setStatus) {
+export default async function ({ html }: { html: string[] }, setStatus: Function): Promise<void> {
   if (html.length === 0) return
   const mapper = new AssetMapper()
   const writer = new FileWriter()
-  const purger = new Purger(mapper, writer)
+  const purger = new Purger(mapper)
   // Exclude ignored pages
   html = html.filter(filename => !mapper.shouldIgnoreFile(filename))
   const status = {
@@ -52,13 +52,13 @@ export default async function ({ html }, setStatus) {
     try {
       await fs.writeFile(reportFile, JSON.stringify(reports, null, 2))
     } catch (e) {
-      throw new Error(`Unable to write postbuild report file "${reportFile}": ${e.message}`)
+      throw new Error(`Unable to write postbuild report file "${reportFile}": ${String(e.message)}`)
     }
   }
 
   const saving = writer.getTotalSaving()
   setStatus(`Done optimizing ${reports.length} files` + (
-    saving[0]
+    saving[0] > 0
       ? ` saving a total of ${saving[1]}`
       : ''
   ))

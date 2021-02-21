@@ -44,7 +44,7 @@ export function mountOptions (options = {}) {
  */
 export function mountDir (dirname) {
   dirname = path.resolve(programRoot, dirname)
-  !fs.existsSync(dirname) ? mkdirp.sync(dirname) : null
+  !fs.existsSync(dirname) && mkdirp.sync(dirname)
 }
 
 /**

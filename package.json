@@ -10,17 +10,18 @@
   "scripts": {
     "prepare": "cross-env NODE_ENV=production npm run build",
     "prebuild": "rimraf 'dist/*'",
-    "build": "babel src --out-dir dist --copy-files --ignore '**/__tests__,**/*.test.js'",
-    "postbuild": "rimraf 'dist/**/__tests__' 'dist/**/*.test.js'",
-    "watch": "babel -w src --out-dir dist --copy-files --ignore '**/__tests__,**/*.test.js'",
+    "build": "babel src --out-dir dist --copy-files --ignore '**/__tests__,**/*.test.(js|ts)' --extensions \".ts,.js\" --source-maps",
+    "postbuild": "rimraf 'dist/**/__tests__' 'dist/**/*.test.(js|ts)'",
+    "watch": "babel -w src --out-dir dist --copy-files --ignore '**/__tests__,**/*.test.(js|ts)'",
     "test": "jest --runInBand",
     "test:coverage": "jest --runInBand --coverage",
     "test:watch": "jest --watch --runInBand",
     "release": "semantic-release",
     "release:inspect": "semantic-release --dry-run",
     "release:manual": "semantic-release --no-ci",
-    "lint": "standard src",
-    "lint:fix": "standard src --fix"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:config": "eslint --print-config .eslintrc.json"
   },
   "keywords": [
     "gatsby",
@@ -40,28 +41,42 @@
   "dependencies": {
     "@babel/runtime": "^7.12.5",
     "bluebird": "^3.7.2",
-    "lodash": "^4.17.20",
     "debug": "^3.2.6",
+    "filesize": "^6.1.0",
+    "lodash": "^4.17.20",
     "parse5": "^6.0.0",
     "parse5-htmlparser2-tree-adapter": "^6.0.0",
-    "purgecss": "^4.0.0",
-    "filesize": "^6.1.0"
+    "purgecss": "^4.0.0"
   },
   "devDependencies": {
     "@babel/cli": "7.12.17",
     "@babel/core": "7.12.17",
     "@babel/eslint-parser": "7.12.17",
+    "@babel/plugin-proposal-class-properties": "7.12.13",
+    "@babel/plugin-proposal-private-methods": "7.12.13",
     "@semantic-release/changelog": "5.0.1",
     "@semantic-release/git": "9.0.0",
+    "@typescript-eslint/eslint-plugin": "4.15.1",
+    "@typescript-eslint/parser": "4.15.1",
+    "@types/bluebird": "3.5.33",
+    "@types/lodash": "4.14.168",
+    "@types/parse5": "6.0.0",
+    "@types/parse5-htmlparser2-tree-adapter": "6.0.0",
     "babel-preset-gatsby-package": "0.12.0",
     "cross-env": "7.0.3",
+    "eslint": "7.20.0",
+    "eslint-config-standard-with-typescript": "20.0.0",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "4.3.1",
+    "gatsby": "2.32.4",
     "gatsby-plugin-utils": "0.9.0",
     "jest": "26.6.3",
-    "mkdirp": "1.0.4",
     "metro-memory-fs": "0.65.1",
+    "mkdirp": "1.0.4",
     "rimraf": "3.0.2",
     "semantic-release": "17.3.9",
-    "standard": "16.0.3"
+    "typescript": "4.1.5"
   },
   "peerDependencies": {
     "gatsby": ">=2.25.0"
@@ -75,13 +90,7 @@
       "<rootDir>/src/"
     ],
     "collectCoverageFrom": [
-      "src/**/*.js"
-    ]
-  },
-  "standard": {
-    "parser": "@babel/eslint-parser",
-    "env": [
-      "jest"
+      "src/**/*.(js|ts)"
     ]
   },
   "babel": {
@@ -91,6 +100,20 @@
         {
           "browser": false,
           "nodeVersion": "10.13.0"
+        }
+      ]
+    ],
+    "plugins": [
+      [
+        "@babel/plugin-proposal-class-properties",
+        {
+          "loose": true
+        }
+      ],
+      [
+        "@babel/plugin-proposal-private-methods",
+        {
+          "loose": true
         }
       ]
     ]

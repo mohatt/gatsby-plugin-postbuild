@@ -5,31 +5,36 @@ import { options, createDebug } from '../util'
 const debug = createDebug('purgecss/writer')
 
 /**
+ * Represents a file written by the plugin
+ * along with some stats
+ */
+export interface IWriteReport {
+  file: string
+  sizes: string[]
+  rejected?: number
+}
+
+/**
  * Handles writing optimized files
  */
 export class FileWriter {
   /**
    * Formats a given file size
-   * @type {Function}
    */
-  formatSize
+  formatSize: ((bytes: number) => string)
 
   /**
    * File write reports
-   * @type {[Object]}
    */
-  reports = []
+  reports: IWriteReport[] = []
 
   /**
    * Total bytes of data purged
-   * @type {number}
    */
-  saving = 0
+  saving: number = 0
 
   /**
    * Creates the filesize format function
-   *
-   * @constructor
    */
   constructor () {
     this.formatSize = filesize.partial({ spacer: '' })
@@ -38,12 +43,12 @@ export class FileWriter {
   /**
    * Writes the purged file to disk
    *
-   * @param {string} file - File absolute path
-   * @param {string} data - File data
-   * @param {([string]|null)} purged - Purged selectors as array to write a rejected
+   * @param file - File absolute path
+   * @param data - File data
+   * @param purged - Purged selectors as array to write a rejected
    *  log file next to the written file, otherwise nothing will be written
    */
-  async write (file, data, purged) {
+  async write (file: string, data: string, purged: string[]|null): Promise<void> {
     const sizes = []
     const rejected = Array.isArray(purged)
     try {
@@ -62,7 +67,7 @@ export class FileWriter {
         await fs.writeFile(file + '.rejected.log', purged.join(' '))
       }
     } catch (e) {
-      throw new Error(`Unable to write purged file "${file}": ${e.message}`)
+      throw new Error(`Unable to write purged file "${file}": ${String(e.message)}`)
     }
 
     const r = {
@@ -91,19 +96,15 @@ export class FileWriter {
 
   /**
    * Returns a list of all write reports
-   *
-   * @return {Object[]}
    */
-  getReports () {
+  getReports (): IWriteReport[] {
     return this.reports
   }
 
   /**
    * Returns the total bytes saved and its formatted form
-   *
-   * @return {(number|string)[]}
    */
-  getTotalSaving () {
+  getTotalSaving (): [number, string] {
     const saving = this.saving * -1
     return [
       saving,

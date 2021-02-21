@@ -71,7 +71,7 @@ plugins: [
 ## Options
 
 ### Defaults
-These are the default plugin options defined in [`src/options.js`](src/options.js).
+These are the default plugin options defined in [`src/options.ts`](src/options.ts).
 
 ```javascript
 plugins: [
