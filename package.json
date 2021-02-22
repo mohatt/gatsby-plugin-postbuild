@@ -17,8 +17,8 @@
     "release": "semantic-release",
     "release:inspect": "semantic-release --dry-run",
     "release:manual": "semantic-release --no-ci",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
     "lint:config": "eslint --print-config .eslintrc.json"
   },
   "keywords": [
