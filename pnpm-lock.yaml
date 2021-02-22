@@ -16,6 +16,7 @@ devDependencies:
   '@semantic-release/changelog': 5.0.1_semantic-release@17.3.9
   '@semantic-release/git': 9.0.0_semantic-release@17.3.9
   '@types/bluebird': 3.5.33
+  '@types/jest': 26.0.20
   '@types/lodash': 4.14.168
   '@types/parse5': 6.0.0
   '@types/parse5-htmlparser2-tree-adapter': 6.0.0
@@ -2017,7 +2018,7 @@ packages:
     dependencies:
       '@types/istanbul-lib-coverage': 2.0.3
       '@types/istanbul-reports': 3.0.0
-      '@types/node': 14.14.25
+      '@types/node': 14.14.31
       '@types/yargs': 15.0.13
       chalk: 4.1.0
     dev: true
@@ -2556,6 +2557,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==
+  /@types/jest/26.0.20:
+    dependencies:
+      jest-diff: 26.6.2
+      pretty-format: 26.6.2
+    dev: true
+    resolution:
+      integrity: sha512-9zi2Y+5USJRxd0FsahERhBwlcvFh6D2GLQnY2FH2BzK8J9s9omvNHIbvABwIluXa0fD8XVKMLTO0aOEuUfACAA==
   /@types/json-schema/7.0.7:
     dev: true
     resolution:
@@ -15967,6 +15975,7 @@ specifiers:
   '@semantic-release/changelog': 5.0.1
   '@semantic-release/git': 9.0.0
   '@types/bluebird': 3.5.33
+  '@types/jest': 26.0.20
   '@types/lodash': 4.14.168
   '@types/parse5': 6.0.0
   '@types/parse5-htmlparser2-tree-adapter': 6.0.0

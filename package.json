@@ -9,9 +9,8 @@
   ],
   "scripts": {
     "prepare": "cross-env NODE_ENV=production npm run build",
-    "prebuild": "rimraf 'dist/*'",
-    "build": "babel src --out-dir dist --extensions '.ts,.js' --ignore '**/__tests__,**/*.test.js' --source-maps",
-    "watch": "babel -w src --out-dir dist --extensions '.ts,.js' --ignore '**/__tests__,**/*.test.js'",
+    "build": "babel src --out-dir dist -x '.ts,.js' --delete-dir-on-start --ignore '**/__tests__,**/*.test.js' -s",
+    "watch": "babel -w src --out-dir dist -x '.ts,.js' --delete-dir-on-start --ignore '**/__tests__,**/*.test.js'",
     "test": "jest --runInBand",
     "test:coverage": "jest --runInBand --coverage",
     "test:watch": "jest --watch --runInBand",
@@ -57,6 +56,7 @@
     "@semantic-release/git": "9.0.0",
     "@typescript-eslint/eslint-plugin": "4.15.1",
     "@typescript-eslint/parser": "4.15.1",
+    "@types/jest": "26.0.20",
     "@types/bluebird": "3.5.33",
     "@types/lodash": "4.14.168",
     "@types/parse5": "6.0.0",
@@ -73,7 +73,6 @@
     "jest": "26.6.3",
     "metro-memory-fs": "0.65.1",
     "mkdirp": "1.0.4",
-    "rimraf": "3.0.2",
     "semantic-release": "17.3.9",
     "typescript": "4.1.5"
   },
