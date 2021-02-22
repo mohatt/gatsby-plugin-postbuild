@@ -3,7 +3,7 @@ import crypto from 'crypto'
 import { mergeWith, isArray } from 'lodash'
 import Debug from 'debug'
 import { defaults, IPluginOptions } from './options'
-import {
+import type {
   GatsbyNodeHelpers,
   GatsbyPluginOptions,
   GatsbyReporterErrorMap,

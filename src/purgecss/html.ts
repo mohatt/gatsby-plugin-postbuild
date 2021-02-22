@@ -3,7 +3,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import parse5 from 'parse5'
 import * as htmlparser2 from 'parse5-htmlparser2-tree-adapter'
-import _ from 'lodash'
+import { cloneDeep, pick } from 'lodash'
 import { Purger, PurgeResult } from './purger'
 import { FileWriter } from './writer'
 import { AssetMapper } from './mapper'
@@ -187,7 +187,7 @@ export class HtmlFile {
       treeAdapter: htmlparser2
     })
     // clone the tree and remove all <style> nodes
-    const nakedTree = _.cloneDeep(this.tree)
+    const nakedTree = cloneDeep(this.tree)
     walk(nakedTree, node => node.name !== 'style')
     // then serialize it back to HTML
     this.nakedHtml = parse5.serialize(nakedTree, {
@@ -216,7 +216,7 @@ export class HtmlFile {
       }
       return true
     })
-    debug('Loaded html file assets', _.pick(this, ['path', 'styles', 'scripts']))
+    debug('Loaded html file assets', pick(this, ['path', 'styles', 'scripts']))
   }
 
   /**

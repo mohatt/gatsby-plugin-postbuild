@@ -3,7 +3,7 @@ import { promises as fs } from 'fs'
 import { schema } from './options'
 import { bootstrap, debug, options, createGatsbyError } from './util'
 import purgecss from './purgecss'
-import { GatsbyNodeHelpers, GatsbyPluginOptions } from './gatsby'
+import type { GatsbyNodeHelpers, GatsbyPluginOptions } from './gatsby'
 
 /**
  * Validates user-defined options against schema.
