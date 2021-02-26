@@ -45,42 +45,42 @@ export const defaults: IPluginOptions = {
 /**
  * Plugin options schema
  */
-export function schema (Joi: GatsbyJoi): GatsbyJoi {
-  return Joi.object({
-    enabled: Joi.boolean()
+export function schema (joi: GatsbyJoi): GatsbyJoi {
+  return joi.object({
+    enabled: joi.boolean()
       .description('Whether to run the purgecss task or not.'),
-    report: Joi.boolean()
+    report: joi.boolean()
       .description('Write a "postbuild.log.json" file in `/public` with all the changes made.'),
-    reportConsole: Joi.boolean()
+    reportConsole: joi.boolean()
       .description('Print a summary report during build with all the changes made.'),
-    reportRejected: Joi.boolean()
+    reportRejected: joi.boolean()
       .description('Write a log file in `/public` with the rejected selectors for every file.'),
-    ignoreFiles: Joi.object({
-      webpack: Joi.array().items(Joi.string())
+    ignoreFiles: joi.object({
+      webpack: joi.array().items(joi.string())
         .description('Webpack chunck names to ignore while purging CSS.'),
-      pages: Joi.array().items(Joi.string())
+      pages: joi.array().items(joi.string())
         .description('Pages to exclude from optimiztion.'),
-      css: Joi.array().items(Joi.string())
+      css: joi.array().items(joi.string())
         .description('Webpack chunck names to ignore while purging CSS.'),
-      js: Joi.array().items(Joi.string())
+      js: joi.array().items(joi.string())
         .description('Webpack chunck names to ignore while purging CSS.')
     }).description('CSS/JavaScript files to ignore during optimization. File names should be relative to `/public` directory'),
-    allowSymbols: Joi.boolean()
+    allowSymbols: joi.boolean()
       .description('Sets a custom PurgeCSS extractor that allows CSS selectors to contain symbols (e.g TailwindCSS).'),
-    purgecss: Joi.object({
-      defaultExtractor: Joi.function()
+    purgecss: joi.object({
+      defaultExtractor: joi.function()
         .description('A custom PurgeCSS extractor to be used instead of the default one.'),
-      safelist: Joi.alternatives().try(
-        Joi.object({}).unknown(true),
-        Joi.array().items(Joi.string())
+      safelist: joi.alternatives().try(
+        joi.object({}).unknown(true),
+        joi.array().items(joi.string())
       ).description('Selectors that are safe to leave in the final CSS.'),
-      blocklist: Joi.array().items(Joi.string())
+      blocklist: joi.array().items(joi.string())
         .description('Selectors that are blocked from appearing in the final CSS.'),
-      fontFace: Joi.boolean()
+      fontFace: joi.boolean()
         .description('Remove any unused `@font-face` rules in your css.'),
-      keyframes: Joi.boolean()
+      keyframes: joi.boolean()
         .description('Remove any unused `@keyframes` rules in your css.'),
-      variables: Joi.boolean()
+      variables: joi.boolean()
         .description('Remove any unused variables in your css.')
     })
   })

@@ -3,13 +3,13 @@ import { promises as fs } from 'fs'
 import { schema } from './options'
 import { bootstrap, debug, options, createGatsbyError } from './util'
 import purgecss from './purgecss'
-import type { GatsbyNodeHelpers, GatsbyPluginOptions } from './gatsby'
+import type { GatsbyJoi, GatsbyNodeHelpers, GatsbyPluginOptions } from './gatsby'
 
 /**
  * Validates user-defined options against schema.
  * Runs before any other node API
  */
-export function pluginOptionsSchema ({ Joi }: GatsbyNodeHelpers): void {
+export function pluginOptionsSchema ({ Joi }: { Joi: GatsbyJoi }): void {
   return schema(Joi)
 }
 
