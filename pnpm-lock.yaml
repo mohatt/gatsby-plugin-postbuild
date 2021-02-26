@@ -13,8 +13,8 @@ devDependencies:
   '@babel/eslint-parser': 7.12.17_c31887dab900bbf2ca8c3a08b8119075
   '@babel/plugin-proposal-class-properties': 7.12.13_@babel+core@7.12.17
   '@babel/plugin-proposal-private-methods': 7.12.13_@babel+core@7.12.17
-  '@semantic-release/changelog': 5.0.1_semantic-release@17.3.9
-  '@semantic-release/git': 9.0.0_semantic-release@17.3.9
+  '@semantic-release/changelog': 5.0.1_semantic-release@17.4.0
+  '@semantic-release/git': 9.0.0_semantic-release@17.4.0
   '@types/bluebird': 3.5.33
   '@types/jest': 26.0.20
   '@types/lodash': 4.14.168
@@ -34,7 +34,7 @@ devDependencies:
   jest: 26.6.3
   metro-memory-fs: 0.65.1
   mkdirp: 1.0.4
-  semantic-release: 17.3.9
+  semantic-release: 17.4.0
   typescript: 4.1.5
 lockfileVersion: 5.2
 packages:
@@ -2171,7 +2171,7 @@ packages:
   /@octokit/types/6.8.2:
     dependencies:
       '@octokit/openapi-types': 4.0.1
-      '@types/node': 14.14.25
+      '@types/node': 14.14.31
     dev: true
     resolution:
       integrity: sha512-RpG0NJd7OKSkWptiFhy1xCLkThs5YoDIKM21lEtDmUvSpbaIEfrxzckWLUGDFfF8RydSyngo44gDv8m2hHruUg==
@@ -2238,13 +2238,13 @@ packages:
       react-dom: 15.x || 16.x || 16.4.0-alpha.0911da3
     resolution:
       integrity: sha512-+mtn9wjlB9NN2CNnnC/BRYtwdKBfSyyasPYraNAyvaV1occr/5NnB4CVzjEZipNHwYebQwcndGUmpFzxAUoqSA==
-  /@semantic-release/changelog/5.0.1_semantic-release@17.3.9:
+  /@semantic-release/changelog/5.0.1_semantic-release@17.4.0:
     dependencies:
       '@semantic-release/error': 2.2.0
       aggregate-error: 3.1.0
       fs-extra: 9.1.0
       lodash: 4.17.20
-      semantic-release: 17.3.9
+      semantic-release: 17.4.0
     dev: true
     engines:
       node: '>=10.18'
@@ -2252,16 +2252,16 @@ packages:
       semantic-release: '>=15.8.0 <18.0.0'
     resolution:
       integrity: sha512-unvqHo5jk4dvAf2nZ3aw4imrlwQ2I50eVVvq9D47Qc3R+keNqepx1vDYwkjF8guFXnOYaYcR28yrZWno1hFbiw==
-  /@semantic-release/commit-analyzer/8.0.1_semantic-release@17.3.9:
+  /@semantic-release/commit-analyzer/8.0.1_semantic-release@17.4.0:
     dependencies:
       conventional-changelog-angular: 5.0.12
       conventional-commits-filter: 2.0.7
       conventional-commits-parser: 3.2.0
       debug: 4.3.1
       import-from: 3.0.0
-      lodash: 4.17.20
+      lodash: 4.17.21
       micromatch: 4.0.2
-      semantic-release: 17.3.9
+      semantic-release: 17.4.0
     dev: true
     engines:
       node: '>=10.18'
@@ -2273,7 +2273,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-9Tj/qn+y2j+sjCI3Jd+qseGtHjOAeg7dU2/lVcqIQ9TV3QDaDXDYXcoOHU+7o2Hwh8L8ymL4gfuO7KxDs3q2zg==
-  /@semantic-release/git/9.0.0_semantic-release@17.3.9:
+  /@semantic-release/git/9.0.0_semantic-release@17.4.0:
     dependencies:
       '@semantic-release/error': 2.2.0
       aggregate-error: 3.1.0
@@ -2283,7 +2283,7 @@ packages:
       lodash: 4.17.20
       micromatch: 4.0.2
       p-reduce: 2.1.0
-      semantic-release: 17.3.9
+      semantic-release: 17.4.0
     dev: true
     engines:
       node: '>=10.18'
@@ -2291,7 +2291,7 @@ packages:
       semantic-release: '>=16.0.0 <18.0.0'
     resolution:
       integrity: sha512-AZ4Zha5NAPAciIJH3ipzw/WU9qLAn8ENaoVAhD6srRPxTpTzuV3NhNh14rcAo8Paj9dO+5u4rTKcpetOBluYVw==
-  /@semantic-release/github/7.2.0_semantic-release@17.3.9:
+  /@semantic-release/github/7.2.0_semantic-release@17.4.0:
     dependencies:
       '@octokit/rest': 18.1.0
       '@semantic-release/error': 2.2.0
@@ -2304,11 +2304,11 @@ packages:
       http-proxy-agent: 4.0.1
       https-proxy-agent: 5.0.0
       issue-parser: 6.0.0
-      lodash: 4.17.20
-      mime: 2.5.0
+      lodash: 4.17.21
+      mime: 2.5.2
       p-filter: 2.1.0
       p-retry: 4.3.0
-      semantic-release: 17.3.9
+      semantic-release: 17.4.0
       url-join: 4.0.1
     dev: true
     engines:
@@ -2317,20 +2317,20 @@ packages:
       semantic-release: '>=16.0.0 <18.0.0'
     resolution:
       integrity: sha512-tMRnWiiWb43whRHvbDGXq4DGEbKRi56glDpXDJZit4PIiwDPX7Kx3QzmwRtDOcG+8lcpGjpdPabYZ9NBxoI2mw==
-  /@semantic-release/npm/7.0.10_semantic-release@17.3.9:
+  /@semantic-release/npm/7.0.10_semantic-release@17.4.0:
     dependencies:
       '@semantic-release/error': 2.2.0
       aggregate-error: 3.1.0
       execa: 5.0.0
       fs-extra: 9.1.0
-      lodash: 4.17.20
+      lodash: 4.17.21
       nerf-dart: 1.0.0
       normalize-url: 5.3.0
       npm: 6.14.11
       rc: 1.2.8
       read-pkg: 5.2.0
       registry-auth-token: 4.2.1
-      semantic-release: 17.3.9
+      semantic-release: 17.4.0
       semver: 7.3.4
       tempy: 1.0.0
     dev: true
@@ -2340,7 +2340,7 @@ packages:
       semantic-release: '>=16.0.0 <18.0.0'
     resolution:
       integrity: sha512-DXFEhgSt5u22imTWbw8wfcVGB90nFJNcjUBtJI3zswJojzZ7yXpY4i2Va5RBRQRTtj00BfG0stbilAtKrKp35g==
-  /@semantic-release/release-notes-generator/9.0.1_semantic-release@17.3.9:
+  /@semantic-release/release-notes-generator/9.0.1_semantic-release@17.4.0:
     dependencies:
       conventional-changelog-angular: 5.0.12
       conventional-changelog-writer: 4.1.0
@@ -2350,9 +2350,9 @@ packages:
       get-stream: 5.2.0
       import-from: 3.0.0
       into-stream: 5.1.1
-      lodash: 4.17.20
+      lodash: 4.17.21
       read-pkg-up: 7.0.1
-      semantic-release: 17.3.9
+      semantic-release: 17.4.0
     dev: true
     engines:
       node: '>=10.18'
@@ -4873,7 +4873,7 @@ packages:
       dateformat: 3.0.3
       handlebars: 4.7.6
       json-stringify-safe: 5.0.1
-      lodash: 4.17.20
+      lodash: 4.17.21
       meow: 8.1.2
       semver: 6.3.0
       split: 1.0.1
@@ -4897,7 +4897,7 @@ packages:
     dependencies:
       JSONStream: 1.3.5
       is-text-path: 1.0.1
-      lodash: 4.17.20
+      lodash: 4.17.21
       meow: 8.1.2
       split2: 2.2.0
       through2: 4.0.2
@@ -5593,7 +5593,7 @@ packages:
   /del/6.0.0:
     dependencies:
       globby: 11.0.2
-      graceful-fs: 4.2.5
+      graceful-fs: 4.2.6
       is-glob: 4.0.1
       is-path-cwd: 2.2.0
       is-path-inside: 3.0.2
@@ -10228,7 +10228,7 @@ packages:
       integrity: sha1-eUfkIUmvgNaWy/eXvKq8/h/inKg=
   /load-json-file/4.0.0:
     dependencies:
-      graceful-fs: 4.2.5
+      graceful-fs: 4.2.6
       parse-json: 4.0.0
       pify: 3.0.0
       strip-bom: 3.0.0
@@ -10718,13 +10718,6 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
-  /mime/2.5.0:
-    dev: true
-    engines:
-      node: '>=4.0.0'
-    hasBin: true
-    resolution:
-      integrity: sha512-ft3WayFSFUVBuJj7BMLKAQcSlItKtfjsKDDsii3rqFDAZ7t11zRe8ASw/GlmivGwVUYtwkQrxiGGpL6gFvB0ag==
   /mime/2.5.2:
     dev: true
     engines:
@@ -11119,7 +11112,7 @@ packages:
   /normalize-package-data/3.0.0:
     dependencies:
       hosted-git-info: 3.0.8
-      resolve: 1.19.0
+      resolve: 1.20.0
       semver: 7.3.4
       validate-npm-package-license: 3.0.4
     dev: true
@@ -13596,13 +13589,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-2P4PtieJeEwVgTU9QEcwIRDQ/mXJLX8/+I3ur+Pg16nS8oNbrGxEso9NyYWy8NAmXiNl4dlAp5MwoNeCWzON4w==
-  /semantic-release/17.3.9:
+  /semantic-release/17.4.0:
     dependencies:
-      '@semantic-release/commit-analyzer': 8.0.1_semantic-release@17.3.9
+      '@semantic-release/commit-analyzer': 8.0.1_semantic-release@17.4.0
       '@semantic-release/error': 2.2.0
-      '@semantic-release/github': 7.2.0_semantic-release@17.3.9
-      '@semantic-release/npm': 7.0.10_semantic-release@17.3.9
-      '@semantic-release/release-notes-generator': 9.0.1_semantic-release@17.3.9
+      '@semantic-release/github': 7.2.0_semantic-release@17.4.0
+      '@semantic-release/npm': 7.0.10_semantic-release@17.4.0
+      '@semantic-release/release-notes-generator': 9.0.1_semantic-release@17.4.0
       aggregate-error: 3.1.0
       cosmiconfig: 7.0.0
       debug: 4.3.1
@@ -13614,7 +13607,7 @@ packages:
       git-log-parser: 1.2.0
       hook-std: 2.0.0
       hosted-git-info: 3.0.8
-      lodash: 4.17.20
+      lodash: 4.17.21
       marked: 2.0.0
       marked-terminal: 4.1.0_marked@2.0.0
       micromatch: 4.0.2
@@ -13631,7 +13624,7 @@ packages:
       node: '>=10.18'
     hasBin: true
     resolution:
-      integrity: sha512-iPDySFcAXG+7KiM0JH4bvF++imkf85VmfXpIBPAyDxK/P4+pe19KNFCfkzTKwUJkTIAyLUIr7WOg3W5h5aMwNg==
+      integrity: sha512-FrPUpqKobak39F/6HnxhBK6LdL2ZEHadz5qVDTIJ9qlJ6bw8BQ5sguZ2j0ewI0aqRcLf/u9LGy/kOnUy0v7NbQ==
   /semver-diff/3.1.1:
     dependencies:
       semver: 6.3.0
@@ -16062,5 +16055,5 @@ specifiers:
   parse5: ^6.0.0
   parse5-htmlparser2-tree-adapter: ^6.0.0
   purgecss: ^4.0.0
-  semantic-release: 17.3.9
+  semantic-release: 17.4.0
   typescript: 4.1.5
