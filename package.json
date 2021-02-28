@@ -74,7 +74,7 @@
     "metro-memory-fs": "0.65.1",
     "mkdirp": "1.0.4",
     "semantic-release": "17.4.0",
-    "typescript": "4.1.5"
+    "typescript": "4.2.2"
   },
   "peerDependencies": {
     "gatsby": ">=2.25.0"
