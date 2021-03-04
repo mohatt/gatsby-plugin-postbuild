@@ -16888,7 +16888,7 @@ specifiers:
   '@semantic-release/changelog': 5.0.1
   '@semantic-release/git': 9.0.0
   '@types/bluebird': 3.5.33
-  '@types/glob-to-regexp': ^0.4.0
+  '@types/glob-to-regexp': 0.4.0
   '@types/jest': 26.0.20
   '@types/lodash': 4.14.168
   '@types/parse5': 6.0.0
