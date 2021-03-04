@@ -70,7 +70,7 @@ export class Postbuild {
    */
   constructor (tasks?: Tasks, fs?: Filesystem) {
     this.fs = fs ?? new Filesystem(this.options)
-    this.tasks = tasks ?? new Tasks()
+    this.tasks = tasks ?? new Tasks(this.fs, this.options)
   }
 
   /**
@@ -92,7 +92,7 @@ export class Postbuild {
    */
   async bootstrap (gatsby: GatsbyNodeArgs, pluginOptions: GatsbyPluginOptions): Promise<void> {
     // Merge user-defined options with defaults
-    this.options = _.merge(this.options, _.pick(pluginOptions, _.keys(DEFAULTS)))
+    _.merge(this.options, pluginOptions)
 
     // Configure fs root
     this.fs.setRoot(
@@ -104,10 +104,9 @@ export class Postbuild {
     if (typeof gatsby.reporter.setErrorMap === 'function') {
       gatsby.reporter.setErrorMap(ERROR_MAP)
     }
-    debug('Postbuild initialized', this)
 
     // Loads tasks options
-    this.tasks.setOptions(pluginOptions)
+    this.tasks.setOptions()
 
     // Run on.bootstrap events
     await this.tasks.run('on', 'bootstrap', {
@@ -115,6 +114,7 @@ export class Postbuild {
       filesystem: this.fs,
       gatsby
     })
+    debug('Postbuild initialized', this)
   }
 
   /**
@@ -147,32 +147,16 @@ export class Postbuild {
       )
     }
 
-    const globs = this.tasks.getExtensionGlobs()
-    if (globs === {}) return
-    debug('Fetching files with glob patterns', globs)
-    const matchs: { [file: string]: string[] } = {}
-    const files = await Promise
-      .map(Object.keys(globs), pattern => this.fs.glob(pattern, { nodir: true })
-        .then(res => res.forEach(m => {
-          if (this.options.ignore.includes(m)) return
-          matchs[m] ??= []
-          globs[pattern].forEach(task =>
-            !matchs[m].includes(task) && matchs[m].push(task)
-          )
-        })))
-      .then(() => {
-        debug('Matches found by glob', matchs)
-        const files = Object.keys(this.tasks.setFilesTasksMap(matchs))
-        status.total = files.length
-        return files.reduce((result: { [ext: string]: File[] }, relPath) => {
-          const ext = this.fs.extension(relPath) as string
-          (result[ext] ||= []).push(
+    const files: { [p: string]: File[] } = {}
+    await this.tasks.getFilenames()
+      .then(filenames => {
+        for (const ext in filenames) {
+          status.total += filenames[ext].length
+          files[ext] = filenames[ext].map(file =>
             ext === 'html'
-              ? new FileHtml(relPath, this)
-              : new FileGeneric(relPath, this)
-          )
-          return result
-        }, {})
+              ? new FileHtml(file, this)
+              : new FileGeneric(file, this))
+        }
       })
 
     // Bluebird concurrency limit for Promise.map
@@ -201,13 +185,13 @@ export class Postbuild {
       // Process files in steps
       await Promise.map(files[ext], file => file.read().then(() => tick('read')), concLimit)
       await Promise.map(files[ext], file => file.process().then(() => tick('process')), concLimit)
-      await Promise.mapSeries(files[ext], (file, i) => file.write().then(() => {
+      await Promise.each(files[ext], (file, i) => file.write().then(() => {
         tick('write')
         delete files[ext][i]
       }))
     }
 
-    await Promise.map(Object.keys(files), ext => {
+    await Promise.each(Object.keys(files), ext => {
       return runExtension(ext, ext !== 'html')
     })
 

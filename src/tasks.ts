@@ -1,7 +1,8 @@
 import { Promise } from 'bluebird'
 import path from 'path'
 import _ from 'lodash'
-import globToRegexp from 'glob-to-regexp'
+import { Filesystem } from './filesystem'
+import { IOptions } from './options'
 import { createDebug, PostbuildError } from './common'
 import type { File, FileGeneric, FileHtml } from './files'
 import type { Node as parse5Node } from 'parse5'
@@ -130,14 +131,16 @@ export class Tasks {
   tasks: Array<ITask<any>> = []
 
   /**
-   * Map of task ids and their final options object
+   * Map of filenames and the task events that defined them
    */
-  options: { [task: string]: unknown & ITaskOptions } = {}
+  fileEventsMap: { [file: string]: Array<[ITask<any>, string]> } = {}
 
-  /**
-   * Map of filenames and the tasks that need them
-   */
-  filesTasksMap: { [file: string]: Array<ITask<any>> } = {}
+  fs: Filesystem
+  options: IOptions
+  constructor (fs: Filesystem, options: IOptions) {
+    this.fs = fs
+    this.options = options
+  }
 
   /**
    * Registers a new task, task exports needs to be either
@@ -175,14 +178,17 @@ export class Tasks {
    * Sets the user-defined options for all tasks defined
    * Should be called before running any task events
    */
-  setOptions (options: { [task: string]: any }): void {
-    const defaults = this.getOptionsDefaults()
-    this.tasks = this.tasks.filter(({ id }) => {
-      this.options[id] = (options[id] !== undefined)
-        ? _.clone(options[id])
-        : {}
-      if (defaults[id] !== undefined) {
-        _.defaultsDeep(this.options[id], defaults[id])
+  setOptions (): void {
+    this.tasks = this.tasks.filter(({ id, api }) => {
+      const td = {
+        enabled: true,
+        ignore: [],
+        ...api.options?.defaults
+      }
+      if (this.options[id] === undefined) {
+        this.options[id] = td
+      } else {
+        _.defaultsDeep(this.options[id], td)
       }
       // delete disabled tasks
       if (!this.options[id].enabled) {
@@ -191,56 +197,45 @@ export class Tasks {
       }
       return true
     })
-    debug('Loaded tasks options', this.options)
   }
 
   /**
-   * Returns a Map of glob patterns and the tasks
-   * that defined them
+   * Returns a map of file extensions with file names to be processed
    */
-  getExtensionGlobs (): { [ext: string]: string[] } {
-    return this.tasks.reduce((res: { [ext: string]: string[] }, task) => {
+  getFilenames (): Promise<{ [ext: string]: string[] }> {
+    const extensions = this.tasks.reduce((res: Tasks['fileEventsMap'], task) => {
       for (const ext in task.api.events) {
         if (ext === 'on') continue
-        (res[ext.indexOf('/') === 0
-          ? ext.slice(1)
-          : `**/*.${ext}`] ||= [])
-          .push(task.id)
+        (res[ext] ||= []).push([task, ext])
       }
       return res
     }, {})
-  }
-
-  /**
-   * Should be called before running any file-related task events
-   */
-  setFilesTasksMap (map: { [file: string]: string[] }): Tasks['filesTasksMap'] {
-    for (const file in map) {
-      this.filesTasksMap[file] = map[file]
-        .map(task => this.tasks.find(t => t.id === task) as ITask<any>)
-        .filter(task => task !== undefined &&
-          !this.options[task.id].ignore.includes(file))
-      if (this.filesTasksMap[file].length === 0) {
-        delete this.filesTasksMap[file]
-      }
-    }
-    debug('Updated files-tasks map', this.filesTasksMap)
-    return this.filesTasksMap
-  }
-
-  /**
-   * Returns a map of task ids and their options defaults
-   */
-  getOptionsDefaults (): { [task: string]: ITaskOptions } {
-    return this.tasks.reduce((res: { [task: string]: ITaskOptions }, task) => {
-      const td = task.api.options?.defaults
-      res[task.id] = {
-        enabled: true,
-        ignore: [],
-        ...td
-      }
-      return res
-    }, {})
+    const files: Tasks['fileEventsMap'] = {}
+    const extFiles: { [ext: string]: string[] } = {}
+    return Promise
+      .map(Object.keys(extensions), ext =>
+        this.fs.glob(ext.indexOf('/') === 0 ? ext.slice(1) : `**/*.${ext}`, { nodir: true })
+          .then(matchs => matchs.forEach(f => {
+            if (this.options.ignore.includes(f)) return
+            files[f] = (files[f] ||= []).concat(extensions[ext])
+          })))
+      .then(() => {
+        for (const f in files) {
+          files[f] = files[f].filter(([task, ext]) => {
+            if (this.options[task.id].ignore.includes(f)) return false
+            if (ext.indexOf('/') === 0) ext = 'unknown'
+            extFiles[ext] ??= []
+            if (!extFiles[ext].includes(f)) extFiles[ext].push(f)
+            return true
+          })
+          if (files[f].length === 0) {
+            delete files[f]
+          }
+        }
+        this.fileEventsMap = files
+        debug('Updated file-events map', this.fileEventsMap)
+        return extFiles
+      })
   }
 
   /**
@@ -288,27 +283,17 @@ export class Tasks {
     }> = []
     // @ts-expect-error
     const file = payload?.file as File | undefined
-    const tasks = file !== undefined ? this.filesTasksMap[file.relative] ?? [] : this.tasks
-    for (const task of tasks) {
-      const taskEventTypes = Object.keys(task.api.events)
-      if (taskEventTypes.includes(type)) {
-        if (event in task.api.events[type]) {
-          events.push({ task, eventObject: task.api.events[type] })
+    if (file !== undefined) {
+      const fileEvents = this.fileEventsMap[file.relative] ?? []
+      for (const [task, ext] of fileEvents) {
+        if ((type === ext || (type === 'glob' && ext.indexOf('/') === 0)) && event in task.api.events[ext]) {
+          events.push({ task, eventObject: task.api.events[ext] })
         }
-        continue
       }
-      if (type === 'glob' && file !== undefined) {
-        for (const pattern of taskEventTypes) {
-          if (pattern.indexOf('/') !== 0) continue
-          const regexp = globToRegexp(pattern, {
-            extended: true,
-            globstar: true
-          })
-          if (regexp.test('/' + file.relative)) {
-            if (event in task.api.events[pattern]) {
-              events.push({ task, eventObject: task.api.events[pattern] })
-            }
-          }
+    } else {
+      for (const task of this.tasks) {
+        if (type in task.api.events && event in task.api.events[type]) {
+          events.push({ task, eventObject: task.api.events[type] })
         }
       }
     }

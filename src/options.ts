@@ -1,19 +1,23 @@
 import { GatsbyJoi } from './gatsby'
+import { ITaskOptions } from './tasks'
 
 /**
  * Plugin options interface
  */
-export interface IOptions {
+export type IOptions = {
   enabled: boolean
   report: boolean
   consoleReport: boolean
   ignore: string[]
   concurrency: number
+} & {
+  [task: string]: ITaskOptions
 }
 
 /**
  * Default values for plugin options
  */
+// @ts-expect-error
 export const DEFAULTS: IOptions = {
   enabled: true,
   report: true,
