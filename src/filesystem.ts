@@ -47,7 +47,7 @@ export class FilesystemReport {
 
   getConsoleOutput (): string {
     const saved = this.size[1] !== undefined
-      ? (((this.size[1] - this.size[0]) / this.size[0]) * 100)
+      ? (((this.size[0] - this.size[1]) / this.size[1]) * 100)
           .toFixed()
           .replace('-0', '0')
       : '0'
@@ -86,7 +86,7 @@ export class FilesystemReporter {
   add (report: FilesystemReport): void {
     this.reports.push(report)
     if (report.size[1] !== undefined) {
-      this.byetsSaved += report.size[1] - report.size[0]
+      this.byetsSaved += report.size[0] - report.size[1]
     }
     if (!this.options.consoleReport) {
       return
@@ -202,7 +202,7 @@ export class Filesystem {
     try {
       // ensure we're not creating any new files
       await fs.access(abs)
-      size = [(await fs.stat(abs)).size, Buffer.byteLength(data)]
+      size = [Buffer.byteLength(data), (await fs.stat(abs)).size]
       await fs.writeFile(abs, data)
     } catch (e) {
       throw new PostbuildError(
