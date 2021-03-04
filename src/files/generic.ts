@@ -15,7 +15,7 @@ export class FileGeneric extends File {
    */
   read (): Promise<void> {
     return this.doRead()
-      .then(data => this.postbuild.tasks.run('file', 'read', {
+      .then(data => this.postbuild.tasks.run('glob', 'read', {
         ...this.getEventPayload(),
         data
       }, 'data'))
@@ -35,7 +35,7 @@ export class FileGeneric extends File {
    * @inheritDoc
    */
   write (): Promise<void> {
-    return this.postbuild.tasks.run('file', 'write', {
+    return this.postbuild.tasks.run('glob', 'write', {
       ...this.getEventPayload(),
       data: this.data
     }, 'data')

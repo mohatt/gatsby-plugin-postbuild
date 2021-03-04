@@ -43,7 +43,7 @@ export interface IEvents<O extends ITaskOptions> {
     postbuild: IEvent<undefined, O>
     shutdown: IEvent<undefined, O>
   }
-  file: {
+  glob: {
     read: IEvent<FileGeneric, O, { data: string }, string>
     write: IEvent<FileGeneric, O, { data: string }, string>
   }
@@ -65,11 +65,6 @@ export type IEventFuncIn<T extends IEventType, K extends IEventName<T>> = Omit<P
 export type IEventFuncOut<T extends IEventType, K extends IEventName<T>, R = ReturnType<IEventFunc<T, K>>> = R extends PromiseLike<infer U> ? U : R
 
 /**
- * Interface for a task eventType
- */
-export type ITaskEvents<T extends IEventType, O extends ITaskOptions> = Partial<IEvents<O>[T]>
-
-/**
  * Interface for task options
  */
 export interface ITaskOptions {
@@ -79,13 +74,14 @@ export interface ITaskOptions {
 
 /**
  * Interface for task events api
- * Note: This type partially works
+ * Note: This type partially works due to lack of negated types
  * @see https://github.com/Microsoft/TypeScript/pull/29317
+ * @see https://github.com/microsoft/TypeScript/pull/41524
  */
 export type ITaskApiEvents<O extends ITaskOptions> = {
-  [K in Exclude<IEventType, 'file'>]?: Partial<IEvents<O>[K]>
+  [K in Exclude<IEventType, 'glob'>]?: Partial<IEvents<O>[K]>
 } & {
-  [P in Exclude<string, IEventType>]?: Partial<IEvents<O>['file']>
+  [glob: string]: Partial<IEvents<O>['glob']>
 }
 
 /**
@@ -301,7 +297,7 @@ export class Tasks {
         }
         continue
       }
-      if (type === 'file' && file !== undefined) {
+      if (type === 'glob' && file !== undefined) {
         for (const pattern of taskEventTypes) {
           if (pattern.indexOf('/') !== 0) continue
           const regexp = globToRegexp(pattern, {
@@ -309,7 +305,6 @@ export class Tasks {
             globstar: true
           })
           if (regexp.test('/' + file.relative)) {
-            // @ts-expect-error
             if (event in task.api.events[pattern]) {
               events.push({ task, eventObject: task.api.events[pattern] })
             }
