@@ -6,39 +6,29 @@ import { File } from './base'
  */
 export class FileGeneric extends File {
   /**
-   * Raw file contents as string
-   */
-  data: string = ''
-
-  /**
-   * @inheritDoc
+   * Reads and writes the file in one mthod since there
+   * is no need to retain the file data
    */
   read (): Promise<void> {
     return this.doRead()
-      .then(data => this.postbuild.tasks.run('glob', 'read', {
+      .then(raw => this.postbuild.tasks.run('glob', 'content', {
         ...this.getEventPayload(),
-        data
-      }, 'data'))
-      .then(data => {
-        this.data = data
-      })
+        raw
+      }, 'raw'))
+      .then(data => this.doUpdate(data))
   }
 
   /**
-   * @inheritDoc
+   * Dummy method
    */
   process (): Promise<void> {
     return Promise.resolve()
   }
 
   /**
-   * @inheritDoc
+   * Dummy method
    */
   write (): Promise<void> {
-    return this.postbuild.tasks.run('glob', 'write', {
-      ...this.getEventPayload(),
-      data: this.data
-    }, 'data')
-      .then(data => this.doUpdate(data))
+    return Promise.resolve()
   }
 }

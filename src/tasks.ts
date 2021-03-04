@@ -52,8 +52,7 @@ export interface IEvents<O extends ITaskOptions> {
     write: IEvent<FileHtml, O, { html: string }, string>
   }
   glob: {
-    read: IEvent<FileGeneric, O, { data: string }, string>
-    write: IEvent<FileGeneric, O, { data: string }, string>
+    content: IEvent<FileGeneric, O, { raw: string }, string>
   }
 }
 
