@@ -3,8 +3,8 @@ import _ from 'lodash'
 import PurgeCSS from 'purgecss'
 import { createDebug } from '~/common'
 import { Filesystem } from '~/filesystem'
-import { HtmlTransformer, HtmlStyle, HtmlStyleFile } from './html'
 import { AssetMapper } from './mapper'
+import { HtmlTransformer, HtmlStyle, HtmlStyleFile } from './html'
 import { IPurgecssOptions, PurgecssLibOptions, purgecssImportedOptions } from '../options'
 const debug = createDebug('purgecss/purger')
 

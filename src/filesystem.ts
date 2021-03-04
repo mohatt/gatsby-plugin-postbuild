@@ -55,8 +55,7 @@ export class FilesystemReport {
       colorize.tag(this.tag),
       colorize.file(this.file),
       colorize.size(formatSize(this.size[0]) + (saved !== '0' ? ` ${(saved)}%` : '')),
-      Object.keys(this.meta)
-        .map(field => colorize.meta(field, this.meta[field]))
+      Object.keys(this.meta).map(field => colorize.meta(field, this.meta[field]))
     ].flat().join(' ')
   }
 }
@@ -88,9 +87,7 @@ export class FilesystemReporter {
     if (report.size[1] !== undefined) {
       this.byetsSaved += report.size[0] - report.size[1]
     }
-    if (!this.options.consoleReport) {
-      return
-    }
+    if (!this.options.consoleReport) return
     if (this.reports.length === 1) {
       console.log(colorize.title('Postbuild report'))
     }
@@ -109,11 +106,8 @@ export class FilesystemReporter {
    * Returns the total bytes saved and its formatted form
    */
   getTotalSaved (): [number, string] {
-    const saving = this.byetsSaved * -1
-    return [
-      saving,
-      formatSize(saving)
-    ]
+    const saved = this.byetsSaved * -1
+    return [saved, formatSize(saved)]
   }
 }
 
@@ -210,7 +204,6 @@ export class Filesystem {
         e
       )
     }
-
     this.reporter.add(new FilesystemReport(rel, 'update', size, meta))
     return Promise.resolve()
   }

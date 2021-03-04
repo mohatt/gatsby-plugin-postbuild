@@ -1,10 +1,10 @@
+import { HtmlTransformer } from './lib/html'
+import { AssetMapper } from './lib/mapper'
+import { Purger } from './lib/purger'
 import type { FileHtml } from '~/files'
 import type { Filesystem } from '~/filesystem'
 import type { ITaskApiEvents } from '~/tasks'
 import type { IPurgecssOptions } from './options'
-import { HtmlTransformer } from './lib/html'
-import { AssetMapper } from './lib/mapper'
-import { Purger } from './lib/purger'
 
 /**
  * Holds refrences to required dependencies

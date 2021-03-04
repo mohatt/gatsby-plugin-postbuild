@@ -32,7 +32,7 @@ type IEvent<
   F extends File | undefined,
   O extends ITaskOptions,
   P extends Object = {},
-  R = void // eslint-disable-line @typescript-eslint/no-invalid-void-type
+  R = void
 > = Fn<[IPostbuildArgs<F, O, P>], R>
 
 /**
@@ -44,15 +44,16 @@ export interface IEvents<O extends ITaskOptions> {
     postbuild: IEvent<undefined, O>
     shutdown: IEvent<undefined, O>
   }
-  glob: {
-    read: IEvent<FileGeneric, O, { data: string }, string>
-    write: IEvent<FileGeneric, O, { data: string }, string>
-  }
   html: {
     parse: IEvent<FileHtml, O, { html: string }, string>
     tree: IEvent<FileHtml, O>
     node: IEvent<FileHtml, O, { node: parse5Node }>
     serialize: IEvent<FileHtml, O>
+    write: IEvent<FileHtml, O, { html: string }, string>
+  }
+  glob: {
+    read: IEvent<FileGeneric, O, { data: string }, string>
+    write: IEvent<FileGeneric, O, { data: string }, string>
   }
 }
 
@@ -277,35 +278,35 @@ export class Tasks {
    * @see Keys
    */
   async run<T extends IEventType, E extends IEventName<T>> (type: T, event: E, payload: IEventFuncIn<T, E>, accumulator?: keyof IEventFuncIn<T, E>): Promise<Array<IEventFuncOut<T, E>>|IEventFuncOut<T, E>> {
-    const events: Array<{
-      task: ITask<any>
-      eventObject: ITaskApiEvents<any>[T]
-    }> = []
+    const events: Array<[ITask<any>, string]> = []
     // @ts-expect-error
     const file = payload?.file as File | undefined
     if (file !== undefined) {
       const fileEvents = this.fileEventsMap[file.relative] ?? []
       for (const [task, ext] of fileEvents) {
         if ((type === ext || (type === 'glob' && ext.indexOf('/') === 0)) && event in task.api.events[ext]) {
-          events.push({ task, eventObject: task.api.events[ext] })
+          events.push([task, ext])
         }
       }
     } else {
       for (const task of this.tasks) {
         if (type in task.api.events && event in task.api.events[type]) {
-          events.push({ task, eventObject: task.api.events[type] })
+          events.push([task, type])
         }
       }
     }
-    return Promise.mapSeries(events, async ({ task, eventObject }) => {
+    return Promise.mapSeries(events, async ([task, et]) => {
       try {
         const args = {
           task,
           options: this.options[task.id],
-          event: { type, name: event }
+          event: {
+            type: et,
+            name: event
+          }
         }
         // @ts-expect-error
-        const res = await eventObject[event] // eslint-disable-line
+        const res = await task.api.events[et][event] // eslint-disable-line
         ({ ...args, ...payload }) // eslint-disable-line
         if (accumulator !== undefined) {
           if (typeof payload[accumulator] !== typeof res) {
@@ -318,7 +319,7 @@ export class Tasks {
       } catch (e) {
         throw new PostbuildError(
           `The task "${task.id}" encountered an error while running event ` +
-          `"${[type, event].join('.')}": ${String(e.message)}`,
+          `"${[et, event].join('.')}": ${String(e.message)}`,
           e
         )
       }

@@ -1,11 +1,11 @@
 import { Promise } from 'bluebird'
 import path from 'path'
 import * as parse5 from 'parse5'
-import { File } from './base'
 import parse5Adaptor from 'parse5/lib/tree-adapters/default'
+import { File } from './base'
 
 /**
- * A callback function to be run on tree nodes.
+ * A callback function to be run on tree nodes
  * @see FileHtml.walk
  */
 export type IFileHtmlNodeWalker = (node: parse5.Node) => Promise<void>|void
@@ -25,7 +25,7 @@ export class FileHtml extends File {
   tree: parse5.Document = this.adaptor.createDocument()
 
   /**
-   * @inheritDoc
+   * Reads the file then compiles its html to ast
    */
   read (): Promise<void> {
     return this.doRead()
@@ -36,28 +36,34 @@ export class FileHtml extends File {
       .then(html => {
         this.tree = parse5.parse(html)
         return this.tasks.run('html', 'tree', this.getEventPayload())
-      })
-      .then()
+      }) as Promise<void>
   }
 
   /**
-   * @inheritDoc
+   * Invokes html.node events on all nodes
    */
   process (): Promise<void> {
-    return this.walk(async (node) => {
-      await this.tasks.run('html', 'node', {
+    return this.walk(node => {
+      return this.tasks.run('html', 'node', {
         ...this.getEventPayload(),
         node
-      })
+      }) as unknown as Promise<void>
     })
   }
 
   /**
-   * @inheritDoc
+   * Serializes the tree back to html and writes the file
    */
   write (): Promise<void> {
     return this.tasks.run('html', 'serialize', this.getEventPayload())
-      .then(() => this.doUpdate(parse5.serialize(this.tree)))
+      .then(() => {
+        const html = parse5.serialize(this.tree)
+        return this.tasks.run('html', 'write', {
+          ...this.getEventPayload(),
+          html,
+        }, 'html')
+      })
+      .then(html => this.doUpdate(html))
   }
 
   /**
@@ -80,9 +86,9 @@ export class FileHtml extends File {
    * @param attrib - Target attribute. Defaults to `href`
    * @param relative - Return path relative to `/public`. Defaults to `true`
    * @param strict - Return false if resolved path is outside `/public`. Defaults to `true`
-   * @return Resolved file path or false on failure
+   * @return Resolved file path or false on failure to meet conditions
    */
-  resolveHref (node: parse5.Element, attrib = 'href', relative: boolean = true, strict: boolean = true): string|boolean {
+  resolveHref (node: parse5.Element, attrib = 'href', relative = true, strict = true): string|boolean {
     const attr = node.attrs.find(a => a.name === attrib)
     if (attr === undefined) return false
     let href = attr.value.trim()
