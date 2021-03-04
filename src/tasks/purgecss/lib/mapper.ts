@@ -1,6 +1,8 @@
 import path from 'path'
-import { createDebug, extName, options } from '../util'
-import { HtmlFile } from './html'
+import { Filesystem } from '~/filesystem'
+import { createDebug } from '~/common'
+import { HtmlTransformer } from './html'
+import { IPurgecssOptions } from '../options'
 const debug = createDebug('purgecss/mapper')
 
 /**
@@ -11,7 +13,7 @@ export class AssetMapper {
    * Styles shared between multiple html files
    */
   sharedStyles: {
-    [id: string]: HtmlFile[]
+    [id: string]: HtmlTransformer[]
   } = {}
 
   /**
@@ -20,15 +22,18 @@ export class AssetMapper {
   ignoredFiles: {
     [ext: string]: string[]
   } = {
-    html: [],
     css: [],
     js: []
   }
 
+  private readonly fs: Filesystem
+  private readonly options: IPurgecssOptions
   /**
    * Initializes the class and sets excluded files
    */
-  constructor () {
+  constructor (options: IPurgecssOptions, fs: Filesystem) {
+    this.fs = fs
+    this.options = options
     this.loadWebpackIgnores()
     this.loadFileIgnores()
     debug('Mapper initialized with ignoredFiles', this.ignoredFiles)
@@ -38,7 +43,7 @@ export class AssetMapper {
    * Sets scripts ignored by their webpack chunkName
    */
   loadWebpackIgnores (): void {
-    const ignoredChunks = options.ignoreFiles.webpack
+    const ignoredChunks = this.options.ignoreAssets.webpack
     if (ignoredChunks.length === 0) {
       return
     }
@@ -46,7 +51,7 @@ export class AssetMapper {
     let chunks: {
       [index: string]: string[]
     }
-    const statsFile = path.join(options._public, 'webpack.stats.json')
+    const statsFile = path.join(this.fs.root, 'webpack.stats.json')
     try {
       chunks = require(statsFile).assetsByChunkName
     } catch (e) {
@@ -58,7 +63,7 @@ export class AssetMapper {
         return
       }
       chunks[chunk].forEach(file => {
-        extName(file) === 'js' && this.ignoreFile(file)
+        this.fs.extension(file) === 'js' && this.ignoreFile(file)
       })
     })
   }
@@ -67,13 +72,8 @@ export class AssetMapper {
    * Sets files ignored by their filepath and extension
    */
   loadFileIgnores (): void {
-    for (const ext of ['pages', 'css', 'js']) {
-      // @ts-expect-error
-      for (let file of options.ignoreFiles[ext]) {
-        if (file === '') file = '/'
-        if (ext === 'pages') {
-          file = path.join(file, 'index.html')
-        }
+    for (const ext of ['css', 'js']) {
+      for (const file of this.options.ignoreAssets[ext as 'css'|'js']) {
         this.ignoreFile(file)
       }
     }
@@ -82,13 +82,10 @@ export class AssetMapper {
   /**
    * Adds a given file to the ignored files list
    * of the given extension
-   *
-   * @param {string} file - file path relative to /public
    */
   ignoreFile (file: string): void {
-    file = path.join(options._public, file)
-    const ext = extName(file)
-    if (typeof ext !== 'string' || !(ext in this.ignoredFiles)) return
+    const ext = this.fs.extension(file) as string
+    if (!(ext in this.ignoredFiles)) return
     if (!this.ignoredFiles[ext].includes(file)) {
       this.ignoredFiles[ext].push(file)
     }
@@ -96,40 +93,31 @@ export class AssetMapper {
 
   /**
    * Decides whether a file is ignored or not
-   *
-   * @param {string} file - absolute file path
    */
   shouldIgnoreFile (file: string): boolean {
-    const ext = extName(file)
-    if (typeof ext !== 'string') return false
+    const ext = this.fs.extension(file) as string
     if (!(ext in this.ignoredFiles)) {
       debug('Unknown ignore file type', [file, ext])
       return false
     }
-
-    const check = this.ignoredFiles[ext].includes(file)
-    if (check) {
-      debug('Ignoring file', file)
-    }
-    return check
+    return this.ignoredFiles[ext].includes(file)
   }
 
   /**
    * Links a given style id to a html file
    */
-  linkStyleToFile (id: string, file: HtmlFile): void {
+  linkStyleToHtml (id: string, html: HtmlTransformer): void {
     this.sharedStyles[id] ??= []
-    if (!this.sharedStyles[id].includes(file)) {
-      this.sharedStyles[id].push(file)
-      debug('Linked style with file', [id, file.path])
+    if (!this.sharedStyles[id].includes(html)) {
+      this.sharedStyles[id].push(html)
+      debug('Linked style with file', [id, html.file.relative])
     }
   }
 
   /**
-   * Returns the list of files linked to a given style id
-   * or false if the given id doesn't exist
+   * Returns the list of html files linked to a given style id
    */
-  getStyleLinks (id: string): HtmlFile[] {
+  getStyleLinks (id: string): HtmlTransformer[] {
     if (id in this.sharedStyles) {
       return this.sharedStyles[id]
     }

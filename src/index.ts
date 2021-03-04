@@ -1,53 +1,59 @@
-import path from 'path'
-import { promises as fs } from 'fs'
-import { schema } from './options'
-import { bootstrap, debug, options, createGatsbyError } from './util'
-import purgecss from './purgecss'
-import type { GatsbyJoi, GatsbyNodeHelpers, GatsbyPluginOptions } from './gatsby'
+import { Postbuild } from './postbuild'
+import { createGatsbyError, PLUGIN } from './common'
+import type {
+  GatsbyJoi,
+  GatsbyNodeArgs,
+  GatsbyPluginOptions
+} from './gatsby'
 
 /**
- * Validates user-defined options against schema.
+ * The main plugin object that handles core plugin functionality
+ */
+const postbuild = new Postbuild()
+
+/**
+ * Validates user-defined options against schema
  * Runs before any other node API
  */
 export function pluginOptionsSchema ({ Joi }: { Joi: GatsbyJoi }): void {
-  return schema(Joi)
+  try {
+    postbuild.initTasks()
+    return postbuild.getOptionsSchemas(Joi)
+  } catch (e) {
+    throw new Error(
+      `Error occured while initializing "${PLUGIN}" plugin: ${String(e.message)}`
+    )
+  }
 }
 
 /**
  * Initializes the plugin
  */
-export function onPreBootstrap (gatsby: GatsbyNodeHelpers, pluginOptions: GatsbyPluginOptions): void {
-  bootstrap({ gatsby, pluginOptions })
+export async function onPreBootstrap (
+  gatsby: GatsbyNodeArgs,
+  pluginOptions: GatsbyPluginOptions
+): Promise<void> {
+  try {
+    await postbuild.bootstrap(gatsby, pluginOptions)
+  } catch (e) {
+    gatsby.reporter.panic(createGatsbyError(e))
+  }
 }
 
 /**
  * Runs postbuild after build is complete
  */
-export async function onPostBuild ({ getNodesByType, reporter, tracing }: GatsbyNodeHelpers): Promise<void> {
-  if (!options.enabled) {
-    return
-  }
-
-  const activity = reporter.activityTimer(options._plugin, {
+export async function onPostBuild (gatsby: GatsbyNodeArgs): Promise<void> {
+  const activity = gatsby.reporter.activityTimer(PLUGIN, {
     // @ts-expect-error
-    parentSpan: tracing.parentSpan
+    parentSpan: gatsby.tracing.parentSpan
   })
   activity.start()
-  const pages = getNodesByType('SitePage')
-  const html = []
-  for (const page of pages) {
-    const filename = path.join(options._public, page.path as string, 'index.html')
-    try {
-      await fs.access(filename)
-      html.push(filename)
-    } catch (e) {} // ignore silently
-  }
-
   try {
-    debug('Running purgecss on', html)
-    await purgecss({ html }, activity.setStatus)
+    await postbuild.run(gatsby, activity.setStatus)
+    await postbuild.shutdown(gatsby)
   } catch (e) {
-    activity.panic(createGatsbyError('Error occured while running purgecss', e))
+    activity.panic(createGatsbyError(e))
   }
   activity.end()
 }

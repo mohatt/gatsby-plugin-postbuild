@@ -1,6 +1,10 @@
 // tsconfig.json
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["src/*"]
+    },
     "target": "ESNext",
     // Search under node_modules for non-relative imports.
     "moduleResolution": "node",
