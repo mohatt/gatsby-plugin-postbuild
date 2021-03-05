@@ -156,35 +156,43 @@ export class Postbuild {
         }
       })
 
-    // Bluebird concurrency limit for Promise.map
-    const concLimit = { concurrency: this.options.concurrency }
+    // File processing options
+    const defaultConcLimit = this.options.defaultConcurrency
+    const defaultStrategy = this.options.defaultStrategy
+    const extConfig = this.options.extensions
 
     /**
      * Runs file events for a specific extension
      * parallel can be set to true to process files in parallel
      */
-    async function runExtension (ext: string, parallel = true): Promise<void> {
-      if (parallel) {
+    async function processFiles (ext: string): Promise<void> {
+      const strat = extConfig[ext]?.strategy ?? defaultStrategy
+      const conc = {
+        concurrency: extConfig[ext]?.concurrency ?? defaultConcLimit
+      }
+      debug(`Processing ${files[ext].length} files with extension "${ext}" using`, { strat, conc })
+      // Process all files at one step all at the same time
+      if (strat === 'parallel') {
         await Promise.map(files[ext], (file, i) => {
           return file.read()
             .then(() => { tick('read'); return file.process() })
             .then(() => { tick('process'); return file.write() })
             .then(() => { tick('write'); delete files[ext][i] })
-        }, concLimit)
+        }, conc)
         return
       }
-      // Process files in steps
-      await Promise.map(files[ext], file => file.read().then(() => tick('read')), concLimit)
-      await Promise.map(files[ext], file => file.process().then(() => tick('process')), concLimit)
+
+      // Process files in 3 steps with the last step being run in sequential order
+      await Promise.map(files[ext], file => file.read().then(() => tick('read')), conc)
+      await Promise.map(files[ext], file => file.process().then(() => tick('process')), conc)
       await Promise.each(files[ext], (file, i) => file.write().then(() => {
         tick('write')
         delete files[ext][i]
       }))
     }
 
-    await Promise.each(Object.keys(files), ext => {
-      return runExtension(ext, ext !== 'html')
-    })
+    // Run one extension at a time
+    await Promise.each(Object.keys(files), ext => processFiles(ext))
 
     // Write the full postbuild report
     const reports = this.fs.reporter.getReports()

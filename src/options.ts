@@ -9,10 +9,20 @@ export type IOptions = {
   report: boolean
   consoleReport: boolean
   ignore: string[]
-  concurrency: number
+  defaultConcurrency: number
+  defaultStrategy: IOptionsExtStrategy
+  extensions: {
+    [ext: string]: {
+      concurrency?: number
+      strategy?: IOptionsExtStrategy
+    } | undefined
+  }
 } & {
   [task: string]: ITaskOptions
 }
+
+// Available extension processing strategies
+export type IOptionsExtStrategy = 'steps' | 'parallel'
 
 /**
  * Default values for plugin options
@@ -23,7 +33,13 @@ export const DEFAULTS: IOptions = {
   report: true,
   consoleReport: true,
   ignore: [],
-  concurrency: 15
+  defaultStrategy: 'parallel',
+  defaultConcurrency: 15,
+  extensions: {
+    html: {
+      strategy: 'steps'
+    }
+  }
 }
 
 /**
@@ -39,7 +55,18 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
       .description('Print a summary report during build with all the changes made.'),
     ignore: joi.array().items(joi.string())
       .description('File paths to exclude from processing.'),
-    concurrency: joi.number()
+    extensions: joi.object().pattern(joi.string(), joi.object({
+      concurrency: joi.number()
+        .description('How many files to process at once.'),
+      strategy: joi.string()
+        .valid('steps', 'parallel')
+        .description('Determines how the files are processed.')
+    }))
+      .description('Changes how files of a specific extension are processed.'),
+    defaultStrategy: joi.string()
+      .valid('steps', 'parallel')
+      .description('Determines how the files are processed.'),
+    defaultConcurrency: joi.number()
       .description('How many files to process at once.')
   })
 }

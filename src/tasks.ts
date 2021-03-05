@@ -2,9 +2,8 @@ import { Promise } from 'bluebird'
 import path from 'path'
 import _ from 'lodash'
 import { Filesystem } from './filesystem'
-import { File } from './files'
 import { createDebug, PostbuildError } from './common'
-import type { FileGeneric, FileHtml } from './files'
+import type { File, FileGeneric, FileHtml } from './files'
 import type { Node as parse5Node } from 'parse5'
 import type { IOptions } from './options'
 import type { GatsbyJoi } from './gatsby'
@@ -229,7 +228,7 @@ export class Tasks {
         for (const [f] of sortedFiles) {
           files[f] = files[f].filter(([task, ext]) => {
             if (this.options[task.id].ignore.includes(f)) return false
-            if (!File.supports(ext)) ext = 'unknown'
+            ext = this.fs.extension(f) as string
             result[ext] ??= []
             if (!result[ext].includes(f)) result[ext].push(f)
             return true
