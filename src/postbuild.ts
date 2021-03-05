@@ -2,11 +2,11 @@ import { Promise } from 'bluebird'
 import path from 'path'
 import _ from 'lodash'
 import { Filesystem } from './filesystem'
-import { ITask, ITaskOptions, Tasks } from './tasks'
-import { DEFAULTS, IOptions, schema } from './options'
-import { CORE_TASKS, debug, ERROR_MAP } from './common'
+import { Tasks, ITask, ITaskOptions } from './tasks'
+import { File } from './files'
+import { DEFAULTS, schema, IOptions } from './options'
+import { CORE_TASKS, ERROR_MAP, debug } from './common'
 import type { GatsbyJoi, GatsbyNodeArgs, GatsbyPluginOptions } from './gatsby'
-import { File, FileGeneric, FileHtml } from './files'
 
 /**
  * Interface for the main postbuild object thats is passed
@@ -152,10 +152,7 @@ export class Postbuild {
       .then(filenames => {
         for (const ext in filenames) {
           status.total += filenames[ext].length
-          files[ext] = filenames[ext].map(file =>
-            ext === 'html'
-              ? new FileHtml(file, this)
-              : new FileGeneric(file, this))
+          files[ext] = filenames[ext].map(file => File.factory(ext, file, this))
         }
       })
 
@@ -169,16 +166,10 @@ export class Postbuild {
     async function runExtension (ext: string, parallel = true): Promise<void> {
       if (parallel) {
         await Promise.map(files[ext], (file, i) => {
-          return file.read().then(() => {
-            tick('read')
-            return file.process()
-          }).then(() => {
-            tick('process')
-            return file.write()
-          }).then(() => {
-            tick('write')
-            delete files[ext][i]
-          })
+          return file.read()
+            .then(() => { tick('read'); return file.process() })
+            .then(() => { tick('process'); return file.write() })
+            .then(() => { tick('write'); delete files[ext][i] })
         }, concLimit)
         return
       }

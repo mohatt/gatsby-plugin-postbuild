@@ -1,5 +1,6 @@
 import { Promise } from 'bluebird'
 import path from 'path'
+import { SUPPORTS } from './index'
 import { Postbuild } from '../postbuild'
 import { Tasks } from '../tasks'
 import { Filesystem } from '../filesystem'
@@ -40,6 +41,24 @@ export abstract class File {
     this.path = path.join(postbuild.fs.root, rel)
     this.extension = postbuild.fs.extension(rel) as string
     this.relative = rel
+  }
+
+  /**
+   * Creates a new file instance based on the given extension
+   */
+  static factory = (ext: string, rel: string, postbuild: Postbuild): File => {
+    if (!(ext in SUPPORTS)) {
+      ext = '*'
+    }
+    // @ts-expect-error
+    return new SUPPORTS[ext](rel, postbuild)
+  }
+
+  /**
+   * Checks if a file extension is supported
+   */
+  static supports = (ext: string): boolean => {
+    return ext in SUPPORTS
   }
 
   /**

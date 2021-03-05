@@ -2,10 +2,11 @@ import { Promise } from 'bluebird'
 import path from 'path'
 import _ from 'lodash'
 import { Filesystem } from './filesystem'
-import { IOptions } from './options'
+import { File } from './files'
 import { createDebug, PostbuildError } from './common'
-import type { File, FileGeneric, FileHtml } from './files'
+import type { FileGeneric, FileHtml } from './files'
 import type { Node as parse5Node } from 'parse5'
+import type { IOptions } from './options'
 import type { GatsbyJoi } from './gatsby'
 import type { IPostbuildArgs } from './postbuild'
 const debug = createDebug('tasks')
@@ -211,21 +212,26 @@ export class Tasks {
       return res
     }, {})
     const files: Tasks['fileEventsMap'] = {}
-    const extFiles: { [ext: string]: string[] } = {}
+    const filesOrder: { [file: string]: number } = {}
+    const result: { [ext: string]: string[] } = {}
     return Promise
-      .map(Object.keys(extensions), ext =>
+      .map(Object.keys(extensions), (ext, i) =>
         this.fs.glob(ext.indexOf('/') === 0 ? ext.slice(1) : `**/*.${ext}`, { nodir: true })
           .then(matchs => matchs.forEach(f => {
             if (this.options.ignore.includes(f)) return
             files[f] = (files[f] ||= []).concat(extensions[ext])
+            filesOrder[f] = Math.min(i, filesOrder[f] ||= Infinity)
           })))
       .then(() => {
-        for (const f in files) {
+        const sortedFiles = Object.entries(filesOrder).sort(([,a], [,b]) => {
+          return a - b
+        })
+        for (const [f] of sortedFiles) {
           files[f] = files[f].filter(([task, ext]) => {
             if (this.options[task.id].ignore.includes(f)) return false
-            if (ext.indexOf('/') === 0) ext = 'unknown'
-            extFiles[ext] ??= []
-            if (!extFiles[ext].includes(f)) extFiles[ext].push(f)
+            if (!File.supports(ext)) ext = 'unknown'
+            result[ext] ??= []
+            if (!result[ext].includes(f)) result[ext].push(f)
             return true
           })
           if (files[f].length === 0) {
@@ -234,7 +240,7 @@ export class Tasks {
         }
         this.fileEventsMap = files
         debug('Updated file-events map', this.fileEventsMap)
-        return extFiles
+        return result
       })
   }
 
@@ -282,10 +288,8 @@ export class Tasks {
     const file = payload?.file as File | undefined
     if (file !== undefined) {
       const fileEvents = this.fileEventsMap[file.relative] ?? []
-      for (const [task, ext] of fileEvents) {
-        if ((type === ext || (type === 'glob' && ext.indexOf('/') === 0)) && event in task.api.events[ext]) {
-          events.push([task, ext])
-        }
+      for (const fe of fileEvents) {
+        if (event in fe[0].api.events[fe[1]]) events.push(fe)
       }
     } else {
       for (const task of this.tasks) {
