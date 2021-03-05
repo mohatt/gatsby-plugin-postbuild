@@ -220,7 +220,7 @@ export class Tasks {
           .then(matchs => matchs.forEach(f => {
             if (this.options.ignore.includes(f)) return
             files[f] = (files[f] ||= []).concat(extensions[ext])
-            filesOrder[f] = Math.min(i, filesOrder[f] ||= Infinity)
+            filesOrder[f] = Math.max(i, filesOrder[f] ?? 0)
           })))
       .then(() => {
         const sortedFiles = Object.entries(filesOrder).sort(([,a], [,b]) => {
