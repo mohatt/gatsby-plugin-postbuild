@@ -3,20 +3,20 @@ import path from 'path'
 import { SUPPORTS } from './index'
 import { Postbuild } from '../postbuild'
 import { Tasks } from '../tasks'
-import { Filesystem } from '../filesystem'
+import { Filesystem, IFilesystemReportMeta } from '../filesystem'
 import { GatsbyNodeArgs } from '../gatsby'
 
 /**
  * Base class for all file types
  */
-export abstract class File {
+export abstract class File<F extends File = File<any>> {
   /**
    * Absolute path of the file
    */
   path: string
 
   /**
-   * Path of the file relative to `public/`
+   * Path of the file relative to `/public`
    */
   relative: string
 
@@ -29,17 +29,27 @@ export abstract class File {
    * Meta fields to be displayed in
    * the file write report
    */
-  reportMeta: {
-    [p: string]: string
-  } = {}
+  reportMeta: IFilesystemReportMeta = {}
 
-  protected readonly postbuild: Postbuild
-  protected readonly tasks: Tasks
+  protected readonly fs: Filesystem
+  protected readonly emit: Tasks['run']
+  protected readonly payload: {
+    file: F
+    filesystem: Filesystem
+    gatsby: GatsbyNodeArgs
+  }
+
   constructor (rel: string, postbuild: Postbuild) {
-    this.postbuild = postbuild
-    this.tasks = postbuild.tasks
+    this.fs = postbuild.fs
+    this.emit = postbuild.tasks.run.bind(postbuild.tasks)
+    this.payload = {
+      file: this as unknown as F,
+      filesystem: this.fs,
+      gatsby: postbuild.gatsby as GatsbyNodeArgs
+    }
+
     this.path = path.join(postbuild.fs.root, rel)
-    this.extension = postbuild.fs.extension(rel) as string
+    this.extension = this.fs.extension(rel) as string
     this.relative = rel
   }
 
@@ -62,32 +72,17 @@ export abstract class File {
   }
 
   /**
-   * Returns an object to be passed to event callbacks
-   */
-  getEventPayload<F extends File> (): {
-    file: F
-    filesystem: Filesystem
-    gatsby: GatsbyNodeArgs
-  } {
-    return {
-      file: this as unknown as F,
-      filesystem: this.postbuild.fs,
-      gatsby: this.postbuild.gatsby as GatsbyNodeArgs
-    }
-  }
-
-  /**
    * Wraps fs.read by adding file path
    */
   protected doRead (): Promise<string> {
-    return this.postbuild.fs.read(this.relative)
+    return this.fs.read(this.relative)
   }
 
   /**
    * Wraps fs.update by adding file path
    */
   protected doUpdate (data: string): Promise<void> {
-    return this.postbuild.fs.update(this.relative, data, this.reportMeta)
+    return this.fs.update(this.relative, data, this.reportMeta)
   }
 
   /**

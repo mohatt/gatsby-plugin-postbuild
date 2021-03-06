@@ -13,7 +13,7 @@ export type IFileHtmlNodeWalker = (node: parse5.Node) => Promise<void>|void
 /**
  * Interface for html files
  */
-export class FileHtml extends File {
+export class FileHtml extends File<FileHtml> {
   /**
    * Parse5 tree adaptor
    */
@@ -29,13 +29,13 @@ export class FileHtml extends File {
    */
   read (): Promise<void> {
     return this.doRead()
-      .then(html => this.tasks.run('html', 'parse', {
-        ...this.getEventPayload(),
+      .then(html => this.emit('html', 'parse', {
+        ...this.payload,
         html
       }, 'html'))
       .then(html => {
         this.tree = parse5.parse(html)
-        return this.tasks.run('html', 'tree', this.getEventPayload())
+        return this.emit('html', 'tree', this.payload)
       }) as Promise<void>
   }
 
@@ -44,8 +44,8 @@ export class FileHtml extends File {
    */
   process (): Promise<void> {
     return this.walk(node => {
-      return this.tasks.run('html', 'node', {
-        ...this.getEventPayload(),
+      return this.emit('html', 'node', {
+        ...this.payload,
         node
       }) as unknown as Promise<void>
     })
@@ -55,12 +55,12 @@ export class FileHtml extends File {
    * Serializes the tree back to html and writes the file
    */
   write (): Promise<void> {
-    return this.tasks.run('html', 'serialize', this.getEventPayload())
+    return this.emit('html', 'serialize', this.payload)
       .then(() => {
         const html = parse5.serialize(this.tree)
-        return this.tasks.run('html', 'write', {
-          ...this.getEventPayload(),
-          html,
+        return this.emit('html', 'write', {
+          ...this.payload,
+          html
         }, 'html')
       })
       .then(html => this.doUpdate(html))
@@ -93,7 +93,7 @@ export class FileHtml extends File {
     if (attr === undefined) return false
     let href = attr.value.trim()
     if (href === '' || /^\w+:\/\//.test(href)) return false
-    const prefix = this.postbuild.fs.pathPrefix
+    const prefix = this.fs.pathPrefix
     if (prefix !== '') {
       if (href.indexOf(prefix) === 0) {
         href = href.replace(prefix, '')
@@ -104,9 +104,9 @@ export class FileHtml extends File {
     }
 
     const absPath = path.isAbsolute(href)
-      ? path.join(this.postbuild.fs.root, href)
+      ? path.join(this.fs.root, href)
       : path.resolve(path.dirname(this.path), href)
-    const relPath = path.relative(this.postbuild.fs.root, absPath)
+    const relPath = path.relative(this.fs.root, absPath)
     if (strict && relPath.indexOf('..') === 0) return false
     return relative ? relPath : absPath
   }
