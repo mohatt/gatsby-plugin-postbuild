@@ -6,7 +6,7 @@ dependencies:
   glob: 7.1.6
   lodash: 4.17.20
   parse5: 6.0.1
-  purgecss: 4.0.0
+  purgecss: 4.0.2
 devDependencies:
   '@babel/cli': 7.13.0_@babel+core@7.13.8
   '@babel/core': 7.13.8
@@ -13559,7 +13559,7 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-l1jNAspIBSFqbT+y+5FosojNpVpF94nlI+wDUpqP9enwOTfHx9f0gh5nB96vl+6yTpsJsypeNrwfzPrKuHB41A==
-  /purgecss/4.0.0:
+  /purgecss/4.0.2:
     dependencies:
       commander: 6.2.1
       glob: 7.1.6
@@ -13568,7 +13568,7 @@ packages:
     dev: false
     hasBin: true
     resolution:
-      integrity: sha512-j/y6OtNpEiggw/ipCJUOMNLgLpeAv9L8q+SqzEdDzyVEZOfdWjg8yvgOxhBflNyYgJ8SZ+tTwPxrHT9vQUpEPw==
+      integrity: sha512-6J1zOEAZJX6VbfcaJHgdQf4uPhxVXvHz7dGgWYXLOI9q7QFZ5feh8NZ2+G3ysii/Sr8OyUe5yhQ5Z/xZ5gIRnQ==
   /q/1.5.1:
     dev: true
     engines:
