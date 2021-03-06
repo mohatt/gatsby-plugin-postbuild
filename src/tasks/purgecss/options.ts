@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import type { ITaskApiOptions, ITaskOptions } from '~/tasks'
 import { defaultOptions as purgecssDefaults } from 'purgecss'
+type PurgecssDefaults = typeof purgecssDefaults
 
 /**
  * Extracts union type from array values
@@ -30,12 +31,12 @@ export type IPurgecssOptions = ITaskOptions & {
     css: string[]
     js: string[]
   }
-} & Pick<typeof purgecssDefaults, ArrayUnion<typeof purgecssImportedOptions>>
+} & Pick<PurgecssDefaults, ArrayUnion<typeof purgecssImportedOptions>>
 
 /**
  * All options accepted by purgecss lib
  */
-export type PurgecssLibOptions = Partial<typeof purgecssDefaults>
+export type PurgecssLibOptions = Omit<Partial<PurgecssDefaults>, 'content'|'css'> & Pick<PurgecssDefaults, 'content'|'css'>
 
 /**
  * Options API exports

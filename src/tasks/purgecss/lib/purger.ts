@@ -54,6 +54,8 @@ export class Purger {
     this.purgeCSS = new PurgeCSS()
     this.purgeOptions = {
       ..._.pick(options, purgecssImportedOptions),
+      content: [],
+      css: [],
       rejected: true
     }
     if (options.allowSymbols) {
