@@ -1,5 +1,4 @@
 import { Promise } from 'bluebird'
-import path from 'path'
 import _ from 'lodash'
 import { Filesystem } from './filesystem'
 import { createDebug, PostbuildError } from './common'
@@ -131,9 +130,11 @@ export class Tasks {
   tasks: Array<ITask<any>> = []
 
   /**
-   * Map of filenames and the task events that defined them
+   * Map of filenames and task events that need them
    */
-  fileEventsMap: { [file: string]: Array<[ITask<any>, string]> } = {}
+  fileEvents: {
+    [file: string]: Array<[ITask<any>, string]>
+  } = {}
 
   fs: Filesystem
   options: IOptions
@@ -154,7 +155,7 @@ export class Tasks {
 
     if (typeof exports !== 'object') {
       main = exports === undefined
-        ? path.join(__dirname, 'tasks', id, 'index.js')
+        ? `./tasks/${id}`
         : exports
       try {
         exports = require(main) as ITaskApi<O>
@@ -203,14 +204,14 @@ export class Tasks {
    * Returns a map of file extensions with file names to be processed
    */
   getFilenames (): Promise<{ [ext: string]: string[] }> {
-    const extensions = this.tasks.reduce((res: Tasks['fileEventsMap'], task) => {
+    const extensions = this.tasks.reduce((res: Tasks['fileEvents'], task) => {
       for (const ext in task.api.events) {
         if (ext === 'on') continue
         (res[ext] ||= []).push([task, ext])
       }
       return res
     }, {})
-    const files: Tasks['fileEventsMap'] = {}
+    const files: Tasks['fileEvents'] = {}
     const filesOrder: { [file: string]: number } = {}
     const result: { [ext: string]: string[] } = {}
     return Promise
@@ -237,8 +238,8 @@ export class Tasks {
             delete files[f]
           }
         }
-        this.fileEventsMap = files
-        debug('Updated file-events map', this.fileEventsMap)
+        this.fileEvents = files
+        debug('Updated file-events map', this.fileEvents)
         return result
       })
   }
@@ -286,7 +287,7 @@ export class Tasks {
     // @ts-expect-error
     const file = payload?.file as File | undefined
     if (file !== undefined) {
-      const fileEvents = this.fileEventsMap[file.relative] ?? []
+      const fileEvents = this.fileEvents[file.relative] ?? []
       for (const fe of fileEvents) {
         if (event in fe[0].api.events[fe[1]]) events.push(fe)
       }

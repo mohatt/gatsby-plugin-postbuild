@@ -71,7 +71,7 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
     }))
       .description('Set of events to added as a custom postbuild task.'),
     extensions: joi.object().pattern(joi.string(), joi.object({
-      concurrency: joi.number()
+      concurrency: joi.number().min(1)
         .description('How many files to process at once.'),
       strategy: joi.string()
         .valid('steps', 'parallel')
@@ -81,7 +81,7 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
     defaultStrategy: joi.string()
       .valid('steps', 'parallel')
       .description('Determines how the files are processed.'),
-    defaultConcurrency: joi.number()
+    defaultConcurrency: joi.number().min(1)
       .description('How many files to process at once.')
   })
 }
