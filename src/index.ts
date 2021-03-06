@@ -1,5 +1,5 @@
 import Postbuild from './postbuild'
-import { createGatsbyError, PLUGIN } from './common'
+import { createGatsbyError, CORE_TASKS, PLUGIN } from './common'
 import type {
   GatsbyJoi,
   GatsbyNodeArgs,
@@ -17,7 +17,7 @@ const postbuild = new Postbuild()
  */
 export function pluginOptionsSchema ({ Joi }: { Joi: GatsbyJoi }): void {
   try {
-    postbuild.initTasks()
+    postbuild.init(CORE_TASKS)
     return postbuild.getOptionsSchemas(Joi)
   } catch (e) {
     throw new Error(

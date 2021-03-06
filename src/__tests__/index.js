@@ -1,15 +1,11 @@
 import { testPluginOptionsSchema } from 'gatsby-plugin-utils'
-import {
-  pluginOptionsSchema,
-  onPreBootstrap,
-  onPostBuild
-} from '../'
-import Postbuild from '../postbuild'
-import { schema } from '../options'
+import { pluginOptionsSchema, onPreBootstrap, onPostBuild } from '~/index'
+import Postbuild from '~/postbuild'
+import { schema } from '~/options'
+import { PostbuildError } from '~/common'
 import optionsFixtures from '#/__fixtures__/options'
-import { PostbuildError } from '../common'
 
-jest.mock('../postbuild')
+jest.mock('~/postbuild')
 const gatsbyActivity = {
   start: jest.fn(),
   setStatus: jest.fn(),
@@ -48,18 +44,15 @@ describe('pluginOptionsSchema', () => {
 
 describe('onPreBootstrap', () => {
   const postbuild = Postbuild.mock.instances[0]
-  test('runs correctly', () => {
+  test('runs correctly', async () => {
     const args = [gatsby, {}]
-    expect(() => onPreBootstrap(...args)).not.toThrow()
+    await expect(onPreBootstrap(...args)).resolves.toBeUndefined()
     postbuild.bootstrap = () => {
       throw new Error('foo')
     }
     onPreBootstrap(...args)
     postbuild.bootstrap = () => {
-      throw new PostbuildError(
-        'something wrong',
-        new TypeError('foo')
-      )
+      throw new PostbuildError('something wrong', new TypeError('foo'))
     }
     onPreBootstrap(...args)
     expect(gatsby.reporter.panic.mock.calls).toMatchSnapshot()
@@ -75,10 +68,7 @@ describe('onPostBuild', () => {
     }
     await onPostBuild(gatsby)
     postbuild.run = () => {
-      throw new PostbuildError(
-        'something wrong',
-        new TypeError('foo')
-      )
+      throw new PostbuildError('something wrong', new TypeError('foo'))
     }
     await onPostBuild(gatsby)
     expect(gatsby.reporter.activityTimer.mock.calls).toMatchSnapshot()

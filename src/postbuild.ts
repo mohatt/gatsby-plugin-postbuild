@@ -5,7 +5,7 @@ import { Filesystem } from './filesystem'
 import { Tasks, ITask, ITaskOptions } from './tasks'
 import { File } from './files'
 import { DEFAULTS, schema, IOptions } from './options'
-import { CORE_TASKS, ERROR_MAP, debug } from './common'
+import { ERROR_MAP, debug } from './common'
 import type { GatsbyJoi, GatsbyNodeArgs, GatsbyPluginOptions } from './gatsby'
 
 /**
@@ -76,8 +76,8 @@ export default class Postbuild {
   /**
    * Registers core tasks
    */
-  initTasks (): void {
-    CORE_TASKS.forEach(task => this.tasks.register(task))
+  init (tasks: string[]): void {
+    tasks.forEach(task => this.tasks.register(task))
   }
 
   /**
