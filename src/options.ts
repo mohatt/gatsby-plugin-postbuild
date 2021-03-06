@@ -36,7 +36,7 @@ export const DEFAULTS: IOptions = {
   ignore: [],
   events: {},
   defaultStrategy: 'parallel',
-  defaultConcurrency: 15,
+  defaultConcurrency: 10,
   extensions: {
     html: {
       strategy: 'steps'
