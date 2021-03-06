@@ -3,7 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": ["src/*"],
+      "#/*": ["test/*"],
     },
     "target": "ESNext",
     // Search under node_modules for non-relative imports.

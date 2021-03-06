@@ -13,7 +13,8 @@
       "module-resolver",
       {
         "alias": {
-          "~": "./src"
+          "~": "./src",
+          "#": "./test"
         }
       }
     ],

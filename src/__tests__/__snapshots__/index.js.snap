@@ -1,0 +1,146 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`onPostBuild runs correctly 1`] = `
+Array [
+  Array [
+    "gatsby-plugin-postbuild",
+    Object {
+      "parentSpan": "foo",
+    },
+  ],
+  Array [
+    "gatsby-plugin-postbuild",
+    Object {
+      "parentSpan": "foo",
+    },
+  ],
+  Array [
+    "gatsby-plugin-postbuild",
+    Object {
+      "parentSpan": "foo",
+    },
+  ],
+]
+`;
+
+exports[`onPostBuild runs correctly 2`] = `
+Array [
+  Array [],
+  Array [],
+  Array [],
+]
+`;
+
+exports[`onPostBuild runs correctly 3`] = `
+Array [
+  Array [
+    Object {
+      "context": [Error: foo],
+      "error": [Error: foo],
+      "id": "gatsby-plugin-postbuild_10000",
+    },
+  ],
+  Array [
+    Object {
+      "context": Object {
+        "message": "something wrong",
+      },
+      "error": [TypeError: foo],
+      "id": "gatsby-plugin-postbuild_10000",
+    },
+  ],
+]
+`;
+
+exports[`onPostBuild runs correctly 4`] = `
+Array [
+  Array [],
+  Array [],
+  Array [],
+]
+`;
+
+exports[`onPreBootstrap runs correctly 1`] = `
+Array [
+  Array [
+    Object {
+      "context": [Error: foo],
+      "error": [Error: foo],
+      "id": "gatsby-plugin-postbuild_10000",
+    },
+  ],
+  Array [
+    Object {
+      "context": Object {
+        "message": "something wrong",
+      },
+      "error": [TypeError: foo],
+      "id": "gatsby-plugin-postbuild_10000",
+    },
+  ],
+]
+`;
+
+exports[`pluginOptionsSchema runs correctly 1`] = `"Error occured while initializing \\"gatsby-plugin-postbuild\\" plugin: foo"`;
+
+exports[`pluginOptionsSchema validates user options against schema should invalidate empty options 1`] = `false`;
+
+exports[`pluginOptionsSchema validates user options against schema should invalidate empty options 2`] = `
+Array [
+  "\\"ignore[0]\\" is not allowed to be empty",
+  "\\"extensions.txt.concurrency\\" must be greater than or equal to 1",
+  "\\"extensions.txt.strategy\\" must be one of [steps, parallel]",
+  "\\"extensions.txt.strategy\\" is not allowed to be empty",
+  "\\"defaultStrategy\\" must be one of [steps, parallel]",
+  "\\"defaultStrategy\\" is not allowed to be empty",
+  "\\"defaultConcurrency\\" must be greater than or equal to 1",
+]
+`;
+
+exports[`pluginOptionsSchema validates user options against schema should invalidate invalid options 1`] = `false`;
+
+exports[`pluginOptionsSchema validates user options against schema should invalidate invalid options 2`] = `
+Array [
+  "\\"events.on.load\\" is not allowed",
+  "\\"events.html.content\\" is not allowed",
+  "\\"events.txt.parse\\" is not allowed",
+  "\\"extensions.txt.concurrency\\" must be greater than or equal to 1",
+  "\\"extensions.txt.strategy\\" must be one of [steps, parallel]",
+  "\\"defaultStrategy\\" must be one of [steps, parallel]",
+  "\\"defaultConcurrency\\" must be greater than or equal to 1",
+]
+`;
+
+exports[`pluginOptionsSchema validates user options against schema should invalidate options with incorrect data types 1`] = `false`;
+
+exports[`pluginOptionsSchema validates user options against schema should invalidate options with incorrect data types 2`] = `
+Array [
+  "\\"enabled\\" must be a boolean",
+  "\\"report\\" must be a boolean",
+  "\\"ignore\\" must be an array",
+  "\\"events.on.bootstrap\\" must be of type function",
+  "\\"events.html.parse\\" must be of type function",
+  "\\"events.foo\\" must be of type object",
+  "\\"events.txt.content\\" must be of type function",
+  "\\"extensions.foo\\" must be of type object",
+  "\\"extensions.txt.concurrency\\" must be a number",
+  "\\"extensions.txt.strategy\\" must be one of [steps, parallel]",
+  "\\"extensions.txt.strategy\\" must be a string",
+  "\\"defaultStrategy\\" must be one of [steps, parallel]",
+  "\\"defaultStrategy\\" must be a string",
+  "\\"defaultConcurrency\\" must be a number",
+]
+`;
+
+exports[`pluginOptionsSchema validates user options against schema should invalidate unknown options 1`] = `false`;
+
+exports[`pluginOptionsSchema validates user options against schema should invalidate unknown options 2`] = `
+Array [
+  "\\"unknown\\" is not allowed",
+  "\\"foo\\" is not allowed",
+]
+`;
+
+exports[`pluginOptionsSchema validates user options against schema should validate correct options 1`] = `true`;
+
+exports[`pluginOptionsSchema validates user options against schema should validate correct options 2`] = `Array []`;

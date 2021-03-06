@@ -1,4 +1,4 @@
-import { Postbuild } from './postbuild'
+import Postbuild from './postbuild'
 import { createGatsbyError, PLUGIN } from './common'
 import type {
   GatsbyJoi,

@@ -1,10 +1,10 @@
 import { Promise } from 'bluebird'
 import path from 'path'
 import { SUPPORTS } from './index'
-import { Postbuild } from '../postbuild'
-import { Tasks } from '../tasks'
-import { Filesystem, IFilesystemReportMeta } from '../filesystem'
-import { GatsbyNodeArgs } from '../gatsby'
+import type Postbuild from '../postbuild'
+import type { Tasks } from '../tasks'
+import type { Filesystem, IFilesystemReportMeta } from '../filesystem'
+import type { GatsbyNodeArgs } from '../gatsby'
 
 /**
  * Base class for all file types

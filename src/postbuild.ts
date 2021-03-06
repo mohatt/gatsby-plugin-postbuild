@@ -52,7 +52,7 @@ export type IPostbuildArgs<F extends File | undefined, O extends ITaskOptions, P
 /**
  * Handles core plugin functionality
  */
-export class Postbuild {
+export default class Postbuild {
   /**
    * Plugin options
    */

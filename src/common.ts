@@ -74,11 +74,9 @@ export class PostbuildError extends Error {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     let instance: Error|PostbuildError = this
     const errors: Error[] = []
-    while ('childErr' in instance) {
-      if (instance.childErr !== undefined) {
-        errors.push(instance.childErr)
-        instance = instance.childErr
-      }
+    while ('childErr' in instance && instance.childErr !== undefined) {
+      errors.push(instance.childErr)
+      instance = instance.childErr
     }
     return errors
   }
