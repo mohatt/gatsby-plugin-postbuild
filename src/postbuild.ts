@@ -105,6 +105,11 @@ export class Postbuild {
       gatsby.reporter.setErrorMap(ERROR_MAP)
     }
 
+    // Register user task
+    this.tasks.register('user', {
+      events: this.options.events
+    })
+
     // Loads tasks options
     this.tasks.setOptions()
 
@@ -170,7 +175,7 @@ export class Postbuild {
       const conc = {
         concurrency: extConfig[ext]?.concurrency ?? defaultConcLimit
       }
-      debug(`Processing ${files[ext].length} files with extension "${ext}" using`, { strat, conc })
+      debug(`Processing ${files[ext].length} "${ext}" files with`, { strat, conc })
       // Process all files at one step all at the same time
       if (strat === 'parallel') {
         await Promise.map(files[ext], (file, i) => {

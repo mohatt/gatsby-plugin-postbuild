@@ -1,5 +1,5 @@
 import { GatsbyJoi } from './gatsby'
-import { ITaskOptions } from './tasks'
+import { ITaskApiEvents, ITaskOptions } from './tasks'
 
 /**
  * Plugin options interface
@@ -9,6 +9,7 @@ export type IOptions = {
   report: boolean
   consoleReport: boolean
   ignore: string[]
+  events: ITaskApiEvents<any>
   defaultConcurrency: number
   defaultStrategy: IOptionsExtStrategy
   extensions: {
@@ -33,6 +34,7 @@ export const DEFAULTS: IOptions = {
   report: true,
   consoleReport: true,
   ignore: [],
+  events: {},
   defaultStrategy: 'parallel',
   defaultConcurrency: 15,
   extensions: {
@@ -55,6 +57,19 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
       .description('Print a summary report during build with all the changes made.'),
     ignore: joi.array().items(joi.string())
       .description('File paths to exclude from processing.'),
+    events: joi.object({
+      on: joi.object().pattern(
+        joi.string()
+          .valid('bootstrap', 'postbuild', 'shutdown'),
+        joi.function()),
+      html: joi.object().pattern(
+        joi.string()
+          .valid('parse', 'tree', 'node', 'serialize', 'write'),
+        joi.function())
+    }).pattern(joi.string(), joi.object({
+      content: joi.function()
+    }))
+      .description('Set of events to added as a custom postbuild task.'),
     extensions: joi.object().pattern(joi.string(), joi.object({
       concurrency: joi.number()
         .description('How many files to process at once.'),
