@@ -29,7 +29,7 @@ export type IPostbuildArgs<F extends File | undefined, O extends ITaskOptions, P
   file: F
 
   /**
-   * Current event metadata
+   * Current event being excuted
    */
   event: {
     type: string
@@ -87,7 +87,7 @@ export default class Postbuild {
   }
 
   /**
-   * Loads user-defined options, environment options and task options
+   * Loads user-defined options, environment constants and task options
    */
   async bootstrap (gatsby: GatsbyNodeArgs, pluginOptions: GatsbyPluginOptions): Promise<void> {
     // Merge user-defined options with defaults
@@ -109,7 +109,7 @@ export default class Postbuild {
       events: this.options.events
     })
 
-    // Loads tasks options
+    // Load tasks options
     this.tasks.setOptions()
 
     // Run on.bootstrap events

@@ -7,12 +7,13 @@ import type {
 } from './gatsby'
 
 /**
- * The main plugin object that handles core plugin functionality
+ * The main plugin object that handles core functionalities
  */
 const postbuild = new Postbuild()
 
 /**
- * Validates user-defined options against schema
+ * Initializes Postbuild and validates user-defined
+ * options against the final options schema
  * Runs before any other node API
  */
 export function pluginOptionsSchema ({ Joi }: { Joi: GatsbyJoi }): void {
@@ -27,7 +28,7 @@ export function pluginOptionsSchema ({ Joi }: { Joi: GatsbyJoi }): void {
 }
 
 /**
- * Initializes the plugin
+ * Triggers Postbuild initial setup and loads user-defined options
  */
 export async function onPreBootstrap (
   gatsby: GatsbyNodeArgs,
@@ -41,7 +42,7 @@ export async function onPreBootstrap (
 }
 
 /**
- * Runs postbuild after build is complete
+ * Runs Postbuild on the generated files under `/public`
  */
 export async function onPostBuild (gatsby: GatsbyNodeArgs): Promise<void> {
   const activity = gatsby.reporter.activityTimer(PLUGIN, {
