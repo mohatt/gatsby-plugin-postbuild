@@ -3,7 +3,7 @@ export default [
     title: 'should invalidate unknown options',
     options: {
       unknown: 5,
-      foo: {
+      invalid: {
         bar: true
       }
     }
@@ -82,6 +82,26 @@ export default [
         on: { bootstrap: () => 0 },
         html: { node: () => 0 },
         txt: { content: () => 0 }
+      }
+    }
+  },
+  {
+    title: 'should invalidate invalid tasks options',
+    options: {
+      foo: {
+        bar: true
+      },
+      lorem: 'invalid'
+    }
+  },
+  {
+    title: 'should validate correct tasks options',
+    options: {
+      foo: {
+        bar: 'valid'
+      },
+      lorem: {
+        ipsum: true
       }
     }
   }
