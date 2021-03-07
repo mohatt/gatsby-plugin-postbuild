@@ -1,7 +1,6 @@
 import { Promise } from 'bluebird'
 import path from 'path'
 import { SUPPORTS } from './index'
-import type Postbuild from '../postbuild'
 import type { Tasks } from '../tasks'
 import type { Filesystem, IFilesystemReportMeta } from '../filesystem'
 import type { GatsbyNodeArgs } from '../gatsby'
@@ -39,16 +38,16 @@ export abstract class File<F extends File = File<any>> {
     gatsby: GatsbyNodeArgs
   }
 
-  constructor (rel: string, postbuild: Postbuild) {
-    this.fs = postbuild.fs
-    this.emit = postbuild.tasks.run.bind(postbuild.tasks)
+  constructor (rel: string, fs: Filesystem, tasks: Tasks, gatsby: GatsbyNodeArgs) {
+    this.fs = fs
+    this.emit = tasks.run.bind(tasks)
     this.payload = {
       file: this as unknown as F,
       filesystem: this.fs,
-      gatsby: postbuild.gatsby as GatsbyNodeArgs
+      gatsby
     }
 
-    this.path = path.join(postbuild.fs.root, rel)
+    this.path = path.join(this.fs.root, rel)
     this.extension = this.fs.extension(rel) as string
     this.relative = rel
   }
@@ -56,12 +55,12 @@ export abstract class File<F extends File = File<any>> {
   /**
    * Creates a new file instance based on the given extension
    */
-  static factory = (ext: string, rel: string, postbuild: Postbuild): File => {
+  static factory = (ext: string, rel: string, fs: Filesystem, tasks: Tasks, gatsby: GatsbyNodeArgs): File => {
     if (!(ext in SUPPORTS)) {
       ext = '*'
     }
     // @ts-expect-error
-    return new SUPPORTS[ext](rel, postbuild)
+    return new SUPPORTS[ext](rel, fs, tasks, gatsby)
   }
 
   /**

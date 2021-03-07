@@ -63,7 +63,6 @@ export default class Postbuild {
    */
   fs: Filesystem
   tasks: Tasks
-  gatsby?: GatsbyNodeArgs
 
   /**
    * Loads dependencies and sets default options
@@ -127,8 +126,6 @@ export default class Postbuild {
    */
   async run (gatsby: GatsbyNodeArgs, setStatus: (s: string) => void): Promise<void> {
     if (!this.options.enabled) return
-    // Set gatsby object so it can be used by file handlers
-    this.gatsby = gatsby
     // Run on.postbuild events
     await this.tasks.run('on', 'postbuild', {
       file: undefined,
@@ -157,7 +154,7 @@ export default class Postbuild {
       .then(filenames => {
         for (const ext in filenames) {
           status.total += filenames[ext].length
-          files[ext] = filenames[ext].map(file => File.factory(ext, file, this))
+          files[ext] = filenames[ext].map(file => File.factory(ext, file, this.fs, this.tasks, gatsby))
         }
       })
 
