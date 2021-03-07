@@ -193,3 +193,15 @@ describe('run', () => {
     })
   }
 })
+
+describe('shutdown', () => {
+  const tasks = { run: jest.fn() }
+  const filesystem = {}
+  const gatsby = {}
+
+  test('title', async () => {
+    const postbuild = new Postbuild(tasks, filesystem)
+    await expect(postbuild.shutdown(gatsby)).resolves.toBe(undefined)
+    expect(tasks.run.mock.calls[0]).toMatchObject(['on', 'shutdown', { filesystem, gatsby }])
+  })
+})
