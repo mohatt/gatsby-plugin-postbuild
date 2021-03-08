@@ -10,7 +10,7 @@ import type { IPurgecssOptions } from './options'
  * Holds refrences to required dependencies
  */
 class DIContainer {
-  files: {
+  transformers: {
     [file: string]: HtmlTransformer
   } = {}
 
@@ -25,27 +25,23 @@ class DIContainer {
     this.purger = purger ?? new Purger(this.options, this.fs, this.mapper)
   }
 
-  createFile (file: FileHtml): void {
-    this.files[file.relative] = new HtmlTransformer(
-      file,
-      this.options,
-      this.fs,
-      this.mapper,
-      this.purger
+  createTrans (file: FileHtml): void {
+    this.transformers[file.relative] = new HtmlTransformer(
+      file, this.options, this.fs, this.mapper, this.purger
     )
   }
 
-  getFile (file: FileHtml): HtmlTransformer {
-    return this.files[file.relative]
+  getTrans (file: FileHtml): HtmlTransformer {
+    return this.transformers[file.relative]
   }
 
-  deleteFile (file: FileHtml): void {
-    delete this.files[file.relative]
+  deleteTrans (file: FileHtml): void {
+    delete this.transformers[file.relative]
   }
 }
 
 let di: DIContainer
-
+// @ts-expect-error
 export const events: ITaskApiEvents<IPurgecssOptions> = {
   on: {
     postbuild: ({ filesystem, options }) => {
@@ -57,15 +53,15 @@ export const events: ITaskApiEvents<IPurgecssOptions> = {
       config.strategy = 'sequential'
     },
     tree: ({ file }) => {
-      di.createFile(file)
-      return di.getFile(file).load()
+      di.createTrans(file)
+      return di.getTrans(file).load()
     },
     node: ({ node, file }) => {
-      di.getFile(file).processNode(node)
+      di.getTrans(file).processNode(node)
     },
     serialize: ({ file }) => {
-      return di.getFile(file).purgeStyles()
-        .then(() => di.deleteFile(file))
+      return di.getTrans(file).purgeStyles()
+        .then(() => di.deleteTrans(file))
     }
   }
 }

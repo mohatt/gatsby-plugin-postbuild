@@ -59,6 +59,13 @@ export default class Postbuild {
   options: IOptions = DEFAULTS
 
   /**
+   * Files being processed by the plugin
+   */
+  files: {
+    [path: string]: File[]
+  } = {}
+
+  /**
    * Dependencies
    */
   fs: Filesystem
@@ -148,44 +155,17 @@ export default class Postbuild {
       )
     }
 
-    const files: { [p: string]: File[] } = {}
+    // Get filenames then create a File instance for every file based on extension
     await this.tasks.getFilenames()
       .then(filenames => {
         for (const ext in filenames) {
           status.total += filenames[ext].length
-          files[ext] = filenames[ext].map(file => File.factory(ext, file, this.fs, this.tasks, gatsby))
+          this.files[ext] = filenames[ext].map(file => File.factory(ext, file, this.fs, this.tasks, gatsby))
         }
       })
 
-    /**
-     * Processes files of a given extension using the given processing options
-     */
-    async function processFiles (ext: string, options: IOptionProcessing): Promise<void> {
-      debug(`Processing ${files[ext].length} files with extension "${ext}" using`, options)
-      const strat = options.strategy
-      const conc = { concurrency: options.concurrency }
-      // Process all files at one step all at the same time
-      if (strat === 'parallel') {
-        await Promise.map(files[ext], (file, i) => {
-          return file.read()
-            .then(() => { tick('read'); return file.process() })
-            .then(() => { tick('process'); return file.write() })
-            .then(() => { tick('write'); delete files[ext][i] })
-        }, conc)
-        return
-      }
-
-      // Process files in 3 steps with the last step being run in sequential order
-      await Promise.map(files[ext], file => file.read().then(() => tick('read')), conc)
-      await Promise.map(files[ext], file => file.process().then(() => tick('process')), conc)
-      await Promise.each(files[ext], (file, i) => file.write().then(() => {
-        tick('write')
-        delete files[ext][i]
-      }))
-    }
-
     // Run one extension at a time
-    await Promise.each(Object.keys(files), ext => {
+    await Promise.each(Object.keys(this.files), ext => {
       // Extension processing options
       const config = { ...this.options.processing }
       return this.tasks.run(ext as 'unknown', 'configure', {
@@ -193,10 +173,10 @@ export default class Postbuild {
         filesystem: this.fs,
         gatsby,
         config
-      }).then(() => processFiles(ext, {
+      }).then(() => this.process(ext, {
         ...config,
         ...this.options.extensions[ext]
-      }))
+      }, tick))
     })
 
     // Write the full postbuild report
@@ -211,6 +191,35 @@ export default class Postbuild {
         ? ` saving a total of ${saving[1]}`
         : ''
     ))
+  }
+
+  /**
+   * Processes files of a given extension using the given processing options
+   */
+  async process (ext: string, options: IOptionProcessing, tick: Function): Promise<void> {
+    const files = this.files[ext]
+    if (files === undefined) return
+    debug(`Processing ${files.length} files with extension "${ext}" using`, options)
+    const strat = options.strategy
+    const conc = { concurrency: options.concurrency }
+    // Process all files at one step all at the same time
+    if (strat === 'parallel') {
+      await Promise.map(files, (file, i) => {
+        return file.read()
+          .then(() => { tick('read'); return file.process() })
+          .then(() => { tick('process'); return file.write() })
+          .then(() => { tick('write'); delete files[i] })
+      }, conc)
+      return
+    }
+
+    // Process files in 3 steps with the last step being run in sequential order
+    await Promise.map(files, file => file.read().then(() => tick('read')), conc)
+    await Promise.map(files, file => file.process().then(() => tick('process')), conc)
+    await Promise.each(files, (file, i) => file.write().then(() => {
+      tick('write')
+      delete files[i]
+    }))
   }
 
   /**
