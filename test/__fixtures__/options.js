@@ -13,8 +13,10 @@ export default [
     options: {
       enabled: 5,
       report: '',
-      defaultStrategy: 5,
-      defaultConcurrency: false,
+      processing: {
+        strategy: 5,
+        concurrency: false
+      },
       ignore: {},
       events: {
         foo: 'invalid',
@@ -34,8 +36,10 @@ export default [
   {
     title: 'should invalidate empty options',
     options: {
-      defaultStrategy: '',
-      defaultConcurrency: 0,
+      processing: {
+        strategy: '',
+        concurrency: 0
+      },
       ignore: [''],
       extensions: {
         txt: {
@@ -48,8 +52,10 @@ export default [
   {
     title: 'should invalidate invalid options',
     options: {
-      defaultConcurrency: -1,
-      defaultStrategy: 'foo',
+      processing: {
+        strategy: 'foo',
+        concurrency: -1
+      },
       extensions: {
         txt: {
           concurrency: -1,
@@ -70,8 +76,10 @@ export default [
       report: false,
       consoleReport: false,
       ignore: ['a'],
-      defaultConcurrency: 25,
-      defaultStrategy: 'steps',
+      processing: {
+        strategy: 'sequential',
+        concurrency: 25
+      },
       extensions: {
         txt: {
           concurrency: 11,

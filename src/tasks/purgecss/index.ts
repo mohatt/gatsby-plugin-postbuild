@@ -38,10 +38,14 @@ class DIContainer {
   getFile (file: FileHtml): HtmlTransformer {
     return this.files[file.relative]
   }
+
+  deleteFile (file: FileHtml): void {
+    delete this.files[file.relative]
+  }
 }
 
 let di: DIContainer
-// @ts-expect-error
+
 export const events: ITaskApiEvents<IPurgecssOptions> = {
   on: {
     postbuild: ({ filesystem, options }) => {
@@ -49,6 +53,9 @@ export const events: ITaskApiEvents<IPurgecssOptions> = {
     }
   },
   html: {
+    configure: ({ config }) => {
+      config.strategy = 'sequential'
+    },
     tree: ({ file }) => {
       di.createFile(file)
       return di.getFile(file).load()
@@ -58,6 +65,7 @@ export const events: ITaskApiEvents<IPurgecssOptions> = {
     },
     serialize: ({ file }) => {
       return di.getFile(file).purgeStyles()
+        .then(() => di.deleteFile(file))
     }
   }
 }

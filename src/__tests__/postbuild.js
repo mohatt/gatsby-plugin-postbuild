@@ -44,7 +44,7 @@ describe('bootstrap', () => {
   const tasks = {
     register: jest.fn(),
     setOptions: jest.fn(),
-    run: jest.fn()
+    run: jest.fn().mockImplementation(() => Promise.resolve())
   }
   const filesystem = {
     setRoot: jest.fn()
@@ -105,11 +105,11 @@ describe('run', () => {
       foo: ['file1.foo', 'file2.foo'],
       bar: ['file1.bar', 'file2/file2.bar']
     }),
-    run: jest.fn()
+    run: jest.fn().mockImplementation(() => Promise.resolve())
   }
   const setStatus = jest.fn()
   const filesystem = {
-    create: jest.fn(),
+    create: jest.fn().mockImplementation(() => Promise.resolve()),
     reporter: {
       getReports: jest.fn().mockImplementation(() => ['report1', 'report2']),
       getTotalSaved: jest.fn().mockImplementation(() => [5, 5])
@@ -159,22 +159,26 @@ describe('run', () => {
     {
       title: 'correctly runs parallel strat',
       options: {
-        defaultStrategy: 'parallel',
-        defaultConcurrency: 1
+        processing: {
+          strategy: 'parallel',
+          concurrency: 1
+        }
       }
     },
     {
-      title: 'correctly runs steps strat',
+      title: 'correctly runs sequential strat',
       options: {
-        defaultStrategy: 'steps',
-        defaultConcurrency: 1
+        processing: {
+          strategy: 'sequential',
+          concurrency: 1
+        }
       }
     },
     {
       title: 'correctly runs mixed strats',
       options: {
         extensions: {
-          foo: { strategy: 'steps', concurrency: 1 },
+          foo: { strategy: 'sequential', concurrency: 1 },
           bar: { strategy: 'parallel', concurrency: 1 }
         }
       }

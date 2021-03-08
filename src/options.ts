@@ -1,6 +1,14 @@
 import { GatsbyJoi } from './gatsby'
 import { ITaskApiEvents, ITaskOptions } from './tasks'
 
+// Available extension processing strategies
+export type IOptionProcessingStrategy = 'sequential' | 'parallel'
+// Processing options interface
+export interface IOptionProcessing {
+  concurrency: number
+  strategy: IOptionProcessingStrategy
+}
+
 /**
  * Plugin options interface
  */
@@ -10,20 +18,13 @@ export type IOptions = {
   consoleReport: boolean
   ignore: string[]
   events: ITaskApiEvents<any>
-  defaultConcurrency: number
-  defaultStrategy: IOptionsExtStrategy
+  processing: IOptionProcessing
   extensions: {
-    [ext: string]: {
-      concurrency?: number
-      strategy?: IOptionsExtStrategy
-    } | undefined
+    [ext: string]: Partial<IOptionProcessing> | undefined
   }
 } & {
   [task: string]: ITaskOptions
 }
-
-// Available extension processing strategies
-export type IOptionsExtStrategy = 'steps' | 'parallel'
 
 /**
  * Default values for plugin options
@@ -35,19 +36,24 @@ export const DEFAULTS: IOptions = {
   consoleReport: true,
   ignore: [],
   events: {},
-  defaultStrategy: 'parallel',
-  defaultConcurrency: 10,
-  extensions: {
-    html: {
-      strategy: 'steps'
-    }
-  }
+  processing: {
+    strategy: 'parallel',
+    concurrency: 10
+  },
+  extensions: {}
 }
 
 /**
  * Plugin options schema
  */
 export function schema (joi: GatsbyJoi): GatsbyJoi {
+  const processingSchema = joi.object({
+    concurrency: joi.number().min(1)
+      .description('How many files to process at once.'),
+    strategy: joi.string()
+      .valid('sequential', 'parallel')
+      .description('Determines how the files are processed.')
+  })
   return joi.object({
     enabled: joi.boolean()
       .description('Whether to run the postbuild or not.'),
@@ -70,18 +76,9 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
       content: joi.function()
     }))
       .description('Set of events to added as a custom postbuild task.'),
-    extensions: joi.object().pattern(joi.string(), joi.object({
-      concurrency: joi.number().min(1)
-        .description('How many files to process at once.'),
-      strategy: joi.string()
-        .valid('steps', 'parallel')
-        .description('Determines how the files are processed.')
-    }))
-      .description('Changes how files of a specific extension are processed.'),
-    defaultStrategy: joi.string()
-      .valid('steps', 'parallel')
-      .description('Determines how the files are processed.'),
-    defaultConcurrency: joi.number().min(1)
-      .description('How many files to process at once.')
+    processing: processingSchema
+      .description('Default file processing options for all extensions.'),
+    extensions: joi.object().pattern(joi.string(), processingSchema)
+      .description('Changes how files of a specific extension are processed.')
   })
 }

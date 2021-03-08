@@ -33,12 +33,12 @@ exports[`init options schema should invalidate empty options 1`] = `false`;
 exports[`init options schema should invalidate empty options 2`] = `
 Array [
   "\\"ignore[0]\\" is not allowed to be empty",
+  "\\"processing.concurrency\\" must be greater than or equal to 1",
+  "\\"processing.strategy\\" must be one of [sequential, parallel]",
+  "\\"processing.strategy\\" is not allowed to be empty",
   "\\"extensions.txt.concurrency\\" must be greater than or equal to 1",
-  "\\"extensions.txt.strategy\\" must be one of [steps, parallel]",
+  "\\"extensions.txt.strategy\\" must be one of [sequential, parallel]",
   "\\"extensions.txt.strategy\\" is not allowed to be empty",
-  "\\"defaultStrategy\\" must be one of [steps, parallel]",
-  "\\"defaultStrategy\\" is not allowed to be empty",
-  "\\"defaultConcurrency\\" must be greater than or equal to 1",
 ]
 `;
 
@@ -49,10 +49,10 @@ Array [
   "\\"events.on.load\\" is not allowed",
   "\\"events.html.content\\" is not allowed",
   "\\"events.txt.parse\\" is not allowed",
+  "\\"processing.concurrency\\" must be greater than or equal to 1",
+  "\\"processing.strategy\\" must be one of [sequential, parallel]",
   "\\"extensions.txt.concurrency\\" must be greater than or equal to 1",
-  "\\"extensions.txt.strategy\\" must be one of [steps, parallel]",
-  "\\"defaultStrategy\\" must be one of [steps, parallel]",
-  "\\"defaultConcurrency\\" must be greater than or equal to 1",
+  "\\"extensions.txt.strategy\\" must be one of [sequential, parallel]",
 ]
 `;
 
@@ -76,13 +76,13 @@ Array [
   "\\"events.html.parse\\" must be of type function",
   "\\"events.foo\\" must be of type object",
   "\\"events.txt.content\\" must be of type function",
+  "\\"processing.concurrency\\" must be a number",
+  "\\"processing.strategy\\" must be one of [sequential, parallel]",
+  "\\"processing.strategy\\" must be a string",
   "\\"extensions.foo\\" must be of type object",
   "\\"extensions.txt.concurrency\\" must be a number",
-  "\\"extensions.txt.strategy\\" must be one of [steps, parallel]",
+  "\\"extensions.txt.strategy\\" must be one of [sequential, parallel]",
   "\\"extensions.txt.strategy\\" must be a string",
-  "\\"defaultStrategy\\" must be one of [steps, parallel]",
-  "\\"defaultStrategy\\" must be a string",
-  "\\"defaultConcurrency\\" must be a number",
 ]
 `;
 
@@ -197,7 +197,7 @@ Array [
 ]
 `;
 
-exports[`run correctly runs steps strat 1`] = `
+exports[`run correctly runs sequential strat 1`] = `
 Array [
   Array [
     "Loaded 1/4 Processed 0/4 Wrote 0/4",

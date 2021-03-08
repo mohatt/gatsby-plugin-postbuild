@@ -3,8 +3,9 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import glob from 'glob'
 import filesize from 'filesize'
-import { IOptions } from './options'
+import { toInteger } from 'lodash'
 import { PostbuildError } from '~/common'
+import type { IOptions } from './options'
 const globAsync = Promise.promisify(glob) as typeof glob.__promisify__
 
 /**
@@ -47,14 +48,12 @@ export class FilesystemReport {
 
   getConsoleOutput (): string {
     const saved = this.size[1] !== undefined
-      ? (((this.size[0] - this.size[1]) / this.size[1]) * 100)
-          .toFixed()
-          .replace('-0', '0')
-      : '0'
+      ? toInteger(((this.size[0] - this.size[1]) / this.size[1]) * 100)
+      : 0
     return [
       colorize.tag(this.tag),
       colorize.file(this.file),
-      colorize.size(formatSize(this.size[0]) + (saved !== '0' ? ` ${(saved)}%` : '')),
+      colorize.size(formatSize(this.size[0]) + (saved !== 0 ? ` ${(saved)}%` : '')),
       Object.keys(this.meta).map(field => colorize.meta(field, this.meta[field]))
     ].flat().join(' ')
   }
@@ -116,7 +115,8 @@ export class FilesystemReporter {
  */
 export class Filesystem {
   /**
-   * Absolute ath to `/public` directory
+   * Absolute path to be used for resolving relative paths passed to class methods
+   * This should point to `/public` directory
    */
   root: string = ''
 
@@ -128,9 +128,7 @@ export class Filesystem {
   }
 
   /**
-   * Sets root path for `/public`
-   *
-   * @param root - Absolute path to `/public`
+   * Sets root path
    */
   setRoot (root: string): void {
     this.root = root

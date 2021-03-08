@@ -4,7 +4,7 @@ import { Filesystem } from './filesystem'
 import { createDebug, PostbuildError } from './common'
 import type { File, FileGeneric, FileHtml } from './files'
 import type { Node as parse5Node } from 'parse5'
-import type { IOptions } from './options'
+import type { IOptions, IOptionProcessing } from './options'
 import type { GatsbyJoi } from './gatsby'
 import type { IPostbuildArgs } from './postbuild'
 const debug = createDebug('tasks')
@@ -28,30 +28,32 @@ type Keys<O, C> = { [K in keyof O]: O[K] extends C ? K : never }[keyof O]
  * Interface for an event callback
  */
 type IEvent<
-  F extends File | undefined,
   O extends ITaskOptions,
   P extends Object = {},
+  F extends File | undefined = undefined,
   R = void
-> = Fn<[IPostbuildArgs<F, O, P>], R>
+> = Fn<[IPostbuildArgs<O, F, P>], R>
 
 /**
  * Defines every event api within the plugin
  */
 export interface IEvents<O extends ITaskOptions> {
   on: {
-    bootstrap: IEvent<undefined, O>
-    postbuild: IEvent<undefined, O>
-    shutdown: IEvent<undefined, O>
+    bootstrap: IEvent<O>
+    postbuild: IEvent<O>
+    shutdown: IEvent<O>
   }
   html: {
-    parse: IEvent<FileHtml, O, { html: string }, string>
-    tree: IEvent<FileHtml, O>
-    node: IEvent<FileHtml, O, { node: parse5Node }>
-    serialize: IEvent<FileHtml, O>
-    write: IEvent<FileHtml, O, { html: string }, string>
+    configure: IEvent<O, { config: IOptionProcessing }>
+    parse: IEvent<O, { html: string }, FileHtml, string>
+    tree: IEvent<O, {}, FileHtml>
+    node: IEvent<O, { node: parse5Node }, FileHtml>
+    serialize: IEvent<O, {}, FileHtml>
+    write: IEvent<O, { html: string }, FileHtml, string>
   }
-  glob: {
-    content: IEvent<FileGeneric, O, { raw: string }, string>
+  unknown: {
+    configure: IEvent<O, { config: IOptionProcessing }>
+    content: IEvent<O, { raw: string }, FileGeneric, string>
   }
 }
 
@@ -79,9 +81,9 @@ export interface ITaskOptions {
  * @see https://github.com/microsoft/TypeScript/pull/41524
  */
 export type ITaskApiEvents<O extends ITaskOptions> = {
-  [K in Exclude<IEventType, 'glob'>]?: Partial<IEvents<O>[K]>
+  [K in Exclude<IEventType, 'unknown'>]?: Partial<IEvents<O>[K]>
 } & {
-  [glob: string]: Partial<IEvents<O>['glob']>
+  [glob: string]: Partial<IEvents<O>['unknown']>
 }
 
 /**
@@ -293,6 +295,7 @@ export class Tasks {
     if (file !== undefined) {
       const fileEvents = this.fileEvents[file.relative] ?? []
       for (const fe of fileEvents) {
+        // no need to check for event type here
         if (event in fe[0].api.events[fe[1]]) events.push(fe)
       }
     } else {

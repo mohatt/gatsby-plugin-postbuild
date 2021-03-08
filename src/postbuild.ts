@@ -4,7 +4,7 @@ import _ from 'lodash'
 import { Filesystem } from './filesystem'
 import { Tasks, ITask, ITaskOptions } from './tasks'
 import { File } from './files'
-import { DEFAULTS, schema, IOptions } from './options'
+import { DEFAULTS, schema, IOptions, IOptionProcessing } from './options'
 import { ERROR_MAP, debug } from './common'
 import type { GatsbyJoi, GatsbyNodeArgs, GatsbyPluginOptions } from './gatsby'
 
@@ -12,7 +12,7 @@ import type { GatsbyJoi, GatsbyNodeArgs, GatsbyPluginOptions } from './gatsby'
  * Interface for the main postbuild object thats is passed
  * to all event callbacks
  */
-export type IPostbuildArgs<F extends File | undefined, O extends ITaskOptions, P extends Object = {}> = {
+export type IPostbuildArgs<O extends ITaskOptions, F extends File | undefined = undefined, P extends Object = {}> = {
   /**
    * Current active task
    */
@@ -157,21 +157,13 @@ export default class Postbuild {
         }
       })
 
-    // File processing options
-    const defaultConcLimit = this.options.defaultConcurrency
-    const defaultStrategy = this.options.defaultStrategy
-    const extConfig = this.options.extensions
-
     /**
-     * Runs file events for a specific extension
-     * parallel can be set to true to process files in parallel
+     * Processes files of a given extension using the given processing options
      */
-    async function processFiles (ext: string): Promise<void> {
-      const strat = extConfig[ext]?.strategy ?? defaultStrategy
-      const conc = {
-        concurrency: extConfig[ext]?.concurrency ?? defaultConcLimit
-      }
-      debug(`Processing ${files[ext].length} "${ext}" files with`, { strat, conc })
+    async function processFiles (ext: string, options: IOptionProcessing): Promise<void> {
+      debug(`Processing ${files[ext].length} files with extension "${ext}" using`, options)
+      const strat = options.strategy
+      const conc = { concurrency: options.concurrency }
       // Process all files at one step all at the same time
       if (strat === 'parallel') {
         await Promise.map(files[ext], (file, i) => {
@@ -193,7 +185,19 @@ export default class Postbuild {
     }
 
     // Run one extension at a time
-    await Promise.each(Object.keys(files), ext => processFiles(ext))
+    await Promise.each(Object.keys(files), ext => {
+      // Extension processing options
+      const config = { ...this.options.processing }
+      return this.tasks.run(ext as 'unknown', 'configure', {
+        file: undefined,
+        filesystem: this.fs,
+        gatsby,
+        config
+      }).then(() => processFiles(ext, {
+        ...config,
+        ...this.options.extensions[ext]
+      }))
+    })
 
     // Write the full postbuild report
     const reports = this.fs.reporter.getReports()

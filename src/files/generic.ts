@@ -2,7 +2,7 @@ import { Promise } from 'bluebird'
 import { File } from './base'
 
 /**
- * Handles files not known to the plugin
+ * Handles files with unknown extensions
  */
 export class FileGeneric extends File {
   /**
@@ -11,7 +11,7 @@ export class FileGeneric extends File {
    */
   read (): Promise<void> {
     return this.file.read()
-      .then(raw => this.emit('glob', 'content', {
+      .then(raw => this.emit('unknown', 'content', {
         ...this.emitPayload<FileGeneric>(),
         raw
       }, 'raw'))
