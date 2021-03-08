@@ -101,10 +101,12 @@ export default class Postbuild {
       gatsby.reporter.setErrorMap(ERROR_MAP)
     }
 
-    // Register user task
-    this.tasks.register('user', {
-      events: this.options.events
-    })
+    // Register user task if events is set
+    if (!_.isEmpty(this.options.events)) {
+      this.tasks.register('user', {
+        events: this.options.events
+      })
+    }
 
     // Load tasks options
     this.tasks.setOptions()

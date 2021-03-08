@@ -86,7 +86,7 @@ describe('bootstrap', () => {
       await expect(postbuild.bootstrap(gatsby, options)).resolves.toBe(undefined)
       expect(postbuild.options).toMatchObject(Object.keys(options).length ? options : DEFAULTS)
       expect(filesystem.setRoot).toBeCalledWith('/foo/bar/public')
-      expect(tasks.register.mock.calls[0]).toMatchObject(['user', { events: options.events || {} }])
+      expect(tasks.register.mock.calls).toMatchSnapshot()
       expect(tasks.setOptions).toBeCalledTimes(1)
       expect(tasks.run.mock.calls[0]).toMatchObject(['on', 'bootstrap', { filesystem, gatsby }])
     })

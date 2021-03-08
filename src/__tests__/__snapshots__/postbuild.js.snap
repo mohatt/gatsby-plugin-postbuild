@@ -1,5 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`bootstrap correctly loads with user options 1`] = `
+Array [
+  Array [
+    "user",
+    Object {
+      "events": Object {
+        "foo": Object {
+          "bar": [Function],
+        },
+      },
+    },
+  ],
+]
+`;
+
+exports[`bootstrap correctly loads without options 1`] = `Array []`;
+
 exports[`init options defaults 1`] = `
 Array [
   Array [

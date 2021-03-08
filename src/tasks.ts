@@ -164,6 +164,10 @@ export class Tasks {
       }
     }
 
+    if (_.isEmpty(exports.events)) {
+      throw new Error(`Can't register task "${id}" with no events`)
+    }
+
     const task = {
       id,
       main: main !== undefined
