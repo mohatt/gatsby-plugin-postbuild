@@ -4,18 +4,18 @@ import { File } from './base'
 /**
  * Handles files not known to the plugin
  */
-export class FileGeneric extends File<FileGeneric> {
+export class FileGeneric extends File {
   /**
    * Reads and writes the file in one mthod since there
    * is no need to retain the file data
    */
   read (): Promise<void> {
-    return this.doRead()
+    return this.file.read()
       .then(raw => this.emit('glob', 'content', {
-        ...this.payload,
+        ...this.emitPayload<FileGeneric>(),
         raw
       }, 'raw'))
-      .then(data => this.doUpdate(data))
+      .then(data => this.file.update(data))
   }
 
   /**

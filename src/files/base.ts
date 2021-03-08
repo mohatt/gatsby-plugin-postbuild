@@ -8,7 +8,7 @@ import type { GatsbyNodeArgs } from '../gatsby'
 /**
  * Base class for all file types
  */
-export abstract class File<F extends File = File<any>> {
+export abstract class File {
   /**
    * Absolute path of the file
    */
@@ -30,30 +30,50 @@ export abstract class File<F extends File = File<any>> {
    */
   reportMeta: IFilesystemReportMeta = {}
 
-  protected readonly fs: Filesystem
+  /**
+   * Wraps fs methods by adding file path
+   */
+  protected readonly file: {
+    read: () => Promise<string>
+    update: (data: string) => Promise<void>
+  }
+
+  /**
+   * Wraps tasks.run method
+   */
   protected readonly emit: Tasks['run']
-  protected readonly payload: {
+  protected readonly emitPayload: <F extends File>() => {
     file: F
     filesystem: Filesystem
     gatsby: GatsbyNodeArgs
   }
 
+  /**
+   * Sets the file metadata and other private methods
+   * needed for processing the file by child classes
+   * @constructor
+   */
   constructor (rel: string, fs: Filesystem, tasks: Tasks, gatsby: GatsbyNodeArgs) {
-    this.fs = fs
-    this.emit = tasks.run.bind(tasks)
-    this.payload = {
-      file: this as unknown as F,
-      filesystem: this.fs,
-      gatsby
+    this.path = path.join(fs.root, rel)
+    this.relative = rel
+    this.extension = fs.extension(rel) as string
+
+    this.file = {
+      read: () => fs.read(rel),
+      update: (data) => fs.update(rel, data, this.reportMeta)
     }
 
-    this.path = path.join(this.fs.root, rel)
-    this.extension = this.fs.extension(rel) as string
-    this.relative = rel
+    this.emit = tasks.run.bind(tasks)
+    const payload = {
+      file: this as any,
+      filesystem: fs,
+      gatsby
+    }
+    this.emitPayload = () => payload
   }
 
   /**
-   * Creates a new file instance based on the given extension
+   * Creates a new file instance for the given path based on the given extension
    */
   static factory = (ext: string, rel: string, fs: Filesystem, tasks: Tasks, gatsby: GatsbyNodeArgs): File => {
     if (!(ext in SUPPORTS)) {
@@ -71,22 +91,8 @@ export abstract class File<F extends File = File<any>> {
   }
 
   /**
-   * Wraps fs.read by adding file path
-   */
-  protected doRead (): Promise<string> {
-    return this.fs.read(this.relative)
-  }
-
-  /**
-   * Wraps fs.update by adding file path
-   */
-  protected doUpdate (data: string): Promise<void> {
-    return this.fs.update(this.relative, data, this.reportMeta)
-  }
-
-  /**
    * Methods that should be implemented by child
-   * classes to load specific file formats
+   * classes to process specific file formats
    */
 
   /**

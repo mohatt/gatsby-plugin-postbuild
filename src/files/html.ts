@@ -13,7 +13,7 @@ export type IFileHtmlNodeWalker = (node: parse5.Node) => Promise<void>|void
 /**
  * Interface for html files
  */
-export class FileHtml extends File<FileHtml> {
+export class FileHtml extends File {
   /**
    * Parse5 tree adaptor
    */
@@ -28,14 +28,15 @@ export class FileHtml extends File<FileHtml> {
    * Reads the file then compiles its html to ast
    */
   read (): Promise<void> {
-    return this.doRead()
+    const payload = this.emitPayload<FileHtml>()
+    return this.file.read()
       .then(html => this.emit('html', 'parse', {
-        ...this.payload,
+        ...payload,
         html
       }, 'html'))
       .then(html => {
         this.tree = parse5.parse(html)
-        return this.emit('html', 'tree', this.payload)
+        return this.emit('html', 'tree', payload)
       }) as Promise<void>
   }
 
@@ -45,7 +46,7 @@ export class FileHtml extends File<FileHtml> {
   process (): Promise<void> {
     return this.walk(node => {
       return this.emit('html', 'node', {
-        ...this.payload,
+        ...this.emitPayload<FileHtml>(),
         node
       }) as unknown as Promise<void>
     })
@@ -55,15 +56,16 @@ export class FileHtml extends File<FileHtml> {
    * Serializes the tree back to html and writes the file
    */
   write (): Promise<void> {
-    return this.emit('html', 'serialize', this.payload)
+    const payload = this.emitPayload<FileHtml>()
+    return this.emit('html', 'serialize', payload)
       .then(() => {
         const html = parse5.serialize(this.tree)
         return this.emit('html', 'write', {
-          ...this.payload,
+          ...payload,
           html
         }, 'html')
       })
-      .then(html => this.doUpdate(html))
+      .then(html => this.file.update(html))
   }
 
   /**
@@ -89,11 +91,12 @@ export class FileHtml extends File<FileHtml> {
    * @return Resolved file path or false on failure to meet conditions
    */
   resolveHref (node: parse5.Element, attrib = 'href', relative = true, strict = true): string|boolean {
+    const fs = this.emitPayload().filesystem
     const attr = node.attrs.find(a => a.name === attrib)
     if (attr === undefined) return false
     let href = attr.value.trim()
     if (href === '' || /^\w+:\/\//.test(href)) return false
-    const prefix = this.fs.pathPrefix
+    const prefix = fs.pathPrefix
     if (prefix !== '') {
       if (href.indexOf(prefix) === 0) {
         href = href.replace(prefix, '')
@@ -104,9 +107,9 @@ export class FileHtml extends File<FileHtml> {
     }
 
     const absPath = path.isAbsolute(href)
-      ? path.join(this.fs.root, href)
+      ? path.join(fs.root, href)
       : path.resolve(path.dirname(this.path), href)
-    const relPath = path.relative(this.fs.root, absPath)
+    const relPath = path.relative(fs.root, absPath)
     if (strict && relPath.indexOf('..') === 0) return false
     return relative ? relPath : absPath
   }
