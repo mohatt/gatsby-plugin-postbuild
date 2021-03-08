@@ -9,7 +9,7 @@ import type { IPurgecssOptions } from './options'
 /**
  * Holds refrences to required dependencies
  */
-export class DIContainer {
+class DIContainer {
   files: {
     [file: string]: HtmlTransformer
   } = {}
