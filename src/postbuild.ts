@@ -94,10 +94,7 @@ export default class Postbuild {
     _.merge(this.options, pluginOptions)
 
     // Configure fs root
-    this.fs.setRoot(
-      path.join(gatsby.store.getState().program.directory, 'public'),
-      gatsby.pathPrefix
-    )
+    this.fs.setRoot(path.join(gatsby.store.getState().program.directory, 'public'))
 
     // Initialize reporter
     if (typeof gatsby.reporter.setErrorMap === 'function') {

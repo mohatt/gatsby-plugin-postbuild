@@ -120,11 +120,6 @@ export class Filesystem {
    */
   root: string = ''
 
-  /**
-   * Gatsby's path prefix for resolving hrefs
-   */
-  pathPrefix: string = ''
-
   readonly options: IOptions
   readonly reporter: FilesystemReporter
   constructor (options: IOptions, reporter?: FilesystemReporter) {
@@ -133,14 +128,12 @@ export class Filesystem {
   }
 
   /**
-   * Sets root path for `/public` and pathPrefix
+   * Sets root path for `/public`
    *
    * @param root - Absolute path to `/public`
-   * @param pathPrefix - Gatsby's path prefix
    */
-  setRoot (root: string, pathPrefix: string = ''): void {
+  setRoot (root: string): void {
     this.root = root
-    this.pathPrefix = pathPrefix
   }
 
   /**

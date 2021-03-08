@@ -42,7 +42,7 @@ export class FileHtml extends File {
     // Set the path to the html page
     const parts = rel.slice(0, -5).split(path.sep)
     if (parts[parts.length - 1] === 'index') parts.pop()
-    parts.unshift(fs.pathPrefix)
+    parts.unshift(gatsby.pathPrefix)
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     this.pagePath = parts.join('/') || '/'
 
@@ -118,12 +118,12 @@ export class FileHtml extends File {
    * @return Resolved file path or false on failure to meet conditions
    */
   resolveHref (node: parse5.Element, attrib = 'href', relative = true, strict = true): string|boolean {
-    const fs = this.emitPayload().filesystem
+    const { filesystem, gatsby } = this.emitPayload()
     const attr = node.attrs.find(a => a.name === attrib)
     if (attr === undefined) return false
     let href = attr.value.trim()
     if (href === '' || /^\w+:\/\//.test(href)) return false
-    const prefix = fs.pathPrefix
+    const prefix = gatsby.pathPrefix
     if (prefix !== '') {
       if (href.indexOf(prefix) === 0) {
         href = href.replace(prefix, '')
@@ -134,9 +134,9 @@ export class FileHtml extends File {
     }
 
     const absPath = path.isAbsolute(href)
-      ? path.join(fs.root, href)
+      ? path.join(filesystem.root, href)
       : path.resolve(path.dirname(this.path), href)
-    const relPath = path.relative(fs.root, absPath)
+    const relPath = path.relative(filesystem.root, absPath)
     if (strict && relPath.indexOf('..') === 0) return false
     return relative ? relPath : absPath
   }
