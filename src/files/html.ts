@@ -42,7 +42,7 @@ export class FileHtml extends File {
     // Set the path to the html page
     const parts = rel.slice(0, -5).split(path.sep)
     if (parts[parts.length - 1] === 'index') parts.pop()
-    parts.unshift(this.emitPayload().filesystem.pathPrefix)
+    parts.unshift(fs.pathPrefix)
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     this.pagePath = parts.join('/') || '/'
 
