@@ -3,6 +3,9 @@ import path from 'path'
 import * as parse5 from 'parse5'
 import parse5Adaptor from 'parse5/lib/tree-adapters/default'
 import { File } from './base'
+import type { Filesystem } from '~/filesystem'
+import type { Tasks } from '~/tasks'
+import type { GatsbyNodeArgs } from '~/gatsby'
 
 /**
  * A callback function to be run on tree nodes
@@ -15,14 +18,37 @@ export type IFileHtmlNodeWalker = (node: parse5.Node) => Promise<void>|void
  */
 export class FileHtml extends File {
   /**
+   * Path to the html page
+   */
+  pagePath: string
+
+  /**
+   * Compiled ast tree
+   */
+  tree: parse5.Document
+
+  /**
    * Parse5 tree adaptor
    */
   adaptor: typeof parse5Adaptor = parse5Adaptor
 
   /**
-   * Compiled ast tree
+   * Sets the page path and creates an empty parse5 document
+   * @constructor
    */
-  tree: parse5.Document = this.adaptor.createDocument()
+  constructor (rel: string, fs: Filesystem, tasks: Tasks, gatsby: GatsbyNodeArgs) {
+    super(rel, fs, tasks, gatsby)
+
+    // Set the path to the html page
+    const parts = rel.slice(0, -5).split(path.sep)
+    if (parts[parts.length - 1] === 'index') parts.pop()
+    parts.unshift(this.emitPayload().filesystem.pathPrefix)
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    this.pagePath = parts.join('/') || '/'
+
+    // Create an empty document
+    this.tree = this.adaptor.createDocument()
+  }
 
   /**
    * Reads the file then compiles its html to ast
@@ -84,6 +110,7 @@ export class FileHtml extends File {
   /**
    * Resolves a href attribute of a given node into local file path
    *
+   * @todo test this method on win32 platform
    * @param node - Parse5 element node
    * @param attrib - Target attribute. Defaults to `href`
    * @param relative - Return path relative to `/public`. Defaults to `true`
