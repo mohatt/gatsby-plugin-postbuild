@@ -4,6 +4,9 @@ import Postbuild from '~/postbuild'
 import { File } from '~/files'
 import { DEFAULTS } from '~/options'
 
+// Async mock fn
+jest.fnAsync = v => jest.fn().mockImplementation(() => Promise.resolve(v))
+
 describe('init', () => {
   let postbuild
   const tasks = {
@@ -44,7 +47,7 @@ describe('bootstrap', () => {
   const tasks = {
     register: jest.fn(),
     setOptions: jest.fn(),
-    run: jest.fn().mockImplementation(() => Promise.resolve())
+    run: jest.fnAsync()
   }
   const filesystem = {
     setRoot: jest.fn()
@@ -62,7 +65,7 @@ describe('bootstrap', () => {
 
   const cases = [
     {
-      title: 'correctly loads without options',
+      title: 'correctly loads with defaults',
       options: {}
     },
     {
@@ -88,121 +91,138 @@ describe('bootstrap', () => {
       expect(filesystem.setRoot).toBeCalledWith('/foo/bar/public')
       expect(tasks.register.mock.calls).toMatchSnapshot()
       expect(tasks.setOptions).toBeCalledTimes(1)
-      expect(tasks.run.mock.calls[0]).toMatchObject(['on', 'bootstrap', { filesystem, gatsby }])
+      expect(tasks.run.mock.calls[0])
+        .toMatchObject(
+          ['on', 'bootstrap', { filesystem, gatsby }]
+        )
     })
   }
 })
 
 describe('run', () => {
-  const file = {
-    read: jest.fn().mockImplementation(() => Promise.resolve()),
-    process: jest.fn().mockImplementation(() => Promise.resolve()),
-    write: jest.fn().mockImplementation(() => Promise.resolve())
-  }
-  File.factory = jest.fn().mockImplementation(() => file)
+  File.factory = jest.fn()
   const tasks = {
-    getFilenames: () => Promise.resolve({
-      foo: ['file1.foo', 'file2.foo'],
-      bar: ['file1.bar', 'file2/file2.bar']
+    getFilenames: jest.fnAsync({
+      foo: ['file1.foo', 'file2.foo']
     }),
-    run: jest.fn().mockImplementation(() => Promise.resolve())
+    run: jest.fnAsync()
   }
   const setStatus = jest.fn()
   const filesystem = {
-    create: jest.fn().mockImplementation(() => Promise.resolve()),
+    create: jest.fnAsync(),
     reporter: {
-      getReports: jest.fn().mockImplementation(() => ['report1', 'report2']),
-      getTotalSaved: jest.fn().mockImplementation(() => [5, 5])
+      getReports: () => ['report1', 'report2'],
+      getTotalSaved: () => [5, 5]
     }
   }
   const gatsby = {}
 
   beforeEach(() => {
+    File.factory.mockClear()
     setStatus.mockClear()
     tasks.run.mockClear()
-    file.read.mockClear()
-    file.process.mockClear()
-    file.write.mockClear()
     filesystem.create.mockClear()
-    filesystem.reporter.getReports.mockClear()
-    filesystem.reporter.getTotalSaved.mockClear()
   })
 
-  const cases = [
-    {
-      title: 'correctly writes report file',
-      options: {
-        report: true
-      }
-    },
-    {
-      title: 'correctly ignores writing report file',
-      options: {
-        report: false
-      }
-    }
-  ]
-
-  for (const { title, options } of cases) {
-    test(title, async () => {
-      const postbuild = new Postbuild(tasks, filesystem)
-      postbuild.options = { ...postbuild.options, ...options }
-      await expect(postbuild.run(gatsby, setStatus)).resolves.toBe(undefined)
-      expect(tasks.run.mock.calls[0]).toMatchObject(['on', 'postbuild', { filesystem, gatsby }])
-      expect(filesystem.reporter.getReports).toBeCalled()
-      expect(filesystem.reporter.getTotalSaved).toBeCalled()
-      expect(filesystem.create.mock.calls).toMatchSnapshot()
+  const runTest = (options = {}) => {
+    const pb = new Postbuild(tasks, filesystem)
+    pb.options = { ...pb.options, ...options }
+    pb.process = jest.fn().mockImplementation((a, b, tick) => {
+      [0, 0].forEach(() => {
+        tick('read'); tick('process'); tick('write')
+      })
+    })
+    return expect(pb.run(gatsby, setStatus)).resolves.toBe(undefined).then(() => {
+      expect(File.factory.mock.calls)
+        .toMatchObject([
+          ['foo', 'file1.foo', filesystem, tasks, gatsby],
+          ['foo', 'file2.foo', filesystem, tasks, gatsby]
+        ])
+      expect(tasks.run.mock.calls[0])
+        .toMatchObject(
+          ['on', 'postbuild', { filesystem, gatsby }]
+        )
+      expect(pb.process).toBeCalledTimes(1)
+      return pb
     })
   }
 
-  const stratCases = [
-    {
-      title: 'correctly runs parallel strat',
-      options: {
-        processing: {
-          strategy: 'parallel',
-          concurrency: 1
-        }
-      }
-    },
-    {
-      title: 'correctly runs sequential strat',
-      options: {
-        processing: {
-          strategy: 'sequential',
-          concurrency: 1
-        }
-      }
-    },
-    {
-      title: 'correctly runs mixed strats',
-      options: {
-        extensions: {
-          foo: { strategy: 'sequential', concurrency: 1 },
-          bar: { strategy: 'parallel', concurrency: 1 }
-        }
-      }
+  test('correctly runs with default options', () => runTest().then(() => {
+    expect(setStatus.mock.calls).toMatchSnapshot()
+  }))
+
+  test('correctly runs with custom processing options', () => runTest({
+    processing: { strategy: 'parallel', concurrency: 3 }
+  }).then(pb => {
+    expect(pb.process.mock.calls[0][1]).toMatchObject({
+      strategy: 'parallel',
+      concurrency: 3
+    })
+  }))
+
+  test('correctly runs with custom extension options', () => runTest({
+    extensions: {
+      foo: { strategy: 'parallel', concurrency: 2 }
     }
+  }).then(pb => {
+    expect(pb.process.mock.calls[0][1]).toMatchObject({
+      strategy: 'parallel',
+      concurrency: 2
+    })
+  }))
+
+  test('correctly writes report file', () => runTest({ report: true }).then(() => {
+    expect(filesystem.create.mock.calls).toMatchSnapshot()
+  }))
+
+  test('correctly ignores writing report file', () => runTest({ report: false }).then(() => {
+    expect(filesystem.create.mock.calls).toMatchSnapshot()
+  }))
+})
+
+describe('process', () => {
+  const tick = jest.fn()
+  const file = {
+    read: jest.fnAsync(),
+    process: jest.fnAsync(),
+    write: jest.fnAsync()
+  }
+  const files = [file, file, file, file]
+
+  beforeEach(() => {
+    tick.mockClear()
+    file.read.mockClear()
+    file.process.mockClear()
+    file.write.mockClear()
+  })
+
+  const cases = [
+    { strategy: 'parallel', concurrency: 1 },
+    { strategy: 'parallel', concurrency: 2 },
+    { strategy: 'parallel', concurrency: 3 },
+    { strategy: 'sequential', concurrency: 1 },
+    { strategy: 'sequential', concurrency: 2 },
+    { strategy: 'sequential', concurrency: 3 }
   ]
-  for (const { title, options } of stratCases) {
-    test(title, async () => {
-      const postbuild = new Postbuild(tasks, filesystem)
-      postbuild.options = { ...postbuild.options, ...options }
-      await expect(postbuild.run(gatsby, setStatus)).resolves.toBe(undefined)
-      expect(setStatus.mock.calls).toMatchSnapshot()
+  for (const c of cases) {
+    test(`correctly runs with s:${c.strategy} c:${c.concurrency}`, async () => {
+      const postbuild = new Postbuild({}, {})
+      postbuild.files.foo = files.concat()
+      await expect(postbuild.process('foo', c, tick)).resolves.toBe(undefined)
       expect(file.read.mock.calls.length).toBe(4)
       expect(file.process.mock.calls.length).toBe(4)
       expect(file.write.mock.calls.length).toBe(4)
+      expect(tick.mock.calls.toString()).toMatchSnapshot()
     })
   }
 })
 
 describe('shutdown', () => {
-  const tasks = { run: jest.fn() }
+  const tasks = { run: jest.fnAsync() }
   const filesystem = {}
   const gatsby = {}
 
-  test('title', async () => {
+  test('correctly runs shutdown events', async () => {
     const postbuild = new Postbuild(tasks, filesystem)
     await expect(postbuild.shutdown(gatsby)).resolves.toBe(undefined)
     expect(tasks.run.mock.calls[0]).toMatchObject(['on', 'shutdown', { filesystem, gatsby }])
