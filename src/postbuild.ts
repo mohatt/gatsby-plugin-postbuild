@@ -180,9 +180,11 @@ export default class Postbuild {
     })
 
     // Write the full postbuild report
-    const reports = this.fs.reporter.getReports()
     if (this.options.report) {
-      await this.fs.create('postbuild.log.json', JSON.stringify(reports, null, 2))
+      await this.fs.create(
+        'postbuild.log.json',
+        JSON.stringify(this.fs.reporter.getReports(), null, 2)
+      )
     }
 
     const saving = this.fs.reporter.getTotalSaved()

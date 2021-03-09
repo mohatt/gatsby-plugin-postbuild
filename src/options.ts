@@ -54,6 +54,11 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
       .valid('sequential', 'parallel')
       .description('Determines how the files are processed.')
   })
+  const EventTypeSchema = (events: string[]): GatsbyJoi => joi.object()
+    .pattern(
+      joi.string().valid(...events),
+      joi.function().maxArity(1)
+    )
   return joi.object({
     enabled: joi.boolean()
       .description('Whether to run the postbuild or not.'),
@@ -64,17 +69,9 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
     ignore: joi.array().items(joi.string())
       .description('File paths to exclude from processing.'),
     events: joi.object({
-      on: joi.object().pattern(
-        joi.string()
-          .valid('bootstrap', 'postbuild', 'shutdown'),
-        joi.function()),
-      html: joi.object().pattern(
-        joi.string()
-          .valid('parse', 'tree', 'node', 'serialize', 'write'),
-        joi.function())
-    }).pattern(joi.string(), joi.object({
-      content: joi.function()
-    }))
+      on: EventTypeSchema(['bootstrap', 'postbuild', 'shutdown']),
+      html: EventTypeSchema(['configure', 'parse', 'tree', 'node', 'serialize', 'write'])
+    }).pattern(joi.string(), EventTypeSchema(['configure', 'content']))
       .description('Set of events to added as a custom postbuild task.'),
     processing: processingSchema
       .description('Default file processing options for all extensions.'),
