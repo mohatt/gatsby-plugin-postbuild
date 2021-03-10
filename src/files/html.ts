@@ -41,9 +41,10 @@ export class FileHtml extends File {
 
     // Set the path to the html page
     const parts = rel.slice(0, -5).split(path.sep)
-    if (parts[parts.length - 1] === 'index') parts.pop()
+    const l = parts.length - 1
+    if (parts[l] === 'index') parts.pop()
+    else if (parts[l] === '404') parts[l] = '404.html'
     parts.unshift(gatsby.pathPrefix)
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     this.pagePath = parts.join('/') || '/'
 
     // Create an empty document
