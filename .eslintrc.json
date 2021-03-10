@@ -26,7 +26,11 @@
         "@typescript-eslint/promise-function-async": "off",
         "@typescript-eslint/return-await": ["error", "in-try-catch"],
         "@typescript-eslint/no-dynamic-delete": "off",
-        "@typescript-eslint/no-invalid-void-type": "off"
+        "@typescript-eslint/no-invalid-void-type": "off",
+        "@typescript-eslint/strict-boolean-expressions": [
+          "error",
+          { "allowString": true, "allowNumber": true, "allowNullableObject": true }
+        ]
       },
       "parserOptions": {
         "project": "./tsconfig.json"

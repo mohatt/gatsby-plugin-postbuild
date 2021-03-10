@@ -47,8 +47,9 @@ exports[`init options schema should invalidate invalid options 1`] = `false`;
 exports[`init options schema should invalidate invalid options 2`] = `
 Array [
   "\\"events.on.load\\" is not allowed",
+  "\\"events.html.tree\\" must have an arity lesser or equal to 1",
   "\\"events.html.content\\" is not allowed",
-  "\\"events.txt.parse\\" is not allowed",
+  "\\"events./*.txt.content\\" must have an arity lesser or equal to 1",
   "\\"processing.concurrency\\" must be greater than or equal to 1",
   "\\"processing.strategy\\" must be one of [sequential, parallel]",
   "\\"extensions.txt.concurrency\\" must be greater than or equal to 1",

@@ -64,8 +64,8 @@ export default [
       },
       events: {
         on: { load: () => 0 },
-        html: { content: () => 0 },
-        txt: { parse: () => 0 }
+        html: { content: () => 0, tree: (a, b) => 0 },
+        '/*.txt': { content: (a, b) => 0 }
       }
     }
   },
@@ -87,9 +87,10 @@ export default [
         }
       },
       events: {
-        on: { bootstrap: () => 0 },
+        on: { bootstrap: (a) => 0 },
         html: { node: () => 0 },
-        txt: { content: () => 0 }
+        txt: { content: () => 0 },
+        '/*.+(html|txt)': { content: () => 0, node: () => 0}
       }
     }
   },
