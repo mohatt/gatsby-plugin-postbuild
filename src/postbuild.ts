@@ -133,11 +133,12 @@ export default class Postbuild {
   async run (gatsby: GatsbyNodeArgs, setStatus: (s: string) => void): Promise<void> {
     if (!this.options.enabled) return
     // Run on.postbuild events
-    await this.tasks.run('on', 'postbuild', {
+    const payload = {
       file: undefined,
       filesystem: this.fs,
       gatsby
-    })
+    }
+    await this.tasks.run('on', 'postbuild', payload)
 
     // Activity status updater
     const status = {
@@ -169,15 +170,16 @@ export default class Postbuild {
       // Extension processing options
       const config = { ...this.options.processing }
       return this.tasks.run(ext as 'unknown', 'configure', {
-        file: undefined,
-        filesystem: this.fs,
-        gatsby,
+        ...payload,
         config
       }).then(() => this.process(ext, {
         ...config,
         ...this.options.extensions[ext]
       }, tick))
     })
+
+    // Run on.shutdown events
+    await this.tasks.run('on', 'shutdown', payload)
 
     // Write the full postbuild report
     if (this.options.report) {
@@ -222,17 +224,5 @@ export default class Postbuild {
       tick('write')
       delete files[i]
     }))
-  }
-
-  /**
-   * Last step of plugin lifecycle
-   */
-  async shutdown (gatsby: GatsbyNodeArgs): Promise<void> {
-    // Run on.shutdown events
-    await this.tasks.run('on', 'shutdown', {
-      file: undefined,
-      filesystem: this.fs,
-      gatsby
-    })
   }
 }

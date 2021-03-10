@@ -138,10 +138,12 @@ describe('run', () => {
           ['foo', 'file1.foo', filesystem, tasks, gatsby],
           ['foo', 'file2.foo', filesystem, tasks, gatsby]
         ])
-      expect(tasks.run.mock.calls[0])
-        .toMatchObject(
-          ['on', 'postbuild', { filesystem, gatsby }]
-        )
+      expect(tasks.run.mock.calls)
+        .toMatchObject([
+          ['on', 'postbuild', { filesystem, gatsby }],
+          ['foo', 'configure', { filesystem, gatsby, config: pb.options.processing }],
+          ['on', 'shutdown', { filesystem, gatsby }]
+        ])
       expect(pb.process).toBeCalledTimes(1)
       return pb
     })
@@ -215,16 +217,4 @@ describe('process', () => {
       expect(tick.mock.calls.toString()).toMatchSnapshot()
     })
   }
-})
-
-describe('shutdown', () => {
-  const tasks = { run: jest.fnAsync() }
-  const filesystem = {}
-  const gatsby = {}
-
-  test('correctly runs shutdown events', async () => {
-    const postbuild = new Postbuild(tasks, filesystem)
-    await expect(postbuild.shutdown(gatsby)).resolves.toBe(undefined)
-    expect(tasks.run.mock.calls[0]).toMatchObject(['on', 'shutdown', { filesystem, gatsby }])
-  })
 })

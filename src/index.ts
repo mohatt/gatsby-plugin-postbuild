@@ -52,7 +52,6 @@ export async function onPostBuild (gatsby: GatsbyNodeArgs): Promise<void> {
   activity.start()
   try {
     await postbuild.run(gatsby, activity.setStatus)
-    await postbuild.shutdown(gatsby)
   } catch (e) {
     activity.panic(createGatsbyError(e))
   }
