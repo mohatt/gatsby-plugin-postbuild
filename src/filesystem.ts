@@ -203,10 +203,12 @@ export class Filesystem {
    * Returns the file extension or checks if
    * a file has a given extension
    */
-  extension (file: string, checkExt?: string): string|boolean {
+  extension (file: string, checkExt?: string|string[]): string|boolean {
     const ext = path.extname(file).replace('.', '').toLowerCase()
     if (checkExt === undefined) return ext
-    return ext === checkExt
+    return typeof checkExt === 'string'
+      ? ext === checkExt
+      : checkExt.includes(ext)
   }
 
   /**
