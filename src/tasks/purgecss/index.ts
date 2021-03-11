@@ -4,7 +4,7 @@ import { Purger } from './lib/purger'
 import type { FileHtml } from '~/files'
 import type { Filesystem } from '~/filesystem'
 import type { ITaskApiEvents } from '~/tasks'
-import type { IPurgecssOptions } from './options'
+import type { IOptions } from './options'
 
 /**
  * Holds refrences to required dependencies
@@ -14,11 +14,11 @@ class DIContainer {
     [file: string]: HtmlTransformer
   } = {}
 
-  readonly options: IPurgecssOptions
+  readonly options: IOptions
   readonly fs: Filesystem
   readonly mapper: AssetMapper
   readonly purger: Purger
-  constructor (options: IPurgecssOptions, fs: Filesystem, mapper?: AssetMapper, purger?: Purger) {
+  constructor (options: IOptions, fs: Filesystem, mapper?: AssetMapper, purger?: Purger) {
     this.options = options
     this.fs = fs
     this.mapper = mapper ?? new AssetMapper(this.options, this.fs)
@@ -42,7 +42,7 @@ class DIContainer {
 
 let di: DIContainer
 // @ts-expect-error
-export const events: ITaskApiEvents<IPurgecssOptions> = {
+export const events: ITaskApiEvents<IOptions> = {
   on: {
     postbuild: ({ filesystem, options }) => {
       di = new DIContainer(options, filesystem)

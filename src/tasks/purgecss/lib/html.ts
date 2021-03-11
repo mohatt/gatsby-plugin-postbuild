@@ -2,13 +2,11 @@ import { Promise } from 'bluebird'
 import crypto from 'crypto'
 import * as parse5 from 'parse5'
 import { cloneDeep } from 'lodash'
-import { FileHtml } from '~/files'
-import { Filesystem } from '~/filesystem'
-import { createDebug } from '~/common'
-import { Purger, IPurgeResult } from './purger'
-import { AssetMapper } from './mapper'
-import { IPurgecssOptions } from '../options'
-const debug = createDebug('purgecss/html')
+import type { FileHtml } from '~/files'
+import type { Filesystem } from '~/filesystem'
+import type { Purger, IPurgeResult } from './purger'
+import type { AssetMapper } from './mapper'
+import type { IOptions } from '../options'
 
 /**
  * Utility function to create an id for an inline
@@ -70,9 +68,9 @@ export class HtmlStyleInline extends HtmlStyle {
  */
 export class HtmlStyleFile extends HtmlStyle {
   private readonly fs: Filesystem
-  private readonly options: IPurgecssOptions
+  private readonly options: IOptions
   private readonly path: string
-  constructor (path: string, options: IPurgecssOptions, fs: Filesystem) {
+  constructor (path: string, options: IOptions, fs: Filesystem) {
     super()
     this.fs = fs
     this.options = options
@@ -118,7 +116,7 @@ export class HtmlTransformer {
    */
   scripts: string[] = []
 
-  private readonly options: IPurgecssOptions
+  private readonly options: IOptions
   private readonly fs: Filesystem
   private readonly mapper: AssetMapper
   private readonly purger: Purger
@@ -127,7 +125,7 @@ export class HtmlTransformer {
   /**
    * Creates a new instance for the given html file
    */
-  constructor (file: FileHtml, options: IPurgecssOptions, fs: Filesystem, mapper: AssetMapper, purger: Purger) {
+  constructor (file: FileHtml, options: IOptions, fs: Filesystem, mapper: AssetMapper, purger: Purger) {
     this.options = options
     this.file = file
     this.fs = fs
@@ -228,7 +226,6 @@ export class HtmlTransformer {
    * optimized html file
    */
   purgeStyles (): Promise<void> {
-    debug('Purging styles for html file', this.file.relative)
     return Promise.mapSeries(this.styles, style => {
       return this.purger.purge(style, this)
     }).then(result => {

@@ -1,8 +1,8 @@
 import path from 'path'
-import { Filesystem } from '~/filesystem'
 import { createDebug } from '~/common'
-import { HtmlTransformer } from './html'
-import { IPurgecssOptions } from '../options'
+import type { Filesystem } from '~/filesystem'
+import type { HtmlTransformer } from './html'
+import type { IOptions } from '../options'
 const debug = createDebug('purgecss/mapper')
 
 /**
@@ -27,11 +27,11 @@ export class AssetMapper {
   }
 
   private readonly fs: Filesystem
-  private readonly options: IPurgecssOptions
+  private readonly options: IOptions
   /**
    * Initializes the class and sets excluded files
    */
-  constructor (options: IPurgecssOptions, fs: Filesystem) {
+  constructor (options: IOptions, fs: Filesystem) {
     this.fs = fs
     this.options = options
     this.loadWebpackIgnores()

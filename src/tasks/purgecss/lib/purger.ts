@@ -2,10 +2,10 @@ import { Promise } from 'bluebird'
 import _ from 'lodash'
 import PurgeCSS from 'purgecss'
 import { createDebug } from '~/common'
-import { Filesystem } from '~/filesystem'
-import { AssetMapper } from './mapper'
 import { HtmlTransformer, HtmlStyle, HtmlStyleFile } from './html'
-import { IPurgecssOptions, PurgecssLibOptions, purgecssImportedOptions } from '../options'
+import { IOptions, PurgecssOptions, purgecssImportedOptions } from '../options'
+import type { Filesystem } from '~/filesystem'
+import type { AssetMapper } from './mapper'
 const debug = createDebug('purgecss/purger')
 
 export interface IPurgeResult {
@@ -38,16 +38,16 @@ export class Purger {
    * PurgeCSS deps
    */
   purgeCSS: PurgeCSS
-  purgeOptions: PurgecssLibOptions
+  purgeOptions: PurgecssOptions
 
-  private readonly options: IPurgecssOptions
+  private readonly options: IOptions
   private readonly fs: Filesystem
   private readonly mapper
 
   /**
    * Sets PurgeCSS options
    */
-  constructor (options: IPurgecssOptions, fs: Filesystem, mapper: AssetMapper) {
+  constructor (options: IOptions, fs: Filesystem, mapper: AssetMapper) {
     this.options = options
     this.fs = fs
     this.mapper = mapper

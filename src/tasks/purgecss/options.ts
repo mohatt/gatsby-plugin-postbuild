@@ -1,6 +1,6 @@
 import _ from 'lodash'
-import type { ITaskApiOptions, ITaskOptions } from '~/tasks'
 import { defaultOptions as purgecssDefaults } from 'purgecss'
+import type { ITaskApiOptions, ITaskOptions } from '~/tasks'
 type PurgecssDefaults = typeof purgecssDefaults
 
 /**
@@ -23,7 +23,7 @@ export const purgecssImportedOptions = [
 /**
  * Task options interface
  */
-export type IPurgecssOptions = ITaskOptions & {
+export type IOptions = ITaskOptions & {
   reportRejected: boolean
   allowSymbols: boolean
   ignoreAssets: {
@@ -36,12 +36,12 @@ export type IPurgecssOptions = ITaskOptions & {
 /**
  * All options accepted by purgecss lib
  */
-export type PurgecssLibOptions = Omit<Partial<PurgecssDefaults>, 'content'|'css'> & Pick<PurgecssDefaults, 'content'|'css'>
+export type PurgecssOptions = Omit<Partial<PurgecssDefaults>, 'content'|'css'> & Pick<PurgecssDefaults, 'content'|'css'>
 
 /**
  * Options API exports
  */
-export const options: ITaskApiOptions<IPurgecssOptions> = {
+export const options: ITaskApiOptions<IOptions> = {
   defaults: {
     enabled: true,
     ignore: [],
