@@ -39,9 +39,11 @@ export default class Builder {
 
   readonly options: IOptions
   readonly fs: Filesystem
-  constructor (options: IOptions, fs: Filesystem) {
+  readonly pathPrefix: string
+  constructor (options: IOptions, fs: Filesystem, pathPrefix: string) {
     this.options = options
     this.fs = fs
+    this.pathPrefix = pathPrefix
     this.headers = {
       ...(options.security ? HEADERS_SECURITY : {}),
       ...(options.caching ? HEADERS_CACHING : {})
@@ -70,6 +72,15 @@ export default class Builder {
    */
   addPageLink (page: string, link: Link): void {
     (this.pages[page] ||= []).push(link)
+  }
+
+  /**
+   * Strips gatsby's pathPrefix from a given href
+   */
+  normalizeHref (href: string): string {
+    return href.indexOf(this.pathPrefix) === 0
+      ? href.replace(this.pathPrefix, '') || '/'
+      : href
   }
 
   /**

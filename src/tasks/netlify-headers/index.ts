@@ -11,37 +11,46 @@ let builder: Builder
 // @ts-expect-error
 export const events: ITaskApiEvents<IOptions> = {
   on: {
-    postbuild: ({ options, filesystem }) => {
-      builder = new Builder(options, filesystem)
+    postbuild: ({ options, filesystem, gatsby }) => {
+      builder = new Builder(options, filesystem, gatsby.pathPrefix)
     },
     shutdown: () => {
       return builder.build()
     }
   },
   html: {
-    node: ({ node, file, options, gatsby }) => {
+    node: ({ node, file, options }) => {
       if (node.nodeName === 'link') {
-        const rel = node.attrs.find(a => a.name === 'rel' && a.value in Link.supports)
-        if (!rel) return
-        const href = node.attrs.find(a => a.name === 'href' && a.value)
-        if (!href) return
+        const rels = node.attrs.find(a => a.name === 'rel')?.value.trim().toLowerCase().split(' ')
+        if (rels === undefined || rels.length === 0) return
+        let href = node.attrs.find(a => a.name === 'href')?.value.trim()
+        if (href === undefined || href === '') return
 
-        // Create a new Link object
-        // We are removing path prefixes since its irrelevant when deploying to Netlify
-        const link = Link.create(rel.value, href.value.replace(gatsby.pathPrefix, ''), node.attrs)
+        // Strip path prefixes from paths since its irrelevant when deploying to Netlify
+        href = builder.normalizeHref(href)
+        const path = builder.normalizeHref(file.pagePath)
 
-        // Add the created link to the current page path
-        builder.addPageLink(file.pagePath.replace(gatsby.pathPrefix, '') || '/', link)
+        // Create a separate link for each rel
+        for (const rel of rels) {
+          // Check if rel is supported
+          if (!(rel in Link.supports)) continue
 
-        // If the link's href refers to a local path send it to the builder
-        // to decide whether it should be listed as an immutable cached asset
-        if (!/^\w+:\/\//.test(link.href)) {
-          builder.addCachedAsset(link)
-        }
+          // Create a new Link object
+          const link = Link.create(rel, href, node.attrs)
 
-        // Remove the link node if specified in task options
-        if (options.removeLinkTags) {
-          file.adaptor.detachNode(node)
+          // Add the created link to the current page path
+          builder.addPageLink(path, link)
+
+          // If the link's href refers to a local path send it to the builder
+          // to decide whether it should be listed as an immutable cached asset
+          if (!/^\w+:\/\//.test(link.href)) {
+            builder.addCachedAsset(link)
+          }
+
+          // Remove the link node if specified in task options
+          if (options.removeLinkTags) {
+            file.adaptor.detachNode(node)
+          }
         }
       }
     }
