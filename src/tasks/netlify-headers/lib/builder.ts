@@ -1,6 +1,7 @@
+import _ from 'lodash'
 import { PLUGIN } from '~/common'
 import type { Filesystem } from '~/filesystem'
-import type { IOptions } from '../options'
+import type { IHeader, IHeadersMap, IOptions } from '../options'
 import type Link from './link'
 
 /**
@@ -31,10 +32,7 @@ const HEADERS_CACHING = {
  * Headers file builder
  */
 export default class Builder {
-  headers: {
-    [path: string]: string[]
-  }
-
+  headers: IHeadersMap
   pages: {
     [path: string]: Link[]
   } = {}
@@ -46,11 +44,14 @@ export default class Builder {
     this.fs = fs
     this.headers = {
       ...(options.security ? HEADERS_SECURITY : {}),
-      ...(options.caching ? HEADERS_CACHING : {}),
-      ...this.options.headers
+      ...(options.caching ? HEADERS_CACHING : {})
     }
   }
 
+  /**
+   * Adds a Link's href path as an immutable cached asset if
+   *  it matches certain critiria
+   */
   addCachedAsset (link: Link): void {
     if (
       !this.options.caching ||
@@ -65,23 +66,57 @@ export default class Builder {
     }
   }
 
+  /**
+   * Adds a Link to a page path
+   */
   addPageLink (page: string, link: Link): void {
     (this.pages[page] ||= []).push(link)
   }
 
+  /**
+   * Builds the netlify `_headers` file
+   */
   build (): Promise<void> {
+    /**
+     * - When used as an Array.filter(predicate: callback):
+     *   - Filters out invalid headers by returning undefined
+     *
+     * - When used as an _.unionBy([..], predicate: callback):
+     *   - Overwrites headers with user-defined headers based on lower-cased
+     *      header name (either single or multi entry headers)
+     *   - Merges multi-entry 'Link' headers with user-defined ones (either single
+     *      or multi entry headers)
+     **/
+    const hcallback = (h: IHeader): string|number|undefined => {
+      const matches = (typeof h === 'string' ? h : h[0]).match(/^([^:]+):/)
+      const hname = matches?.[1].toLowerCase()
+      return hname === 'link' ? Math.random() : hname
+    }
+
     for (const path in this.pages) {
-      if (this.headers[path] === undefined) {
-        this.headers[path] = this.pages[path].map(link => `Link: ${String(link)}`)
+      this.headers[path] = [
+        this.pages[path].map(link => `Link: ${String(link)}`)
+      ]
+      if ('[page]' in this.options.headers) {
+        this.headers[path] = _.unionBy(this.options.headers['[page]'], this.headers[path], hcallback)
       }
     }
-    const lines = [
-      `## Created with ${PLUGIN}`,
-      ''
-    ]
+
+    for (const path in this.options.headers) {
+      if (path === '[page]') continue
+      const headers = this.options.headers[path].filter(hcallback)
+      if (path in this.headers) {
+        // Merge user headers
+        this.headers[path] = _.unionBy(headers, this.headers[path], hcallback)
+        continue
+      }
+      this.headers[path] = headers
+    }
+
+    const lines = [`## Created with ${PLUGIN}`, '']
     for (const path in this.headers) {
       lines.push(path)
-      this.headers[path].forEach(h => lines.push('  ' + h))
+      this.headers[path].flat().forEach(h => lines.push('  ' + h))
     }
 
     // Write _headers file
