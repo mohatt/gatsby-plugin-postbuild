@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { PLUGIN } from '~/common'
 import Link from './link'
 import type { Filesystem } from '~/filesystem'
-import type { IHeader, IHeadersMap, IOptions } from '../options'
+import type { IOptions, IHeadersMap, IHeader } from '../options'
 
 /**
  * Default security headers
@@ -56,12 +56,11 @@ export default class Builder {
     if (
       !this.options.caching ||
       this.options.cachingAssetTypes.length === 0 ||
-      /^\w+:\/\//.test(link.href) ||
       link.type !== 'preload' ||
       link.href.indexOf('/page-data/') === 0 ||
       link.href.indexOf('/static/') === 0
     ) return
-    if (this.options.cachingAssetTypes.includes(link.meta.as)) {
+    if (this.options.cachingAssetTypes.includes(link.attrs.as)) {
       this.headers[link.href] = [HEADER_CACHE_IMMUTABLE]
     }
   }
@@ -89,7 +88,7 @@ export default class Builder {
      **/
     const hcallback = (h: IHeader): string|number|undefined => {
       const matches = (typeof h === 'string' ? h : h[0] || '').match(/^([^:]+):/)
-      const hname = matches?.[1].toLowerCase()
+      const hname = matches?.[1].toLowerCase().trim()
       return hname === 'link' ? Math.random() : hname
     }
 
@@ -110,7 +109,6 @@ export default class Builder {
       if (path === '[page]') continue
       const headers = this.options.headers[path].filter(hcallback)
       if (path in this.headers) {
-        // Merge user headers
         this.headers[path] = _.unionBy(headers, this.headers[path], hcallback)
         continue
       }
