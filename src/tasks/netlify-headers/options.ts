@@ -1,4 +1,5 @@
 import type { ITaskApiOptions, ITaskOptions } from '~/tasks'
+import type Link from './lib/link'
 
 /**
  * Either a string for single-entry headers or
@@ -36,6 +37,7 @@ export type IOptions = ITaskOptions & {
   security: boolean
   caching: boolean
   cachingAssetTypes: string[]
+  transformPathLinks: (links: Link[], path: string) => Link[]
   removeLinkTags: boolean
 }
 
@@ -50,6 +52,7 @@ export const options: ITaskApiOptions<IOptions> = {
     security: true,
     caching: true,
     cachingAssetTypes: ['image', 'script', 'style', 'font'],
+    transformPathLinks: links => links,
     removeLinkTags: true
   },
   schema: (joi) => {
@@ -72,6 +75,8 @@ export const options: ITaskApiOptions<IOptions> = {
       cachingAssetTypes: joi.array()
         .items(joi.string())
         .description('Specifies the types of assets that are considered immutable.'),
+      transformPathLinks: joi.function().maxArity(2)
+        .description('Callback for manipulating links under each path.'),
       removeLinkTags: joi.boolean()
         .description('Removes the HTML link tags processed by the task.')
     })

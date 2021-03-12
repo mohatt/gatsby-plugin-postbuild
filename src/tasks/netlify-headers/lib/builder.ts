@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import { PLUGIN } from '~/common'
+import Link from './link'
 import type { Filesystem } from '~/filesystem'
 import type { IHeader, IHeadersMap, IOptions } from '../options'
-import type Link from './link'
 
 /**
  * Default security headers
@@ -88,14 +88,18 @@ export default class Builder {
      *      or multi entry headers)
      **/
     const hcallback = (h: IHeader): string|number|undefined => {
-      const matches = (typeof h === 'string' ? h : h[0]).match(/^([^:]+):/)
+      const matches = (typeof h === 'string' ? h : h[0] || '').match(/^([^:]+):/)
       const hname = matches?.[1].toLowerCase()
       return hname === 'link' ? Math.random() : hname
     }
 
     for (const path in this.pages) {
+      const links = this.options.transformPathLinks(this.pages[path], path)
+      if (!Array.isArray(links)) continue
       this.headers[path] = [
-        this.pages[path].map(link => `Link: ${String(link)}`)
+        _.sortBy(links, 'priority')
+          .filter(link => link instanceof Link)
+          .map(link => `Link: ${String(link)}`)
       ]
       if ('[page]' in this.options.headers) {
         this.headers[path] = _.unionBy(this.options.headers['[page]'], this.headers[path], hcallback)
