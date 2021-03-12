@@ -49,9 +49,9 @@
     "purgecss": "^4.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.13.0",
-    "@babel/core": "7.13.8",
-    "@babel/eslint-parser": "7.13.8",
+    "@babel/cli": "7.13.10",
+    "@babel/core": "7.13.10",
+    "@babel/eslint-parser": "7.13.10",
     "@babel/plugin-proposal-class-properties": "7.13.0",
     "@babel/plugin-proposal-private-methods": "7.13.0",
     "@semantic-release/changelog": "5.0.1",
@@ -60,8 +60,8 @@
     "@types/jest": "26.0.20",
     "@types/lodash": "4.14.168",
     "@types/parse5": "6.0.0",
-    "@typescript-eslint/eslint-plugin": "4.16.1",
-    "@typescript-eslint/parser": "4.16.1",
+    "@typescript-eslint/eslint-plugin": "4.17.0",
+    "@typescript-eslint/parser": "4.17.0",
     "babel-plugin-module-resolver": "4.1.0",
     "babel-preset-gatsby-package": "0.12.0",
     "cross-env": "7.0.3",
@@ -74,7 +74,7 @@
     "gatsby": "2.32.4",
     "gatsby-plugin-utils": "0.9.0",
     "jest": "26.6.3",
-    "semantic-release": "17.4.1",
+    "semantic-release": "17.4.2",
     "typescript": "4.2.3"
   },
   "peerDependencies": {
