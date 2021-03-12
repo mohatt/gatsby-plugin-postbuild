@@ -3,9 +3,8 @@ import type * as parse5 from 'parse5'
 export default class Link {
   static supports: {
     rel: string[]
-    relMeta: {
-      [p: string]: string[]
-    }
+    relMeta: { [p: string]: string[] }
+    relPriority: { [p: string]: number }
   } = {
     rel: ['preload', 'prefetch', 'preconnect', 'dns-prefetch'],
     relMeta: {
@@ -13,14 +12,19 @@ export default class Link {
       prefetch: ['as', 'crossorigin'],
       preconnect: ['crossorigin'],
       'dns-prefetch': []
+    },
+    relPriority: {
+      'dns-prefetch': 0,
+      preconnect: 10,
+      preload: 20,
+      prefetch: 30
     }
   }
 
   href: string
   type: string
-  meta: {
-    [p: string]: string
-  } = {}
+  meta: { [p: string]: string } = {}
+  priority: number = 0
 
   constructor (href: string, type: string) {
     this.href = href
@@ -50,6 +54,7 @@ export default class Link {
       }
       return m
     }, link.meta)
+    link.priority = Link.supports.relPriority[type]
     return link
   }
 }
