@@ -1,7 +1,7 @@
 import { GatsbyJoi } from './gatsby'
 import { ITaskApiEvents, ITaskOptions } from './tasks'
 
-// Available extension processing strategies
+// Available processing strategies
 export type IOptionProcessingStrategy = 'sequential' | 'parallel'
 // Processing options interface
 export interface IOptionProcessing {
@@ -29,7 +29,7 @@ export type IOptions = {
 }
 
 /**
- * Default values for plugin options
+ * Plugin options defaults
  */
 // @ts-expect-error
 export const DEFAULTS: IOptions = {
