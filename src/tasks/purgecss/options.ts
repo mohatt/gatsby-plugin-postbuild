@@ -24,7 +24,7 @@ export const purgecssImportedOptions = [
  * Task options interface
  */
 export type IOptions = ITaskOptions & {
-  reportRejected: boolean
+  writeRejected: boolean
   allowSymbols: boolean
   ignoreAssets: {
     webpack: string[]
@@ -50,14 +50,14 @@ export const options: ITaskApiOptions<IOptions> = {
       css: [],
       js: []
     },
-    reportRejected: true,
     allowSymbols: false,
+    writeRejected: false,
     ..._.pick(purgecssDefaults, purgecssImportedOptions)
   },
   schema: (joi) => {
     return joi.object({
-      reportRejected: joi.boolean()
-        .description('Write a log file in `/public` with the rejected selectors for every file.'),
+      writeRejected: joi.boolean()
+        .description('Write a text file under `/public` a list of rejected selectors for every file.'),
       ignoreAssets: joi.object({
         webpack: joi.array().items(joi.string())
           .description('Webpack chunck names to ignore while purging CSS.'),

@@ -85,7 +85,7 @@ export class HtmlStyleFile extends HtmlStyle {
     return this.fs.update(this.path, result.css, {
       purgecss: String(result.rejected.length)
     }).then(() => {
-      if (this.options.reportRejected) {
+      if (this.options.writeRejected) {
         return this.fs.create(this.path + '.rejected.txt', result.rejected.join(' '))
       }
     })
@@ -231,7 +231,7 @@ export class HtmlTransformer {
     }).then(result => {
       const rejected = result.flat()
       this.file.reportMeta.purgecss = String(rejected.length)
-      if (this.options.reportRejected) {
+      if (this.options.writeRejected) {
         return this.fs.create(this.file.relative + '.rejected.txt', rejected.join(' '))
       }
     })
