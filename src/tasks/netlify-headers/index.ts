@@ -26,13 +26,13 @@ export const events: ITaskApiEvents<IOptions> = {
         let href = node.attrs.find(a => a.name === 'href')?.value.trim()
         if (href === undefined || href === '') return
 
-        // Strip path prefixes from paths since its irrelevant when deploying to Netlify
+        // Strip out pathPrefix from paths since its irrelevant when deploying to Netlify
         href = builder.normalizeHref(href)
         const path = builder.normalizeHref(file.pagePath)
 
-        // Create a separate link for each rel
+        // Create a separate link for each rel type
         for (const rel of rels) {
-          // Check if rel is supported
+          // Check if rel type is supported
           if (!(rel in Link.supports)) continue
 
           // Create a new Link object

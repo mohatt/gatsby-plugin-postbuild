@@ -11,8 +11,8 @@ export default [
   {
     title: 'should invalidate options with incorrect data types',
     options: {
-      enabled: 5,
-      report: '',
+      enabled: '',
+      reporting: null,
       processing: {
         strategy: 5,
         concurrency: false
@@ -73,8 +73,10 @@ export default [
     title: 'should validate correct options',
     options: {
       enabled: true,
-      report: false,
-      consoleReport: false,
+      reporting: {
+        log: true,
+        console: false
+      },
       ignore: ['a'],
       processing: {
         strategy: 'sequential',
@@ -92,6 +94,12 @@ export default [
         txt: { content: () => 0 },
         '/*.+(html|txt)': { content: () => 0, node: () => 0}
       }
+    }
+  },
+  {
+    title: 'should validate correct options (with alternatives)',
+    options: {
+      reporting: false
     }
   },
   {

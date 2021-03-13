@@ -71,7 +71,7 @@ exports[`init options schema should invalidate options with incorrect data types
 exports[`init options schema should invalidate options with incorrect data types 2`] = `
 Array [
   "\\"enabled\\" must be a boolean",
-  "\\"report\\" must be a boolean",
+  "\\"reporting\\" must be one of [object, boolean]",
   "\\"ignore\\" must be an array",
   "\\"events.on.bootstrap\\" must be of type function",
   "\\"events.html.parse\\" must be of type function",
@@ -95,6 +95,10 @@ Array [
   "\\"invalid\\" is not allowed",
 ]
 `;
+
+exports[`init options schema should validate correct options (with alternatives) 1`] = `true`;
+
+exports[`init options schema should validate correct options (with alternatives) 2`] = `Array []`;
 
 exports[`init options schema should validate correct options 1`] = `true`;
 
@@ -120,7 +124,7 @@ exports[`process correctly runs with s:sequential c:2 1`] = `"read,read,read,rea
 
 exports[`process correctly runs with s:sequential c:3 1`] = `"read,read,read,read,process,process,process,process,write,write,write,write"`;
 
-exports[`run correctly ignores writing report file 1`] = `Array []`;
+exports[`run correctly ignores writing log file 1`] = `Array []`;
 
 exports[`run correctly runs with default options 1`] = `
 Array [
@@ -148,7 +152,7 @@ Array [
 ]
 `;
 
-exports[`run correctly writes report file 1`] = `
+exports[`run correctly writes log file 1`] = `
 Array [
   Array [
     "postbuild.log.json",

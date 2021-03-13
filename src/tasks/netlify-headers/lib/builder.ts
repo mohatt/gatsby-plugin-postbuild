@@ -88,14 +88,13 @@ export default class Builder {
    */
   build (): Promise<void> {
     /**
-     * - When used as an Array.filter(predicate: callback):
-     *   - Filters out invalid headers by returning undefined
+     * - When used as an Array.filter(user-defined, predicate: callback):
+     *   - Filters out invalid user-defined headers by returning undefined
      *
-     * - When used as an _.unionBy([..], predicate: callback):
-     *   - Overwrites headers with user-defined headers based on lower-cased
-     *      header name (either single or multi entry headers)
-     *   - Merges multi-entry 'Link' headers with user-defined ones (either single
-     *      or multi entry headers)
+     * - When used as a _.unionBy(user-defined, current, predicate: callback):
+     *   - Overwrites user-defined headers based on lower-cased header name (either single or multi-entry headers)
+     *   - Merges user-defined 'Link' headers (either single or multi-entry headers) into current headers
+     *   - By default, any user-defined headers are moved to the top of the array
      **/
     const hcallback = (h: IHeader): string|number|undefined => {
       const matches = (typeof h === 'string' ? h : h[0] || '').match(/^([^:]+):/)

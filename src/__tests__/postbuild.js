@@ -71,7 +71,6 @@ describe('bootstrap', () => {
     {
       title: 'correctly loads with user options',
       options: {
-        report: true,
         events: { foo: { bar: () => '' } }
       }
     }
@@ -173,11 +172,11 @@ describe('run', () => {
     })
   }))
 
-  test('correctly writes report file', () => runTest({ report: true }).then(() => {
+  test('correctly writes log file', () => runTest({ reporting: { log: true } }).then(() => {
     expect(filesystem.create.mock.calls).toMatchSnapshot()
   }))
 
-  test('correctly ignores writing report file', () => runTest({ report: false }).then(() => {
+  test('correctly ignores writing log file', () => runTest({ reporting: { log: false } }).then(() => {
     expect(filesystem.create.mock.calls).toMatchSnapshot()
   }))
 })

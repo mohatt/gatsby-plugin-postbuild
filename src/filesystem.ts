@@ -86,7 +86,8 @@ export class FilesystemReporter {
     if (report.size[1] !== undefined) {
       this.byetsSaved += report.size[0] - report.size[1]
     }
-    if (!this.options.consoleReport) return
+    const { reporting } = this.options
+    if (reporting === false || (typeof reporting === 'object' && !reporting.console)) return
     if (this.reports.length === 1) {
       console.log(colorize.title('Postbuild report'))
     }

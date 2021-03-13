@@ -14,8 +14,10 @@ export interface IOptionProcessing {
  */
 export type IOptions = {
   enabled: boolean
-  report: boolean
-  consoleReport: boolean
+  reporting: {
+    log: boolean
+    console: boolean
+  } | boolean
   ignore: string[]
   events: ITaskApiEvents<any>
   processing: IOptionProcessing
@@ -32,8 +34,7 @@ export type IOptions = {
 // @ts-expect-error
 export const DEFAULTS: IOptions = {
   enabled: true,
-  report: true,
-  consoleReport: true,
+  reporting: true,
   ignore: [],
   events: {},
   processing: {
@@ -62,10 +63,13 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
   return joi.object({
     enabled: joi.boolean()
       .description('Whether to run the postbuild or not.'),
-    report: joi.boolean()
-      .description('Write a `/public/postbuild.log.json` with all the changes made.'),
-    consoleReport: joi.boolean()
-      .description('Print a summary report during build with all the changes made.'),
+    reporting: joi.alternatives().try(joi.object({
+      log: joi.boolean()
+        .description('Write a `/public/postbuild.log.json` with all the changes made.'),
+      console: joi.boolean()
+        .description('Print a summary report during build.')
+    }), joi.boolean())
+      .description('Reporting flag either as a boolean to enable/disable all reports or an object.'),
     ignore: joi.array().items(joi.string())
       .description('File paths to exclude from processing.'),
     events: joi.object({

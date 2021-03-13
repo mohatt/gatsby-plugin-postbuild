@@ -182,7 +182,8 @@ export default class Postbuild {
     await this.tasks.run('on', 'shutdown', payload)
 
     // Write the full postbuild report
-    if (this.options.report) {
+    const { reporting } = this.options
+    if (reporting === true || (typeof reporting === 'object' && reporting.log)) {
       await this.fs.create(
         'postbuild.log.json',
         JSON.stringify(this.fs.reporter.getReports(), null, 2)
