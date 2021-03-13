@@ -30,10 +30,15 @@ export const events: ITaskApiEvents<IOptions> = {
         href = builder.normalizeHref(href)
         const path = builder.normalizeHref(file.pagePath)
 
+        // Whether the node is eligible for removal
+        let removable = true
         // Create a separate link for each rel type
         for (const rel of rels) {
           // Check if rel type is supported
-          if (!(rel in Link.supports)) continue
+          if (!(rel in Link.supports)) {
+            removable = false
+            continue
+          }
 
           // Create a new Link object
           const link = Link.create(rel, href, node.attrs)
@@ -46,11 +51,11 @@ export const events: ITaskApiEvents<IOptions> = {
           if (!/^\w+:\/\//.test(link.href)) {
             builder.addCachedAsset(link)
           }
+        }
 
-          // Remove the link node if specified in task options
-          if (options.removeLinkTags) {
-            file.adaptor.detachNode(node)
-          }
+        // Remove the link node if specified in task options
+        if (removable && options.removeLinkTags) {
+          file.adaptor.detachNode(node)
         }
       }
     }
