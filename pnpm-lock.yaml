@@ -10,7 +10,7 @@ dependencies:
 devDependencies:
   '@babel/cli': 7.13.10_@babel+core@7.13.10
   '@babel/core': 7.13.10
-  '@babel/eslint-parser': 7.13.10_a947faa3ff7c013f5c2dc3fbd09e9947
+  '@babel/eslint-parser': 7.13.10_034a79b673b214252be02f5b7224dec9
   '@babel/plugin-proposal-class-properties': 7.13.0_@babel+core@7.13.10
   '@babel/plugin-proposal-private-methods': 7.13.0_@babel+core@7.13.10
   '@semantic-release/changelog': 5.0.1_semantic-release@17.4.2
@@ -19,16 +19,16 @@ devDependencies:
   '@types/jest': 26.0.20
   '@types/lodash': 4.14.168
   '@types/parse5': 6.0.0
-  '@typescript-eslint/eslint-plugin': 4.17.0_3641211d697b4d4d12940eb9cf33dc28
-  '@typescript-eslint/parser': 4.17.0_eslint@7.21.0+typescript@4.2.3
+  '@typescript-eslint/eslint-plugin': 4.17.0_1761b76df9b5dd3adf5d03ef124e1b23
+  '@typescript-eslint/parser': 4.17.0_eslint@7.22.0+typescript@4.2.3
   babel-plugin-module-resolver: 4.1.0
   babel-preset-gatsby-package: 0.12.0_@babel+core@7.13.10
   cross-env: 7.0.3
-  eslint: 7.21.0
-  eslint-config-standard-with-typescript: 20.0.0_256fa2e2ffabadb577048f57b40ef8ed
-  eslint-import-resolver-typescript: 2.4.0_7c15dd0cfa14fe651ab374dc3d7ac180
-  eslint-plugin-import: 2.22.1_eslint@7.21.0
-  eslint-plugin-node: 11.1.0_eslint@7.21.0
+  eslint: 7.22.0
+  eslint-config-standard-with-typescript: 20.0.0_4b99a4af8aafc5e605b405bcf5833840
+  eslint-import-resolver-typescript: 2.4.0_23c541aea0503b6154366e35dc4fb8b3
+  eslint-plugin-import: 2.22.1_eslint@7.22.0
+  eslint-plugin-node: 11.1.0_eslint@7.22.0
   eslint-plugin-promise: 4.3.1
   gatsby: 2.32.4_typescript@4.2.3
   gatsby-plugin-utils: 0.9.0_gatsby@2.32.4
@@ -175,10 +175,10 @@ packages:
       node: '>=6.9.0'
     resolution:
       integrity: sha512-bfIYcT0BdKeAZrovpMqX2Mx5NrgAckGbwT982AkdS5GNfn3KMGiprlBAtmBcFZRUmpaufS6WZFP8trvx8ptFDw==
-  /@babel/eslint-parser/7.13.10_a947faa3ff7c013f5c2dc3fbd09e9947:
+  /@babel/eslint-parser/7.13.10_034a79b673b214252be02f5b7224dec9:
     dependencies:
       '@babel/core': 7.13.10
-      eslint: 7.21.0
+      eslint: 7.22.0
       eslint-scope: 5.1.0
       eslint-visitor-keys: 1.3.0
       semver: 6.3.0
@@ -3512,13 +3512,13 @@ packages:
         optional: true
     resolution:
       integrity: sha512-4zY3Z88rEE99+CNvTbXSyovv2z9PNOVffTWD2W8QF5s2prBQtwN2zadqERcrHpcR7O/+KMI3fcTAmUUhK/iQcQ==
-  /@typescript-eslint/eslint-plugin/4.17.0_3641211d697b4d4d12940eb9cf33dc28:
+  /@typescript-eslint/eslint-plugin/4.17.0_1761b76df9b5dd3adf5d03ef124e1b23:
     dependencies:
-      '@typescript-eslint/experimental-utils': 4.17.0_eslint@7.21.0+typescript@4.2.3
-      '@typescript-eslint/parser': 4.17.0_eslint@7.21.0+typescript@4.2.3
+      '@typescript-eslint/experimental-utils': 4.17.0_eslint@7.22.0+typescript@4.2.3
+      '@typescript-eslint/parser': 4.17.0_eslint@7.22.0+typescript@4.2.3
       '@typescript-eslint/scope-manager': 4.17.0
       debug: 4.3.1
-      eslint: 7.21.0
+      eslint: 7.22.0
       functional-red-black-tree: 1.0.1
       lodash: 4.17.21
       regexpp: 3.1.0
@@ -3552,13 +3552,13 @@ packages:
       typescript: '*'
     resolution:
       integrity: sha512-eS6FTkq+wuMJ+sgtuNTtcqavWXqsflWcfBnlYhg/nS4aZ1leewkXGbvBhaapn1q6qf4M71bsR1tez5JTRMuqwA==
-  /@typescript-eslint/experimental-utils/4.17.0_eslint@7.21.0+typescript@4.2.3:
+  /@typescript-eslint/experimental-utils/4.17.0_eslint@7.22.0+typescript@4.2.3:
     dependencies:
       '@types/json-schema': 7.0.7
       '@typescript-eslint/scope-manager': 4.17.0
       '@typescript-eslint/types': 4.17.0
       '@typescript-eslint/typescript-estree': 4.17.0_typescript@4.2.3
-      eslint: 7.21.0
+      eslint: 7.22.0
       eslint-scope: 5.1.1
       eslint-utils: 2.1.0
     dev: true
@@ -3588,13 +3588,13 @@ packages:
         optional: true
     resolution:
       integrity: sha512-03ilO0ucSD0EPTw2X4PntSIRFtDPWjrVq7C3/Z3VQHRC7+13YB55rcJI3Jt+YgeHbjUdJPcPa7b23rXCBokuyA==
-  /@typescript-eslint/parser/4.15.1_eslint@7.21.0+typescript@4.2.3:
+  /@typescript-eslint/parser/4.15.1_eslint@7.22.0+typescript@4.2.3:
     dependencies:
       '@typescript-eslint/scope-manager': 4.15.1
       '@typescript-eslint/types': 4.15.1
       '@typescript-eslint/typescript-estree': 4.15.1_typescript@4.2.3
       debug: 4.3.1
-      eslint: 7.21.0
+      eslint: 7.22.0
       typescript: 4.2.3
     dev: true
     engines:
@@ -3607,13 +3607,13 @@ packages:
         optional: true
     resolution:
       integrity: sha512-V8eXYxNJ9QmXi5ETDguB7O9diAXlIyS+e3xzLoP/oVE4WCAjssxLIa0mqCLsCGXulYJUfT+GV70Jv1vHsdKwtA==
-  /@typescript-eslint/parser/4.17.0_eslint@7.21.0+typescript@4.2.3:
+  /@typescript-eslint/parser/4.17.0_eslint@7.22.0+typescript@4.2.3:
     dependencies:
       '@typescript-eslint/scope-manager': 4.17.0
       '@typescript-eslint/types': 4.17.0
       '@typescript-eslint/typescript-estree': 4.17.0_typescript@4.2.3
       debug: 4.3.1
-      eslint: 7.21.0
+      eslint: 7.22.0
       typescript: 4.2.3
     dev: true
     engines:
@@ -7003,14 +7003,14 @@ packages:
       eslint-plugin-react-hooks: 1.x || 2.x
     resolution:
       integrity: sha512-pGIZ8t0mFLcV+6ZirRgYK6RVqUIKRIi9MmgzUEmrIknsn3AdO0I32asO86dJgloHq+9ZPl8UIg8mYrvgP5u2wQ==
-  /eslint-config-standard-with-typescript/20.0.0_256fa2e2ffabadb577048f57b40ef8ed:
+  /eslint-config-standard-with-typescript/20.0.0_4b99a4af8aafc5e605b405bcf5833840:
     dependencies:
-      '@typescript-eslint/eslint-plugin': 4.17.0_3641211d697b4d4d12940eb9cf33dc28
-      '@typescript-eslint/parser': 4.15.1_eslint@7.21.0+typescript@4.2.3
-      eslint: 7.21.0
-      eslint-config-standard: 16.0.2_2d485f4f2bf2333d84b92b3b62864e21
-      eslint-plugin-import: 2.22.1_eslint@7.21.0
-      eslint-plugin-node: 11.1.0_eslint@7.21.0
+      '@typescript-eslint/eslint-plugin': 4.17.0_1761b76df9b5dd3adf5d03ef124e1b23
+      '@typescript-eslint/parser': 4.15.1_eslint@7.22.0+typescript@4.2.3
+      eslint: 7.22.0
+      eslint-config-standard: 16.0.2_c717d077e19c4e5e1a56938898252d9f
+      eslint-plugin-import: 2.22.1_eslint@7.22.0
+      eslint-plugin-node: 11.1.0_eslint@7.22.0
       eslint-plugin-promise: 4.3.1
       typescript: 4.2.3
     dev: true
@@ -7023,11 +7023,11 @@ packages:
       typescript: '>=3.9'
     resolution:
       integrity: sha512-IoySf3r0a2+P3Z6GMjv8p1HuOQ6GWQbMpdt9G8uEbkGpnNWAGBXpgaiutbZHbaQAvG5pkVtYepCfHUxYbVDLCA==
-  /eslint-config-standard/16.0.2_2d485f4f2bf2333d84b92b3b62864e21:
+  /eslint-config-standard/16.0.2_c717d077e19c4e5e1a56938898252d9f:
     dependencies:
-      eslint: 7.21.0
-      eslint-plugin-import: 2.22.1_eslint@7.21.0
-      eslint-plugin-node: 11.1.0_eslint@7.21.0
+      eslint: 7.22.0
+      eslint-plugin-import: 2.22.1_eslint@7.22.0
+      eslint-plugin-node: 11.1.0_eslint@7.22.0
       eslint-plugin-promise: 4.3.1
     dev: true
     peerDependencies:
@@ -7044,11 +7044,11 @@ packages:
     dev: true
     resolution:
       integrity: sha512-ogtf+5AB/O+nM6DIeBUNr2fuT7ot9Qg/1harBfBtaP13ekEWFQEEMP94BCB7zaNW3gyY+8SHYF00rnqYwXKWOA==
-  /eslint-import-resolver-typescript/2.4.0_7c15dd0cfa14fe651ab374dc3d7ac180:
+  /eslint-import-resolver-typescript/2.4.0_23c541aea0503b6154366e35dc4fb8b3:
     dependencies:
       debug: 4.3.1
-      eslint: 7.21.0
-      eslint-plugin-import: 2.22.1_eslint@7.21.0
+      eslint: 7.22.0
+      eslint-plugin-import: 2.22.1_eslint@7.22.0
       glob: 7.1.6
       is-glob: 4.0.1
       resolve: 1.20.0
@@ -7086,9 +7086,9 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-6j9xxegbqe8/kZY8cYpcp0xhbK0EgJlg3g9mib3/miLaExuuwc3n5UEfSnU6hWMbT0FAYVvDbL9RrRgpUeQIvA==
-  /eslint-plugin-es/3.0.1_eslint@7.21.0:
+  /eslint-plugin-es/3.0.1_eslint@7.22.0:
     dependencies:
-      eslint: 7.21.0
+      eslint: 7.22.0
       eslint-utils: 2.1.0
       regexpp: 3.1.0
     dev: true
@@ -7147,14 +7147,14 @@ packages:
       eslint: ^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0
     resolution:
       integrity: sha512-8K7JjINHOpH64ozkAhpT3sd+FswIZTfMZTjdx052pnWrgRCVfp8op9tbjpAk3DdUeI/Ba4C8OjdC0r90erHEOw==
-  /eslint-plugin-import/2.22.1_eslint@7.21.0:
+  /eslint-plugin-import/2.22.1_eslint@7.22.0:
     dependencies:
       array-includes: 3.1.2
       array.prototype.flat: 1.2.4
       contains-path: 0.1.0
       debug: 2.6.9
       doctrine: 1.5.0
-      eslint: 7.21.0
+      eslint: 7.22.0
       eslint-import-resolver-node: 0.3.4
       eslint-module-utils: 2.6.0
       has: 1.0.3
@@ -7191,10 +7191,10 @@ packages:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7
     resolution:
       integrity: sha512-0rGPJBbwHoGNPU73/QCLP/vveMlM1b1Z9PponxO87jfr6tuH5ligXbDT6nHSSzBC8ovX2Z+BQu7Bk5D/Xgq9zg==
-  /eslint-plugin-node/11.1.0_eslint@7.21.0:
+  /eslint-plugin-node/11.1.0_eslint@7.22.0:
     dependencies:
-      eslint: 7.21.0
-      eslint-plugin-es: 3.0.1_eslint@7.21.0
+      eslint: 7.22.0
+      eslint-plugin-es: 3.0.1_eslint@7.22.0
       eslint-utils: 2.1.0
       ignore: 5.1.8
       minimatch: 3.0.4
@@ -7344,7 +7344,7 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-K+Iayyo2LtyYhDSYwz5D5QdWw0hCacNzyq1Y821Xna2xSJj7cijoLLYmLxTQgcgZ9mC61nryMy9S7GRbYpI5Ig==
-  /eslint/7.21.0:
+  /eslint/7.22.0:
     dependencies:
       '@babel/code-frame': 7.12.11
       '@eslint/eslintrc': 0.4.0
@@ -7363,7 +7363,7 @@ packages:
       file-entry-cache: 6.0.1
       functional-red-black-tree: 1.0.1
       glob-parent: 5.1.1
-      globals: 12.4.0
+      globals: 13.6.0
       ignore: 4.0.6
       import-fresh: 3.3.0
       imurmurhash: 0.1.4
@@ -7388,7 +7388,7 @@ packages:
       node: ^10.12.0 || >=12.0.0
     hasBin: true
     resolution:
-      integrity: sha512-W2aJbXpMNofUp0ztQaF40fveSsJBjlSCSWpy//gzfTvwC+USs/nceBrKmlJOiM8r1bLwP2EuYkCqArn/6QTIgg==
+      integrity: sha512-3VawOtjSJUQiiqac8MQc+w457iGLfuNGLFn8JmF051tTKbh5/x/0vlcEj8OgDCaw7Ysa2Jn8paGshV7x2abKXg==
   /espree/6.2.1:
     dependencies:
       acorn: 7.4.1
@@ -8785,6 +8785,14 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-BWICuzzDvDoH54NHKCseDanAhE3CeDorgDL5MT6LMXXj2WCnd9UC2szdk4AWLfjdgNBCXLUanXYcpBBKOSWGwg==
+  /globals/13.6.0:
+    dependencies:
+      type-fest: 0.20.2
+    dev: true
+    engines:
+      node: '>=8'
+    resolution:
+      integrity: sha512-YFKCX0SiPg7l5oKYCJ2zZGxcXprVXHcSnVuvzrT3oSENQonVLqM5pf9fN5dLGZGyCjhw8TN8Btwe/jKnZ0pjvQ==
   /globby/10.0.2:
     dependencies:
       '@types/glob': 7.1.3
@@ -16890,7 +16898,7 @@ specifiers:
   bluebird: ^3.7.2
   cross-env: 7.0.3
   debug: ^3.2.6
-  eslint: 7.21.0
+  eslint: 7.22.0
   eslint-config-standard-with-typescript: 20.0.0
   eslint-import-resolver-typescript: 2.4.0
   eslint-plugin-import: 2.22.1
