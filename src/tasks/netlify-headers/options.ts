@@ -69,7 +69,7 @@ export const options: ITaskApiOptions<IOptions> = {
         )
         .description('Headers to merge with the generated headers.'),
       security: joi.boolean()
-        .description('Adds useful security headers to all paths.'),
+        .description('Adds useful security headers.'),
       caching: joi.boolean()
         .description('Adds useful caching headers to immutable asset paths.'),
       cachingAssetTypes: joi.array()

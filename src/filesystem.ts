@@ -60,26 +60,18 @@ export class FilesystemReport {
 }
 
 /**
- * Handles file system reports
+ * Handles fs reports
  */
 export class FilesystemReporter {
-  /**
-   * File write reports
-   */
   reports: FilesystemReport[] = []
-
-  /**
-   * Total bytes of data saved
-   */
   byetsSaved: number = 0
-
   readonly options: IOptions
   constructor (options: IOptions) {
     this.options = options
   }
 
   /**
-   * Adds a new report and writes it to console if enabled
+   * Adds a new report and prints a summary to console if enabled
    */
   add (report: FilesystemReport): void {
     this.reports.push(report)
@@ -116,8 +108,7 @@ export class FilesystemReporter {
  */
 export class Filesystem {
   /**
-   * Absolute path to be used for resolving relative paths passed to class methods
-   * This should point to `/public` directory
+   * Absolute path to `/public` to be used for resolving relative paths
    */
   root: string = ''
 
@@ -136,7 +127,7 @@ export class Filesystem {
   }
 
   /**
-   * Wraps glob by setting cwd and root paths to /public
+   * Wraps glob by setting cwd and root paths to `/public` directory
    */
   glob (pattern: string, options?: Parameters<typeof glob>[1]): Promise<string[]> {
     return globAsync(pattern, {
@@ -151,7 +142,7 @@ export class Filesystem {
    */
   async read (rel: string): Promise<string> {
     try {
-      const abs = this.getAbsPath(rel)
+      const abs = this.getPublicPath(rel)
       await fs.access(abs)
       return await fs.readFile(abs, 'utf-8')
     } catch (e) {
@@ -166,7 +157,7 @@ export class Filesystem {
    * Writes a new file under `/public` directory
    */
   async create (rel: string, data: string, meta?: IFilesystemReportMeta): Promise<void> {
-    const abs = this.getAbsPath(rel)
+    const abs = this.getPublicPath(rel)
     try {
       await fs.access(path.dirname(abs))
       await fs.writeFile(abs, data)
@@ -183,7 +174,7 @@ export class Filesystem {
    * Updates a file under `/public` directory
    */
   async update (rel: string, data: string, meta?: IFilesystemReportMeta): Promise<void> {
-    const abs = this.getAbsPath(rel)
+    const abs = this.getPublicPath(rel)
     let size: [number, number]
     try {
       // ensure we're not creating any new files
@@ -201,8 +192,7 @@ export class Filesystem {
   }
 
   /**
-   * Returns the file extension or checks if
-   * a file has a given extension
+   * Returns the file extension or checks if a file has a given extension
    */
   extension (file: string, checkExt?: string|string[]): string|boolean {
     const ext = path.extname(file).replace('.', '').toLowerCase()
@@ -215,7 +205,7 @@ export class Filesystem {
   /**
    * Converts a path relative to `/public` into an absolute one
    */
-  getAbsPath (relative: string): string {
+  getPublicPath (relative: string): string {
     return path.join(this.root, relative)
   }
 }
