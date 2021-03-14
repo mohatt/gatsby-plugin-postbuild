@@ -279,4 +279,3 @@ These events are emitted at certain run time points.
 [gatsby-img]: https://img.shields.io/badge/gatsby-v2.25+-blueviolet.svg
 [license-url]: https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/LICENSE
 [license-img]: https://img.shields.io/github/license/mohatt/gatsby-plugin-postbuild.svg
-[purgecss-config]: https://purgecss.com/configuration.html

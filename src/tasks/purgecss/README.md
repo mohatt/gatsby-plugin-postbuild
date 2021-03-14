@@ -75,3 +75,5 @@ Remove any unused `@keyframes` rules in your css.
 > Type: `Boolean` Default: `false`
 
 Remove any unused variables in your css.
+
+[purgecss-config]: https://purgecss.com/configuration.html
