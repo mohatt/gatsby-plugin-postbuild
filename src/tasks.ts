@@ -308,7 +308,6 @@ export class Tasks {
     return Promise.mapSeries(events, async ([task, et]) => {
       try {
         const args = {
-          task,
           options: this.options[task.id],
           event: {
             type: et,

@@ -2,7 +2,7 @@ import { Promise } from 'bluebird'
 import path from 'path'
 import _ from 'lodash'
 import { Filesystem } from './filesystem'
-import { Tasks, ITask, ITaskOptions } from './tasks'
+import { Tasks, ITaskOptions } from './tasks'
 import { File } from './files'
 import { DEFAULTS, schema, IOptions, IOptionProcessing } from './options'
 import { ERROR_MAP, debug } from './common'
@@ -14,17 +14,12 @@ import type { GatsbyJoi, GatsbyNodeArgs, GatsbyPluginOptions } from './gatsby'
  */
 export type IPostbuildArgs<O extends ITaskOptions, F extends File | undefined = undefined, P extends Object = {}> = {
   /**
-   * Current active task
-   */
-  task: ITask<O>
-
-  /**
    * Options for current task
    */
   options: O
 
   /**
-   * Current file being processed
+   * Reference to current File instance being processed
    */
   file: F
 
@@ -37,12 +32,12 @@ export type IPostbuildArgs<O extends ITaskOptions, F extends File | undefined = 
   }
 
   /**
-   * Instance of the filesystem class
+   * Reference to Filesystem instance
    */
   filesystem: Filesystem
 
   /**
-   * Gatsby node helpers
+   * Reference to Gatsby node helpers object
    */
   gatsby: GatsbyNodeArgs
 } & {
