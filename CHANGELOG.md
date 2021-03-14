@@ -1,3 +1,65 @@
+# [2.0.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.2.2...v2.0.0) (2021-03-14)
+
+
+### Bug Fixes
+
+* **plugin:** add `ext.configure` event to plugin options schema ([9d6d8cd](https://github.com/mohatt/gatsby-plugin-postbuild/commit/9d6d8cd14570c833e480c7b1721f8e206a249eb5))
+* **plugin:** correctly handle both 404 and 404.html ([1242415](https://github.com/mohatt/gatsby-plugin-postbuild/commit/124241514e4ce85b5b004d6f57b806010c6c5594))
+* **plugin:** fix `concurrency` option ([04d8fc6](https://github.com/mohatt/gatsby-plugin-postbuild/commit/04d8fc69080a16e0204101b7e0579e72a2c60e78))
+* **plugin:** fix glob matches sorting ([6f07e36](https://github.com/mohatt/gatsby-plugin-postbuild/commit/6f07e369fd47e71c4f7cff692895ce6a85a1878d))
+* **plugin:** fix incorrect file size for updated files ([b29e89f](https://github.com/mohatt/gatsby-plugin-postbuild/commit/b29e89f0c4f943486ecc769685d47d4e8609fe86))
+* **plugin:** ignore running when there is no enabled tasks ([c6514b5](https://github.com/mohatt/gatsby-plugin-postbuild/commit/c6514b554b43e80047e02e2469176bbfc09db58f))
+* **plugin:** sort matches found by glob ([a561b59](https://github.com/mohatt/gatsby-plugin-postbuild/commit/a561b5961c641f4f87b63c30638fceba1c0d13ed))
+* **purgecss:** fix purgecss types ([b97d36b](https://github.com/mohatt/gatsby-plugin-postbuild/commit/b97d36b8b1727af4203f748479404333e4847c84))
+* **task:netlify-headers:** don't remove links with unsupported rel types ([adc126b](https://github.com/mohatt/gatsby-plugin-postbuild/commit/adc126bf08761a52fbf0b6a9ce2f3a8f64a51d1c))
+* **task:purgecss:** no need to export DI container ([9981160](https://github.com/mohatt/gatsby-plugin-postbuild/commit/9981160b58a6dda600d0e6e07e283930d5989ef2))
+
+
+### Features
+
+* **netlify-headers:** add header merging functionality ([fbbb0d6](https://github.com/mohatt/gatsby-plugin-postbuild/commit/fbbb0d674eac94492daf93897161de0002f9b78c))
+* **netlify-headers:** add link priority for sorting Link headers ([bd5f82e](https://github.com/mohatt/gatsby-plugin-postbuild/commit/bd5f82ed3f4d29eb0bd181ded3925449160de656))
+* **netlify-headers:** add option `transformPathLinks` for manipulating links under each path ([bc144d0](https://github.com/mohatt/gatsby-plugin-postbuild/commit/bc144d0ea329636be020db9319a7b2ea33419f20))
+* **netlify-headers:** add support for `prerender` links ([c491491](https://github.com/mohatt/gatsby-plugin-postbuild/commit/c491491c85ecc4044321caf622d2ddea48b0672d))
+* **netlify-headers:** support space delimited multi-value `rel` attribute ([36131c9](https://github.com/mohatt/gatsby-plugin-postbuild/commit/36131c93d71539b60d48a6c5532755d8d98a63f0))
+* **plugin:** add `events` option to allow custom events to be added as a `user` task ([f9fc71e](https://github.com/mohatt/gatsby-plugin-postbuild/commit/f9fc71eda41652a2ef8dba742615959b2a2c156d))
+* **plugin:** add `html.pagePath` to get the path of the current html file ([c6dfbb3](https://github.com/mohatt/gatsby-plugin-postbuild/commit/c6dfbb3b774697acbc0818d0338fa13c8e6e381e))
+* **plugin:** add `netlify-headers` task ([38dbec3](https://github.com/mohatt/gatsby-plugin-postbuild/commit/38dbec36f825936cc030a907ab64c8265171dc89))
+* **plugin:** add event `ext.configure` that allows tasks to change processing options for different extensions ([edc3d10](https://github.com/mohatt/gatsby-plugin-postbuild/commit/edc3d10417ccae03d936ac076f56890b5f761899))
+* **plugin:** add html.write event ([021e87d](https://github.com/mohatt/gatsby-plugin-postbuild/commit/021e87d7e5a962d84d6d6cffcf2fcdc3f7a1952d))
+* **plugin:** allow customizing concurrency and processing strategy on a per extension basis ([0a364f9](https://github.com/mohatt/gatsby-plugin-postbuild/commit/0a364f9e1199f94a3dcbc423b09442413e7912a0))
+* **plugin:** implemented tasks api ([9facd94](https://github.com/mohatt/gatsby-plugin-postbuild/commit/9facd94df0a572d26f8081c38635c09484a4af4d))
+* **plugin:** The plugin is now written in Typescript ([83013f7](https://github.com/mohatt/gatsby-plugin-postbuild/commit/83013f78f26955db03d7d304e4f93f9f7ea11365))
+
+
+### Performance Improvements
+
+* **deps:** no need for `glob-to-regexp` anymore ([cda1d2d](https://github.com/mohatt/gatsby-plugin-postbuild/commit/cda1d2d86efc0994482813416d91488474770d35))
+* **plugin:** change `defaultConcurrency` to 10 ([3c01272](https://github.com/mohatt/gatsby-plugin-postbuild/commit/3c01272d0949919d9eed918fa9e620354070f1f8))
+* **plugin:** check for empty events options before adding `user` task ([2602f46](https://github.com/mohatt/gatsby-plugin-postbuild/commit/2602f46ad57d3e64a028e896d1c599b728e5e2be))
+* **plugin:** merge `report` and `consoleReport` options in one option `reporting` ([cd83e3a](https://github.com/mohatt/gatsby-plugin-postbuild/commit/cd83e3a960ff910f50a1de6156e52350b076c817))
+* **plugin:** move `on.shutdown` event to `Postbuild.run` method ([d64d4e8](https://github.com/mohatt/gatsby-plugin-postbuild/commit/d64d4e86819898aebe1ae72bfa2080f6a7fb4ce6))
+* **plugin:** move `processFiles` outside of `postbuild.run` ([8c65b67](https://github.com/mohatt/gatsby-plugin-postbuild/commit/8c65b6778506e7bdaeb93d258b04ab3f3b369b45))
+* **plugin:** optimized tasks api ([6ded889](https://github.com/mohatt/gatsby-plugin-postbuild/commit/6ded8895b70b948d1acdac70daad80e62a12d585))
+* **plugin:** remove file.getEventPayload and use a class property instead ([2af57c4](https://github.com/mohatt/gatsby-plugin-postbuild/commit/2af57c45cbfcce719d2ce8547cc4ee3aa3edaad5))
+* **plugin:** rename `file` events to `glob` ([fed250f](https://github.com/mohatt/gatsby-plugin-postbuild/commit/fed250fb39b91728f9c95463ad308c1b7b02b8a2))
+* **plugin:** Replace option.purgecss.rejected with options.reportRejected ([f8e4a91](https://github.com/mohatt/gatsby-plugin-postbuild/commit/f8e4a91c33e93ce6c6b8961aa9f0610c30084d90))
+* **plugin:** support checking for a list of extensions ([a942e03](https://github.com/mohatt/gatsby-plugin-postbuild/commit/a942e0327e24c186b9578d5133c753c6ff5410b2))
+* **plugin:** use import type when possible ([5410d4b](https://github.com/mohatt/gatsby-plugin-postbuild/commit/5410d4b2613017858d068f922e8e1af527d71af7))
+* **plugin:** use one event to handle generic files since we dont need to retain their data ([daea1ba](https://github.com/mohatt/gatsby-plugin-postbuild/commit/daea1ba46df905cf0e99671aad77d27f5041f580))
+* **postbuild:** no need to include current `task` in event payload ([3fda7ed](https://github.com/mohatt/gatsby-plugin-postbuild/commit/3fda7ed9de0201d9ae80512041263373bf565bde))
+* **task:purgecss:** rename `reportRejected` to `writeRejected` and set it to `false` by default ([23488f5](https://github.com/mohatt/gatsby-plugin-postbuild/commit/23488f5ee1223a2a6e503e7fae467166390aa399))
+
+
+### Reverts
+
+* "chore(release): 1.2.2 [skip ci]" ([a4c83c8](https://github.com/mohatt/gatsby-plugin-postbuild/commit/a4c83c87756ccaab43adeeda4dc2d2ce03347ec4))
+
+
+### BREAKING CHANGES
+
+* **plugin:** The plugin options schema has been changed
+
 ## [1.2.2](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.2.1...v1.2.2) (2021-02-20)
 
 
