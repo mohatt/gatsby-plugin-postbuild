@@ -51,7 +51,7 @@ export default class Postbuild {
   /**
    * Plugin options
    */
-  options: IOptions = DEFAULTS
+  options: IOptions
 
   /**
    * Files being processed by the plugin
@@ -70,6 +70,7 @@ export default class Postbuild {
    * Loads dependencies and sets default options
    */
   constructor (tasks?: Tasks, fs?: Filesystem) {
+    this.options = { ...DEFAULTS }
     this.fs = fs ?? new Filesystem(this.options)
     this.tasks = tasks ?? new Tasks(this.fs, this.options)
   }
@@ -112,6 +113,12 @@ export default class Postbuild {
 
     // Load tasks options
     this.tasks.setOptions()
+
+    // No need to run the plugin if there is no tasks enabled
+    if (this.tasks.getActiveTasks().length === 0) {
+      this.options.enabled = false
+      return
+    }
 
     // Run on.bootstrap events
     await this.tasks.run('on', 'bootstrap', {

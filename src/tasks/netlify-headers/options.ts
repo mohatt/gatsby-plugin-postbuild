@@ -46,7 +46,7 @@ export type IOptions = ITaskOptions & {
  */
 export const options: ITaskApiOptions<IOptions> = {
   defaults: {
-    enabled: true,
+    enabled: false,
     ignore: [],
     headers: {},
     security: true,

@@ -129,17 +129,17 @@ export class Tasks {
   /**
    * Tasks collection
    */
-  tasks: Array<ITask<any>> = []
+  private tasks: Array<ITask<any>> = []
 
   /**
    * Map of filenames and task events that need them
    */
-  fileEvents: {
+  private fileEvents: {
     [file: string]: Array<[ITask<any>, string]>
   } = {}
 
-  fs: Filesystem
-  options: IOptions
+  private readonly fs: Filesystem
+  private readonly options: IOptions
   constructor (fs: Filesystem, options: IOptions) {
     this.fs = fs
     this.options = options
@@ -340,5 +340,12 @@ export class Tasks {
       }
       return res
     })
+  }
+
+  /**
+   * Returns a list of enabled tasks
+   */
+  getActiveTasks (): Array<ITask<any>> {
+    return this.tasks.filter(task => this.options[task.id].enabled)
   }
 }

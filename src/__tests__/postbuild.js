@@ -47,7 +47,8 @@ describe('bootstrap', () => {
   const tasks = {
     register: jest.fn(),
     setOptions: jest.fn(),
-    run: jest.fnAsync()
+    run: jest.fnAsync(),
+    getActiveTasks: () => [{}]
   }
   const filesystem = {
     setRoot: jest.fn()
@@ -96,6 +97,14 @@ describe('bootstrap', () => {
         )
     })
   }
+
+  test('incorrectly ignores running when no active tasks', async () => {
+    tasks.getActiveTasks = () => []
+    const postbuild = new Postbuild(tasks, filesystem)
+    await expect(postbuild.bootstrap(gatsby, {})).resolves.toBe(undefined)
+    expect(postbuild.options.enabled).toBe(false)
+    expect(tasks.run.mock.calls.length).toBe(0)
+  })
 })
 
 describe('run', () => {

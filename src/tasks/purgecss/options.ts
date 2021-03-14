@@ -43,7 +43,7 @@ export type PurgecssOptions = Omit<Partial<PurgecssDefaults>, 'content'|'css'> &
  */
 export const options: ITaskApiOptions<IOptions> = {
   defaults: {
-    enabled: true,
+    enabled: false,
     ignore: [],
     ignoreAssets: {
       webpack: ['app', 'polyfill'],
