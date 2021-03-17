@@ -1,4 +1,4 @@
-import { pluginOptionsSchema, onPreBootstrap, onPostBuild } from '../index'
+import { pluginOptionsSchema, onPreBootstrap, onPostBuild } from '../gatsby-node'
 import Postbuild from '../postbuild'
 import { PostbuildError } from '../common'
 
