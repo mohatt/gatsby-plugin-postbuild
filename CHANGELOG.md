@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.0.0...v2.1.0) (2021-03-17)
+
+
+### Features
+
+* **plugin:** add type declaration ([0aa8210](https://github.com/mohatt/gatsby-plugin-postbuild/commit/0aa821012435685068203bc7a907f5908907e050))
+
 # [2.0.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v1.2.2...v2.0.0) (2021-03-14)
 
 ### BREAKING CHANGES
