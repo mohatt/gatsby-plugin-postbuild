@@ -1,8 +1,8 @@
 import { testPluginOptionsSchema } from 'gatsby-plugin-utils'
-import optionsFixtures from '#/__fixtures__/options'
-import Postbuild from '~/postbuild'
-import { File } from '~/files'
-import { DEFAULTS } from '~/options'
+import optionsFixtures from '../../test/__fixtures__/options'
+import Postbuild from '../postbuild'
+import { File } from '../files'
+import { DEFAULTS } from '../options'
 
 // Async mock fn
 jest.fnAsync = v => jest.fn().mockImplementation(() => Promise.resolve(v))

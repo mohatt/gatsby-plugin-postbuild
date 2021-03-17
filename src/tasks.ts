@@ -1,12 +1,17 @@
 import { Promise } from 'bluebird'
 import _ from 'lodash'
-import { Filesystem } from './filesystem'
 import { createDebug, PostbuildError } from './common'
-import type { File, FileGeneric, FileHtml } from './files'
 import type { Node as parse5Node } from 'parse5'
-import type { IOptions, IOptionProcessing } from './options'
 import type { GatsbyJoi } from './gatsby'
-import type { IPostbuildArgs } from './postbuild'
+import type {
+  IPostbuildArg,
+  IOptions,
+  IOptionProcessing,
+  Filesystem,
+  File,
+  FileGeneric,
+  FileHtml
+} from './index'
 const debug = createDebug('tasks')
 
 /**
@@ -32,7 +37,7 @@ type IEvent<
   P extends Object = {},
   F extends File | undefined = undefined,
   R = void
-> = Fn<[IPostbuildArgs<O, F, P>], R>
+> = Fn<[IPostbuildArg<O, F, P>], R>
 
 /**
  * Defines every event api within the plugin
@@ -60,11 +65,11 @@ export interface IEvents<O extends ITaskOptions> {
 /**
  * Event type helpers
  */
-export type IEventType = keyof IEvents<any>
-export type IEventName<T extends IEventType> = Keys<IEvents<any>[T], Fn<any[], any>>
-export type IEventFunc<T extends IEventType, K extends IEventName<T>> = IEvents<any>[T][K]
-export type IEventFuncIn<T extends IEventType, K extends IEventName<T>> = Omit<Parameters<IEventFunc<T, K>>[0], 'task'|'event'|'options'>
-export type IEventFuncOut<T extends IEventType, K extends IEventName<T>, R = ReturnType<IEventFunc<T, K>>> = R extends PromiseLike<infer U> ? U : R
+type IEventType = keyof IEvents<any>
+type IEventName<T extends IEventType> = Keys<IEvents<any>[T], Fn<any[], any>>
+type IEventFunc<T extends IEventType, K extends IEventName<T>> = IEvents<any>[T][K]
+type IEventFuncIn<T extends IEventType, K extends IEventName<T>> = Omit<Parameters<IEventFunc<T, K>>[0], 'task'|'event'|'options'>
+type IEventFuncOut<T extends IEventType, K extends IEventName<T>, R = ReturnType<IEventFunc<T, K>>> = R extends PromiseLike<infer U> ? U : R
 
 /**
  * Interface for task options
@@ -104,6 +109,7 @@ export interface ITaskApi<O extends ITaskOptions> {
 
 /**
  * Interface for a plugin task
+ * @internal
  */
 export interface ITask<O extends ITaskOptions> {
   /**
@@ -124,6 +130,7 @@ export interface ITask<O extends ITaskOptions> {
 
 /**
  * Handles tasks defined within the plugin
+ * @internal
  */
 export class Tasks {
   /**
@@ -349,3 +356,6 @@ export class Tasks {
     return this.tasks.filter(task => this.options[task.id].enabled)
   }
 }
+
+/** @internal */
+export default Tasks

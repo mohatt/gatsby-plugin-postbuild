@@ -2,10 +2,10 @@ import { Promise } from 'bluebird'
 import path from 'path'
 import * as parse5 from 'parse5'
 import parse5Adaptor from 'parse5/lib/tree-adapters/default'
-import { File } from './base'
-import type { Filesystem } from '~/filesystem'
-import type { Tasks } from '~/tasks'
-import type { GatsbyNodeArgs } from '~/gatsby'
+import File from './base'
+import type Filesystem from '../filesystem'
+import type Tasks from '../tasks'
+import type { GatsbyNodeArgs } from '../gatsby'
 
 /**
  * A callback function to be run on tree nodes
@@ -34,7 +34,7 @@ export class FileHtml extends File {
 
   /**
    * Sets the page path and creates an empty parse5 document
-   * @constructor
+   * @internal
    */
   constructor (rel: string, fs: Filesystem, tasks: Tasks, gatsby: GatsbyNodeArgs) {
     super(rel, fs, tasks, gatsby)
@@ -53,6 +53,7 @@ export class FileHtml extends File {
 
   /**
    * Reads the file then compiles its html to ast
+   * @internal
    */
   read (): Promise<void> {
     const payload = this.emitPayload<FileHtml>()
@@ -69,6 +70,7 @@ export class FileHtml extends File {
 
   /**
    * Invokes html.node events on all nodes
+   * @internal
    */
   process (): Promise<void> {
     return this.walk(node => {
@@ -81,6 +83,7 @@ export class FileHtml extends File {
 
   /**
    * Serializes the tree back to html and writes the file
+   * @internal
    */
   write (): Promise<void> {
     const payload = this.emitPayload<FileHtml>()
@@ -142,3 +145,5 @@ export class FileHtml extends File {
     return relative ? relPath : absPath
   }
 }
+
+export default FileHtml

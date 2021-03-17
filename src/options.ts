@@ -1,5 +1,5 @@
-import { GatsbyJoi } from './gatsby'
-import { ITaskApiEvents, ITaskOptions } from './tasks'
+import type { GatsbyJoi } from './gatsby'
+import type { ITaskApiEvents, ITaskOptions } from './index'
 
 // Available processing strategies
 export type IOptionProcessingStrategy = 'sequential' | 'parallel'
@@ -30,6 +30,7 @@ export type IOptions = {
 
 /**
  * Plugin options defaults
+ * @internal
  */
 // @ts-expect-error
 export const DEFAULTS: IOptions = {
@@ -46,6 +47,7 @@ export const DEFAULTS: IOptions = {
 
 /**
  * Plugin options schema
+ * @internal
  */
 export function schema (joi: GatsbyJoi): GatsbyJoi {
   const processingSchema = joi.object({
@@ -83,3 +85,5 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
       .description('Changes how files of a specific extension are processed.')
   })
 }
+
+export default IOptions

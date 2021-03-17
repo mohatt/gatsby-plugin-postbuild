@@ -1,11 +1,11 @@
 import { Promise } from 'bluebird'
 import _ from 'lodash'
 import PurgeCSS from 'purgecss'
-import { createDebug } from '~/common'
-import { HtmlTransformer, HtmlStyle, HtmlStyleFile } from './html'
+import { createDebug } from '@postbuild/common'
+import { HtmlOptimizer, HtmlStyle, HtmlStyleFile } from './html'
 import { IOptions, PurgecssOptions, purgecssImportedOptions } from '../options'
-import type { Filesystem } from '~/filesystem'
-import type { AssetMapper } from './mapper'
+import type { Filesystem } from '@postbuild'
+import type AssetMapper from './mapper'
 const debug = createDebug('purgecss/purger')
 
 export interface IPurgeResult {
@@ -22,7 +22,7 @@ export class Purger {
    * multiple html files
    * @type {Object}
    */
-  cachedStyles: {
+  private cachedStyles: {
     [id: string]: IPurgeResult
   } = {}
 
@@ -30,15 +30,15 @@ export class Purger {
    * Cached contents of script files
    * @type {Object}
    */
-  cachedScripts: {
+  private cachedScripts: {
     [id: string]: string
   } = {}
 
   /**
    * PurgeCSS deps
    */
-  purgeCSS: PurgeCSS
-  purgeOptions: PurgecssOptions
+  private readonly purgeCSS: PurgeCSS
+  private readonly purgeOptions: PurgecssOptions
 
   private readonly options: IOptions
   private readonly fs: Filesystem
@@ -71,7 +71,7 @@ export class Purger {
   /**
    * Purges a style object based on its metadata
    */
-  async purge (style: HtmlStyle, file: HtmlTransformer): Promise<string[]> {
+  async purge (style: HtmlStyle, file: HtmlOptimizer): Promise<string[]> {
     if (style.hasID() && style.getID() in this.cachedStyles) {
       if (style instanceof HtmlStyleFile) {
         debug('Ignoring rewriting file', style.getID())
@@ -119,3 +119,5 @@ export class Purger {
     })
   }
 }
+
+export default Purger

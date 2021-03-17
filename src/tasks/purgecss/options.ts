@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { defaultOptions as purgecssDefaults } from 'purgecss'
-import type { ITaskApiOptions, ITaskOptions } from '~/tasks'
+import type { ITaskApiOptions, ITaskOptions } from '@postbuild'
 type PurgecssDefaults = typeof purgecssDefaults
 
 /**
@@ -85,3 +85,5 @@ export const options: ITaskApiOptions<IOptions> = {
     })
   }
 }
+
+export default IOptions

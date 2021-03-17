@@ -1,18 +1,18 @@
 import { Promise } from 'bluebird'
 import path from 'path'
 import _ from 'lodash'
-import { Filesystem } from './filesystem'
-import { Tasks, ITaskOptions } from './tasks'
-import { File } from './files'
-import { DEFAULTS, schema, IOptions, IOptionProcessing } from './options'
+import Filesystem from './filesystem'
+import Tasks from './tasks'
+import { DEFAULTS, schema } from './options'
 import { ERROR_MAP, debug } from './common'
+import { ITaskOptions, IOptions, IOptionProcessing, File } from './index'
 import type { GatsbyJoi, GatsbyNodeArgs, GatsbyPluginOptions } from './gatsby'
 
 /**
  * Interface for the main postbuild object thats is passed
  * to all event callbacks
  */
-export type IPostbuildArgs<O extends ITaskOptions, F extends File | undefined = undefined, P extends Object = {}> = {
+export type IPostbuildArg<O extends ITaskOptions, F extends File | undefined = undefined, P extends Object = {}> = {
   /**
    * Options for current task
    */
@@ -46,25 +46,26 @@ export type IPostbuildArgs<O extends ITaskOptions, F extends File | undefined = 
 
 /**
  * Handles core plugin functionality
+ * @internal
  */
-export default class Postbuild {
+export class Postbuild {
   /**
    * Plugin options
    */
-  options: IOptions
+  private readonly options: IOptions
 
   /**
    * Files being processed by the plugin
    */
-  files: {
+  private files: {
     [path: string]: File[]
   } = {}
 
   /**
    * Dependencies
    */
-  fs: Filesystem
-  tasks: Tasks
+  private readonly fs: Filesystem
+  private readonly tasks: Tasks
 
   /**
    * Loads dependencies and sets default options
@@ -229,3 +230,6 @@ export default class Postbuild {
     }))
   }
 }
+
+/** @internal */
+export default Postbuild

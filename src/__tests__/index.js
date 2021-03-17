@@ -1,8 +1,8 @@
-import { pluginOptionsSchema, onPreBootstrap, onPostBuild } from '~/index'
-import Postbuild from '~/postbuild'
-import { PostbuildError } from '~/common'
+import { pluginOptionsSchema, onPreBootstrap, onPostBuild } from '../index'
+import Postbuild from '../postbuild'
+import { PostbuildError } from '../common'
 
-jest.mock('~/postbuild')
+jest.mock('../postbuild')
 const postbuild = Postbuild.mock.instances[0]
 const gatsbyActivity = {
   start: jest.fn(),

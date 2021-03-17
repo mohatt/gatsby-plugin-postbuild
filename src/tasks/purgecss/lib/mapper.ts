@@ -1,19 +1,19 @@
 import path from 'path'
-import { createDebug } from '~/common'
-import type { Filesystem } from '~/filesystem'
-import type { HtmlTransformer } from './html'
-import type { IOptions } from '../options'
+import { createDebug } from '@postbuild/common'
+import type { Filesystem } from '@postbuild'
+import type HtmlOptimizer from './html'
+import type IOptions from '../options'
 const debug = createDebug('purgecss/mapper')
 
 /**
  * Handles linking/ignoring html, js and css files
  */
-export class AssetMapper {
+export default class AssetMapper {
   /**
    * Styles shared between multiple html files
    */
   sharedStyles: {
-    [id: string]: HtmlTransformer[]
+    [id: string]: HtmlOptimizer[]
   } = {}
 
   /**
@@ -106,7 +106,7 @@ export class AssetMapper {
   /**
    * Links a given style id to a html file
    */
-  linkStyleToHtml (id: string, html: HtmlTransformer): void {
+  linkStyleToHtml (id: string, html: HtmlOptimizer): void {
     this.sharedStyles[id] ??= []
     if (!this.sharedStyles[id].includes(html)) {
       this.sharedStyles[id].push(html)
@@ -117,7 +117,7 @@ export class AssetMapper {
   /**
    * Returns the list of html files linked to a given style id
    */
-  getStyleLinks (id: string): HtmlTransformer[] {
+  getStyleLinks (id: string): HtmlOptimizer[] {
     if (id in this.sharedStyles) {
       return this.sharedStyles[id]
     }

@@ -1,7 +1,7 @@
 import _ from 'lodash'
-import { PLUGIN } from '~/common'
+import { PLUGIN } from '@postbuild/common'
 import Link from './link'
-import type { Filesystem } from '~/filesystem'
+import type { Filesystem } from '@postbuild'
 import type { IOptions, IHeadersMap, IHeader } from '../options'
 
 /**

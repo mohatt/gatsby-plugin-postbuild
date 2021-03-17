@@ -1,4 +1,4 @@
-import type { ITaskApiOptions, ITaskOptions } from '~/tasks'
+import type { ITaskApiOptions, ITaskOptions } from '@postbuild'
 import type Link from './lib/link'
 
 /**
@@ -82,3 +82,5 @@ export const options: ITaskApiOptions<IOptions> = {
     })
   }
 }
+
+export default IOptions

@@ -1,17 +1,15 @@
-import { HtmlTransformer } from './lib/html'
-import { AssetMapper } from './lib/mapper'
-import { Purger } from './lib/purger'
-import type { FileHtml } from '~/files'
-import type { Filesystem } from '~/filesystem'
-import type { ITaskApiEvents } from '~/tasks'
-import type { IOptions } from './options'
+import HtmlOptimizer from './lib/html'
+import AssetMapper from './lib/mapper'
+import Purger from './lib/purger'
+import type IOptions from './options'
+import type { ITaskApiEvents, Filesystem, FileHtml } from '@postbuild'
 
 /**
  * Holds refrences to required dependencies
  */
 class DIContainer {
-  transformers: {
-    [file: string]: HtmlTransformer
+  optimizers: {
+    [file: string]: HtmlOptimizer
   } = {}
 
   readonly options: IOptions
@@ -25,18 +23,18 @@ class DIContainer {
     this.purger = purger ?? new Purger(this.options, this.fs, this.mapper)
   }
 
-  createTrans (file: FileHtml): void {
-    this.transformers[file.relative] = new HtmlTransformer(
+  setOptimizer (file: FileHtml): void {
+    this.optimizers[file.relative] = new HtmlOptimizer(
       file, this.options, this.fs, this.mapper, this.purger
     )
   }
 
-  getTrans (file: FileHtml): HtmlTransformer {
-    return this.transformers[file.relative]
+  getOptimizer (file: FileHtml): HtmlOptimizer {
+    return this.optimizers[file.relative]
   }
 
-  deleteTrans (file: FileHtml): void {
-    delete this.transformers[file.relative]
+  unsetOptimizer (file: FileHtml): void {
+    delete this.optimizers[file.relative]
   }
 }
 
@@ -53,15 +51,15 @@ export const events: ITaskApiEvents<IOptions> = {
       config.strategy = 'sequential'
     },
     tree: ({ file }) => {
-      di.createTrans(file)
-      return di.getTrans(file).load()
+      di.setOptimizer(file)
+      return di.getOptimizer(file).load()
     },
     node: ({ node, file }) => {
-      di.getTrans(file).processNode(node)
+      di.getOptimizer(file).processNode(node)
     },
     serialize: ({ file }) => {
-      return di.getTrans(file).purgeStyles()
-        .then(() => di.deleteTrans(file))
+      return di.getOptimizer(file).purgeStyles()
+        .then(() => di.unsetOptimizer(file))
     }
   }
 }

@@ -1,7 +1,7 @@
 import Builder from './lib/builder'
 import Link from './lib/link'
-import type { ITaskApiEvents } from '~/tasks'
-import type { IOptions } from './options'
+import type IOptions from './options'
+import type { ITaskApiEvents } from '@postbuild'
 
 /**
  * Headers file builder

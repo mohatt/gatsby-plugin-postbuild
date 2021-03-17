@@ -2,11 +2,10 @@ import { Promise } from 'bluebird'
 import crypto from 'crypto'
 import * as parse5 from 'parse5'
 import { cloneDeep } from 'lodash'
-import type { FileHtml } from '~/files'
-import type { Filesystem } from '~/filesystem'
+import type { Filesystem, FileHtml } from '@postbuild'
 import type { Purger, IPurgeResult } from './purger'
-import type { AssetMapper } from './mapper'
-import type { IOptions } from '../options'
+import type AssetMapper from './mapper'
+import type IOptions from '../options'
 
 /**
  * Utility function to create an id for an inline
@@ -95,26 +94,26 @@ export class HtmlStyleFile extends HtmlStyle {
 /**
  * Handles html parsing/serialization and asset searching
  */
-export class HtmlTransformer {
+export class HtmlOptimizer {
   /**
    * File object received from postbuild
    */
-  file: FileHtml
+  readonly file: FileHtml
 
   /**
-   * Html string without CSS
+   * Html string without inline styles
    */
   html: string = ''
 
   /**
-   * List of styles found in html with their metadata
+   * List of scripts found in html
    */
-  styles: HtmlStyle[] = []
+  readonly scripts: string[] = []
 
   /**
-   * Absolute paths to scripts found in html
+   * List of styles found in html with their metadata
    */
-  scripts: string[] = []
+  private readonly styles: HtmlStyle[] = []
 
   private readonly options: IOptions
   private readonly fs: Filesystem
@@ -237,3 +236,5 @@ export class HtmlTransformer {
     })
   }
 }
+
+export default HtmlOptimizer

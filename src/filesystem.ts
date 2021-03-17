@@ -1,11 +1,11 @@
 import { Promise } from 'bluebird'
 import { promises as fs } from 'fs'
 import path from 'path'
-import glob from 'glob'
+import glob, { IOptions as IGlobOptions } from 'glob'
 import filesize from 'filesize'
 import { toInteger } from 'lodash'
-import { PostbuildError } from '~/common'
-import type { IOptions } from './options'
+import { PostbuildError } from './common'
+import type { IOptions } from './index'
 const globAsync = Promise.promisify(glob) as typeof glob.__promisify__
 
 /**
@@ -33,6 +33,7 @@ export interface IFilesystemReportMeta {
 
 /**
  * Represents a file written by the plugin
+ * @internal
  */
 export class FilesystemReport {
   file: string
@@ -61,11 +62,12 @@ export class FilesystemReport {
 
 /**
  * Handles fs reports
+ * @internal
  */
 export class FilesystemReporter {
-  reports: FilesystemReport[] = []
-  byetsSaved: number = 0
-  readonly options: IOptions
+  private readonly reports: FilesystemReport[] = []
+  private byetsSaved: number = 0
+  private readonly options: IOptions
   constructor (options: IOptions) {
     this.options = options
   }
@@ -109,11 +111,17 @@ export class FilesystemReporter {
 export class Filesystem {
   /**
    * Absolute path to `/public` to be used for resolving relative paths
+   * @internal
    */
   root: string = ''
 
-  readonly options: IOptions
+  /** @internal */
+  private readonly options: IOptions
+
+  /** @internal */
   readonly reporter: FilesystemReporter
+
+  /** @internal */
   constructor (options: IOptions, reporter?: FilesystemReporter) {
     this.options = options
     this.reporter = reporter ?? new FilesystemReporter(options)
@@ -121,6 +129,8 @@ export class Filesystem {
 
   /**
    * Sets root path
+   *
+   * @internal
    */
   setRoot (root: string): void {
     this.root = root
@@ -129,7 +139,7 @@ export class Filesystem {
   /**
    * Wraps glob by setting cwd and root paths to `/public` directory
    */
-  glob (pattern: string, options?: Parameters<typeof glob>[1]): Promise<string[]> {
+  glob (pattern: string, options?: IGlobOptions): Promise<string[]> {
     return globAsync(pattern, {
       cwd: this.root,
       root: this.root,
@@ -209,3 +219,6 @@ export class Filesystem {
     return path.join(this.root, relative)
   }
 }
+
+export default Filesystem
+export type { IGlobOptions }

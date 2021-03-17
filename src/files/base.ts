@@ -1,14 +1,14 @@
 import { Promise } from 'bluebird'
 import path from 'path'
 import { SUPPORTS } from './index'
-import type { Tasks } from '../tasks'
+import type Tasks from '../tasks'
 import type { Filesystem, IFilesystemReportMeta } from '../filesystem'
 import type { GatsbyNodeArgs } from '../gatsby'
 
 /**
  * Base class for all file types
  */
-export abstract class File {
+export default abstract class File {
   /**
    * Absolute path of the file
    */
@@ -32,6 +32,7 @@ export abstract class File {
 
   /**
    * Wraps fs methods by adding file path
+   * @internal
    */
   protected readonly file: {
     read: () => Promise<string>
@@ -40,8 +41,10 @@ export abstract class File {
 
   /**
    * Wraps tasks.run method
+   * @internal
    */
   protected readonly emit: Tasks['run']
+  /** @internal */
   protected readonly emitPayload: <F extends File>() => {
     file: F
     filesystem: Filesystem
@@ -51,7 +54,7 @@ export abstract class File {
   /**
    * Sets the file metadata and other private methods
    * needed for processing the file by child classes
-   * @constructor
+   * @internal
    */
   constructor (rel: string, fs: Filesystem, tasks: Tasks, gatsby: GatsbyNodeArgs) {
     this.path = path.join(fs.root, rel)
@@ -74,6 +77,7 @@ export abstract class File {
 
   /**
    * Creates a new file instance for the given path based on the given extension
+   * @internal
    */
   static factory = (ext: string, rel: string, fs: Filesystem, tasks: Tasks, gatsby: GatsbyNodeArgs): File => {
     if (!(ext in SUPPORTS)) {
@@ -86,8 +90,8 @@ export abstract class File {
   /**
    * Checks if a file extension is supported
    */
-  static supports = (ext: string): boolean => {
-    return ext in SUPPORTS
+  static supports = (ext: string): boolean|typeof File => {
+    return ext in SUPPORTS ? SUPPORTS[ext] : false
   }
 
   /**
@@ -97,16 +101,19 @@ export abstract class File {
 
   /**
    * Reads the file contents
+   * @internal
    */
   abstract read (): Promise<void>
 
   /**
    * Performs transformations on the file contents
+   * @internal
    */
   abstract process (): Promise<void>
 
   /**
    * Writes the processed file contents
+   * @internal
    */
   abstract write (): Promise<void>
 }

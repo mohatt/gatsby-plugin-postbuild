@@ -1,13 +1,15 @@
 import { Promise } from 'bluebird'
-import { File } from './base'
+import File from './base'
 
 /**
  * Handles files with unknown extensions
  */
-export class FileGeneric extends File {
+export default class FileGeneric extends File {
   /**
    * Reads and writes the file in one mthod since there
    * is no need to retain the file data
+   *
+   * @internal
    */
   read (): Promise<void> {
     return this.file.read()
@@ -20,6 +22,8 @@ export class FileGeneric extends File {
 
   /**
    * Dummy method
+   *
+   * @internal
    */
   process (): Promise<void> {
     return Promise.resolve()
@@ -27,6 +31,8 @@ export class FileGeneric extends File {
 
   /**
    * Dummy method
+   *
+   * @internal
    */
   write (): Promise<void> {
     return Promise.resolve()
