@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.1.0...v2.1.1) (2021-03-18)
+
+
+### Performance Improvements
+
+* **plugin:** use chalk instead of plain ANSI codes ([b6a8261](https://github.com/mohatt/gatsby-plugin-postbuild/commit/b6a8261ea14b7ad762a587bcf3aff7f59c540518))
+
 # [2.1.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.0.0...v2.1.0) (2021-03-17)
 
 
