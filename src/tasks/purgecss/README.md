@@ -1,8 +1,8 @@
 # Purgecss
-A Postbuild task that optimizes generated HTML/CSS files by removing unused CSS selectors.
+A Postbuild task that optimizes generated HTML/CSS files by removing unused CSS selectors. The task uses [PurgeCSS library][purgecss] under the hood. 
 
 ## Usage
-Enable the task in our `gatsby-config.js`
+Enable the task in your `gatsby-config.js`
 ```javascript
 plugins: [
   {
@@ -76,4 +76,5 @@ Remove any unused `@keyframes` rules in your css.
 
 Remove any unused variables in your css.
 
+[purgecss]: https://purgecss.com/
 [purgecss-config]: https://purgecss.com/configuration.html
