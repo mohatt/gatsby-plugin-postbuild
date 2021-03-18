@@ -27,7 +27,7 @@ The plugin comes with these tasks out of the box:
 ## Installation
 Install with [npm](https://www.npmjs.com/)
 ```sh
-$ npm install --save gatsby-plugin-postbuild
+$ npm install gatsby-plugin-postbuild
 ```
 or [yarn](https://yarnpkg.com/)
 ```sh
