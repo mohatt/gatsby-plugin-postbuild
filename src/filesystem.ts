@@ -2,6 +2,7 @@ import { Promise } from 'bluebird'
 import { promises as fs } from 'fs'
 import path from 'path'
 import glob, { IOptions as IGlobOptions } from 'glob'
+import chalk from 'chalk'
 import filesize from 'filesize'
 import { toInteger } from 'lodash'
 import { PostbuildError } from './common'
@@ -12,11 +13,11 @@ const globAsync = Promise.promisify(glob) as typeof glob.__promisify__
  * Helpers for formatting console output
  */
 const colorize = {
-  title: (text: string) => `\x1b[4m${text}\x1b[0m`,
-  tag: (text: string) => `\x1b[3${text === 'create' ? '3' : '2'}m${text}\x1b[0m`,
+  title: (text: string) => chalk.underline(text),
+  tag: (text: string) => chalk[text === 'create' ? 'yellow' : 'green'](text),
   file: (text: string) => text,
-  size: (text: string) => `\x1b[2m[${text}]\x1b[0m`,
-  meta: (key: string, value: string) => `\x1b[2m${key}: ${value}\x1b[0m`
+  size: (text: string) => chalk.dim(`[${text}]`),
+  meta: (key: string, value: string) => chalk.dim(`${key}: ${value}`)
 }
 
 /**

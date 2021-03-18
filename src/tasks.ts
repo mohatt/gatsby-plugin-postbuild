@@ -298,7 +298,7 @@ export class Tasks {
   async run<T extends IEventType, E extends IEventName<T>> (type: T, event: E, payload: IEventFuncIn<T, E>, accumulator?: keyof IEventFuncIn<T, E>): Promise<Array<IEventFuncOut<T, E>>|IEventFuncOut<T, E>> {
     const events: Array<[ITask<any>, string]> = []
     // @ts-expect-error
-    const file = payload?.file as File | undefined
+    const file = payload.file as File | undefined
     if (file !== undefined) {
       const fileEvents = this.fileEvents[file.relative] ?? []
       for (const fe of fileEvents) {

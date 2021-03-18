@@ -276,6 +276,6 @@ These events are emitted at certain run time points.
 [codecov-url]: https://codecov.io/github/mohatt/gatsby-plugin-postbuild
 [codecov-img]: https://img.shields.io/codecov/c/github/mohatt/gatsby-plugin-postbuild.svg?logo=codecov&logoColor=white
 [gatsby-url]: https://www.gatsbyjs.org/packages/gatsby-plugin-postbuild
-[gatsby-img]: https://img.shields.io/badge/gatsby->=2.25.0-blueviolet.svg?logo=gatsby
+[gatsby-img]: https://img.shields.io/badge/gatsby->=2.25-blueviolet.svg?logo=gatsby
 [license-url]: https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/LICENSE
 [license-img]: https://img.shields.io/github/license/mohatt/gatsby-plugin-postbuild.svg?logo=open%20source%20initiative&logoColor=white
