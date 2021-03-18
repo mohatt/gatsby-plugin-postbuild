@@ -270,12 +270,12 @@ These events are emitted at certain run time points.
 [MIT][license-url]
 
 [npm-url]: https://www.npmjs.com/package/gatsby-plugin-postbuild
-[npm-img]: https://img.shields.io/npm/v/gatsby-plugin-postbuild.svg
-[ci-url]: https://github.com/mohatt/gatsby-plugin-postbuild/actions
-[ci-img]: https://img.shields.io/github/workflow/status/mohatt/gatsby-plugin-postbuild/CI/master
+[npm-img]: https://img.shields.io/npm/v/gatsby-plugin-postbuild.svg?logo=npm
+[ci-url]: https://github.com/mohatt/gatsby-plugin-postbuild/actions/workflows/main.yml
+[ci-img]: https://img.shields.io/github/workflow/status/mohatt/gatsby-plugin-postbuild/CI/master?logo=github
 [codecov-url]: https://codecov.io/github/mohatt/gatsby-plugin-postbuild
-[codecov-img]: https://img.shields.io/codecov/c/github/mohatt/gatsby-plugin-postbuild.svg
+[codecov-img]: https://img.shields.io/codecov/c/github/mohatt/gatsby-plugin-postbuild.svg?logo=codecov&logoColor=white
 [gatsby-url]: https://www.gatsbyjs.org/packages/gatsby-plugin-postbuild
-[gatsby-img]: https://img.shields.io/badge/gatsby-v2.25+-blueviolet.svg
+[gatsby-img]: https://img.shields.io/badge/gatsby->=2.25.0-blueviolet.svg?logo=gatsby
 [license-url]: https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/LICENSE
-[license-img]: https://img.shields.io/github/license/mohatt/gatsby-plugin-postbuild.svg
+[license-img]: https://img.shields.io/github/license/mohatt/gatsby-plugin-postbuild.svg?logo=open%20source%20initiative&logoColor=white
