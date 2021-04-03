@@ -52,7 +52,7 @@ export interface IEvents<O extends ITaskOptions> {
     configure: IEvent<O, { config: IOptionProcessing }>
     parse: IEvent<O, { html: string }, FileHtml, string>
     tree: IEvent<O, {}, FileHtml>
-    node: IEvent<O, { node: parse5Node }, FileHtml>
+    node: IEvent<O, { node: parse5Node, previousNode?: parse5Node, nextNode?: parse5Node }, FileHtml>
     serialize: IEvent<O, {}, FileHtml>
     write: IEvent<O, { html: string }, FileHtml, string>
   }

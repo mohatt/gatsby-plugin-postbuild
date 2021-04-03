@@ -11,7 +11,7 @@ import type { GatsbyNodeArgs } from '../gatsby'
  * A callback function to be run on tree nodes
  * @see FileHtml.walk
  */
-export type IFileHtmlNodeWalker = (node: parse5.Node) => Promise<void>|void
+export type IFileHtmlNodeWalker = (node: parse5.Node, prev?: parse5.Node, next?: parse5.Node) => Promise<void>|void
 
 /**
  * Interface for html files
@@ -73,10 +73,12 @@ export class FileHtml extends File {
    * @internal
    */
   process (): Promise<void> {
-    return this.walk(node => {
+    return this.walk((node, previousNode, nextNode) => {
       return this.emit('html', 'node', {
         ...this.emitPayload<FileHtml>(),
-        node
+        node,
+        previousNode,
+        nextNode
       }) as unknown as Promise<void>
     })
   }
@@ -102,13 +104,22 @@ export class FileHtml extends File {
    * Recursively walks through a parse5 tree invoking a callback
    *  on every node on the tree.
    */
-  async walk (cb: IFileHtmlNodeWalker, node: parse5.Node = this.tree): Promise<void> {
-    await cb(node)
-    if ('childNodes' in node) {
-      await Promise.each(node.childNodes, childNode => {
-        return this.walk(cb, childNode)
-      })
+  walk (cb: IFileHtmlNodeWalker, root: parse5.Node = this.tree, processGatsbyNode = false): Promise<void> {
+    let gatsby = processGatsbyNode
+    const walker = async (curr: parse5.Node, prev?: parse5.Node, next?: parse5.Node): Promise<void> => {
+      // Disallow processing `___gatsby` node and its descendants by default
+      if (!gatsby && 'attrs' in curr && curr.attrs.find(a => a.name === 'id')?.value === '___gatsby') {
+        gatsby = true
+        return
+      }
+      await cb(curr, prev, next)
+      if ('childNodes' in curr) {
+        await Promise.each(curr.childNodes, (childNode, i) => {
+          return walker(childNode, curr.childNodes[i - 1], curr.childNodes[i + 1])
+        })
+      }
     }
+    return walker(root)
   }
 
   /**
