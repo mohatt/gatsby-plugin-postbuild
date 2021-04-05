@@ -221,11 +221,10 @@ export class HtmlOptimizer {
   }
 
   /**
-   * Purges all style nodes then writes the final
-   * optimized html file
+   * Purges all style nodes
    */
   purgeStyles (): Promise<void> {
-    return Promise.mapSeries(this.styles, style => {
+    return Promise.map(this.styles, style => {
       return this.purger.purge(style, this)
     }).then(result => {
       const rejected = result.flat()
