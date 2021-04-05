@@ -1,3 +1,18 @@
+# [2.2.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.1.1...v2.2.0) (2021-04-05)
+
+
+### Features
+
+* **plugin:** allow passing options to file transformers ([fe0d323](https://github.com/mohatt/gatsby-plugin-postbuild/commit/fe0d3238e6519ab505094b344a310decc12491a5))
+* **plugin:** disallow processing `___gatsby` node and its descendants by default ([b9709a0](https://github.com/mohatt/gatsby-plugin-postbuild/commit/b9709a07492d4dacdc2b8907f83fe7fe24a7b79d))
+* **task:minify:** add new task for minifying inline html assets ([bde1f9c](https://github.com/mohatt/gatsby-plugin-postbuild/commit/bde1f9c20f89c290e6f9de76498fb922969d1819))
+
+
+### Performance Improvements
+
+* **plugin:** update type declarations ([6b50078](https://github.com/mohatt/gatsby-plugin-postbuild/commit/6b50078ec50b729148a2cf933f0351791a2d6ed3))
+* **task:purgecss:** use Promise.map for purging styles ([ad4ab7b](https://github.com/mohatt/gatsby-plugin-postbuild/commit/ad4ab7b94afa29ee96a36b3cd55fa28e045e5607))
+
 ## [2.1.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.1.0...v2.1.1) (2021-03-18)
 
 

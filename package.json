@@ -1,6 +1,6 @@
 {
   "name": "gatsby-plugin-postbuild",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Gatsby plugin for optimizing/transforming generated static files.",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
