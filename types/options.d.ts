@@ -4,6 +4,9 @@ export interface IOptionProcessing {
   concurrency: number
   strategy: IOptionProcessingStrategy
 }
+export declare type IExtensionOptions<O = {
+  [option: string]: any
+}> = IOptionProcessing & O
 /**
  * Plugin options interface
  */
@@ -17,7 +20,7 @@ export declare type IOptions = {
   events: ITaskApiEvents<any>
   processing: IOptionProcessing
   extensions: {
-    [ext: string]: Partial<IOptionProcessing> | undefined
+    [ext: string]: Partial<IExtensionOptions>
   }
 } & {
   [task: string]: ITaskOptions

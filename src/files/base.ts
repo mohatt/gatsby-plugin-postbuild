@@ -6,6 +6,7 @@ import type { Filesystem, IFilesystemReportMeta } from '../filesystem'
 import type { IExtensionOptions } from '../options'
 import type { GatsbyNodeArgs } from '../gatsby'
 
+/** @internal */
 export interface FileConstructorArgs {
   filesystem: Filesystem
   tasks: Tasks

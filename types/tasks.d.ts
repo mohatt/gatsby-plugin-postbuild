@@ -1,6 +1,6 @@
 import type { Node as parse5Node } from 'parse5'
 import type { GatsbyJoi } from './gatsby'
-import type { IPostbuildArg, IOptionProcessing, File, FileGeneric, FileHtml } from './index'
+import type { IPostbuildArg, IExtensionOptions, File, FileGeneric, FileHtml } from './index'
 /**
  * Generic type for async/sync functions
  */
@@ -20,7 +20,7 @@ export interface IEvents<O extends ITaskOptions> {
   }
   html: {
     configure: IEvent<O, {
-      config: IOptionProcessing
+      config: IExtensionOptions
     }>
     parse: IEvent<O, {
       html: string
@@ -28,6 +28,8 @@ export interface IEvents<O extends ITaskOptions> {
     tree: IEvent<O, {}, FileHtml>
     node: IEvent<O, {
       node: parse5Node
+      previousNode?: parse5Node
+      nextNode?: parse5Node
     }, FileHtml>
     serialize: IEvent<O, {}, FileHtml>
     write: IEvent<O, {
@@ -36,7 +38,7 @@ export interface IEvents<O extends ITaskOptions> {
   }
   unknown: {
     configure: IEvent<O, {
-      config: IOptionProcessing
+      config: IExtensionOptions
     }>
     content: IEvent<O, {
       raw: string
