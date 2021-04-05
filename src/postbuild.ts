@@ -160,26 +160,24 @@ export class Postbuild {
     }
 
     // Get filenames then create a File instance for every file based on extension
+    // Group files per extension and process them in series
     await this.tasks.getFilenames()
-      .then(filenames => {
+      .then(async filenames => {
         for (const ext in filenames) {
           status.total += filenames[ext].length
-          this.files[ext] = filenames[ext].map(file => File.factory(ext, file, this.fs, this.tasks, gatsby))
+          const config = Object.assign({},
+            this.options.processing,
+            this.options.extensions[ext]
+          )
+          await this.tasks.run(ext as 'unknown', 'configure', { ...payload, config })
+          this.files[ext] = filenames[ext].map(file => File.factory(ext, file, config, {
+            filesystem: this.fs,
+            tasks: this.tasks,
+            gatsby
+          }))
+          await this.process(ext, config, tick)
         }
       })
-
-    // Run one extension at a time
-    await Promise.each(Object.keys(this.files), ext => {
-      // Extension processing options
-      const config = { ...this.options.processing }
-      return this.tasks.run(ext as 'unknown', 'configure', {
-        ...payload,
-        config
-      }).then(() => this.process(ext, {
-        ...config,
-        ...this.options.extensions[ext]
-      }, tick))
-    })
 
     // Run on.shutdown events
     await this.tasks.run('on', 'shutdown', payload)

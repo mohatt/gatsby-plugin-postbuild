@@ -3,7 +3,14 @@ import path from 'path'
 import { SUPPORTS } from './index'
 import type Tasks from '../tasks'
 import type { Filesystem, IFilesystemReportMeta } from '../filesystem'
+import type { IExtensionOptions } from '../options'
 import type { GatsbyNodeArgs } from '../gatsby'
+
+export interface FileConstructorArgs {
+  filesystem: Filesystem
+  tasks: Tasks
+  gatsby: GatsbyNodeArgs
+}
 
 /**
  * Base class for all file types
@@ -23,6 +30,11 @@ export default abstract class File {
    * File extension
    */
   extension: string
+
+  /**
+   * File extension options
+   */
+  options: IExtensionOptions
 
   /**
    * Meta fields to be displayed in
@@ -56,20 +68,21 @@ export default abstract class File {
    * needed for processing the file by child classes
    * @internal
    */
-  constructor (rel: string, fs: Filesystem, tasks: Tasks, gatsby: GatsbyNodeArgs) {
-    this.path = path.join(fs.root, rel)
+  constructor (rel: string, options: IExtensionOptions, { filesystem, tasks, gatsby }: FileConstructorArgs) {
+    this.path = path.join(filesystem.root, rel)
     this.relative = rel
-    this.extension = fs.extension(rel) as string
+    this.extension = filesystem.extension(rel) as string
 
     this.file = {
-      read: () => fs.read(rel),
-      update: (data) => fs.update(rel, data, this.reportMeta)
+      read: () => filesystem.read(rel),
+      update: (data) => filesystem.update(rel, data, this.reportMeta)
     }
 
+    this.options = options
     this.emit = tasks.run.bind(tasks)
     const payload = {
       file: this as any,
-      filesystem: fs,
+      filesystem,
       gatsby
     }
     this.emitPayload = () => payload
@@ -79,12 +92,12 @@ export default abstract class File {
    * Creates a new file instance for the given path based on the given extension
    * @internal
    */
-  static factory = (ext: string, rel: string, fs: Filesystem, tasks: Tasks, gatsby: GatsbyNodeArgs): File => {
+  static factory = (ext: string, rel: string, options: IExtensionOptions, args: FileConstructorArgs): File => {
     if (!(ext in SUPPORTS)) {
       ext = '*'
     }
     // @ts-expect-error
-    return new SUPPORTS[ext](rel, fs, tasks, gatsby)
+    return new SUPPORTS[ext](rel, options, args)
   }
 
   /**

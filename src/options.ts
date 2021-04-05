@@ -9,6 +9,11 @@ export interface IOptionProcessing {
   strategy: IOptionProcessingStrategy
 }
 
+// Extensio options interface
+export type IExtensionOptions<O = {
+  [option: string]: any
+}> = IOptionProcessing & O
+
 /**
  * Plugin options interface
  */
@@ -22,7 +27,7 @@ export type IOptions = {
   events: ITaskApiEvents<any>
   processing: IOptionProcessing
   extensions: {
-    [ext: string]: Partial<IOptionProcessing> | undefined
+    [ext: string]: Partial<IExtensionOptions>
   }
 } & {
   [task: string]: ITaskOptions
@@ -81,7 +86,7 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
       .description('Set of events to added as a custom postbuild task.'),
     processing: processingSchema
       .description('Default file processing options for all extensions.'),
-    extensions: joi.object().pattern(joi.string(), processingSchema)
+    extensions: joi.object().pattern(joi.string(), processingSchema.unknown(true))
       .description('Changes how files of a specific extension are processed.')
   })
 }

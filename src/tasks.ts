@@ -6,7 +6,7 @@ import type { GatsbyJoi } from './gatsby'
 import type {
   IPostbuildArg,
   IOptions,
-  IOptionProcessing,
+  IExtensionOptions,
   Filesystem,
   File,
   FileGeneric,
@@ -49,7 +49,7 @@ export interface IEvents<O extends ITaskOptions> {
     shutdown: IEvent<O>
   }
   html: {
-    configure: IEvent<O, { config: IOptionProcessing }>
+    configure: IEvent<O, { config: IExtensionOptions }>
     parse: IEvent<O, { html: string }, FileHtml, string>
     tree: IEvent<O, {}, FileHtml>
     node: IEvent<O, { node: parse5Node, previousNode?: parse5Node, nextNode?: parse5Node }, FileHtml>
@@ -57,7 +57,7 @@ export interface IEvents<O extends ITaskOptions> {
     write: IEvent<O, { html: string }, FileHtml, string>
   }
   unknown: {
-    configure: IEvent<O, { config: IOptionProcessing }>
+    configure: IEvent<O, { config: IExtensionOptions }>
     content: IEvent<O, { raw: string }, FileGeneric, string>
   }
 }

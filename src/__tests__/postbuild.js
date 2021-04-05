@@ -141,15 +141,16 @@ describe('run', () => {
       })
     })
     return expect(pb.run(gatsby, setStatus)).resolves.toBe(undefined).then(() => {
+      const config = { ...pb.options.processing, ...pb.options.extensions.foo }
       expect(File.factory.mock.calls)
         .toMatchObject([
-          ['foo', 'file1.foo', filesystem, tasks, gatsby],
-          ['foo', 'file2.foo', filesystem, tasks, gatsby]
+          ['foo', 'file1.foo', config, { filesystem, tasks, gatsby }],
+          ['foo', 'file2.foo', config, { filesystem, tasks, gatsby }]
         ])
       expect(tasks.run.mock.calls)
         .toMatchObject([
           ['on', 'postbuild', { filesystem, gatsby }],
-          ['foo', 'configure', { filesystem, gatsby, config: pb.options.processing }],
+          ['foo', 'configure', { filesystem, gatsby, config }],
           ['on', 'shutdown', { filesystem, gatsby }]
         ])
       expect(pb.process).toBeCalledTimes(1)

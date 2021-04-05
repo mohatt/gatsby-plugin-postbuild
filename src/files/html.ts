@@ -1,11 +1,22 @@
 import { Promise } from 'bluebird'
 import path from 'path'
+import _ from 'lodash'
 import * as parse5 from 'parse5'
 import parse5Adaptor from 'parse5/lib/tree-adapters/default'
-import File from './base'
-import type Filesystem from '../filesystem'
-import type Tasks from '../tasks'
-import type { GatsbyNodeArgs } from '../gatsby'
+import File, { FileConstructorArgs } from './base'
+import type { IExtensionOptions } from '../index'
+
+export type IFileHtmlOptions = IExtensionOptions<{
+  commons: {
+    [type: string]: string[]
+  }
+}>
+
+const DEFAULTS = {
+  commons: {
+    style: ['gatsby-global-css']
+  }
+}
 
 /**
  * A callback function to be run on tree nodes
@@ -33,18 +44,26 @@ export class FileHtml extends File {
   adaptor: typeof parse5Adaptor = parse5Adaptor
 
   /**
+   * Html extension options
+   */
+  options: IFileHtmlOptions
+
+  /**
    * Sets the page path and creates an empty parse5 document
    * @internal
    */
-  constructor (rel: string, fs: Filesystem, tasks: Tasks, gatsby: GatsbyNodeArgs) {
-    super(rel, fs, tasks, gatsby)
+  constructor (rel: string, options: IFileHtmlOptions, args: FileConstructorArgs) {
+    super(rel, options, args)
+
+    // @todo options should be loaded once
+    this.options = _.defaultsDeep(options, DEFAULTS)
 
     // Set the path to the html page
     const parts = rel.slice(0, -5).split(path.sep)
     const l = parts.length - 1
     if (parts[l] === 'index') parts.pop()
     else if (parts[l] === '404') parts[l] = '404.html'
-    parts.unshift(gatsby.pathPrefix)
+    parts.unshift(args.gatsby.pathPrefix)
     this.pagePath = parts.join('/') || '/'
 
     // Create an empty document
