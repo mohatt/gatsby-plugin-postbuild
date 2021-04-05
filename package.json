@@ -12,7 +12,7 @@
   "scripts": {
     "prepare": "cross-env NODE_ENV=production pnpm run build",
     "build": "pnpm run typecheck && pnpm run build:js",
-    "build:js": "babel src --out-dir dist -x '.ts,.js' --delete-dir-on-start --ignore '**/__tests__,**/*.test.js'",
+    "build:js": "babel src --out-dir dist -x '.ts,.js' --delete-dir-on-start --ignore \"src/@types,**/__tests__,**/*.test.js\"",
     "build:types": "tsc --build tsconfig.build.json",
     "test": "jest",
     "test:coverage": "jest --coverage",
@@ -47,7 +47,9 @@
     "glob": "^7.1.0",
     "lodash": "^4.17.20",
     "parse5": "^6.0.0",
-    "purgecss": "^4.0.0"
+    "purgecss": "^4.0.0",
+    "terser": "^5.6.0",
+    "cssnano": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "@babel/cli": "7.13.10",
@@ -73,11 +75,13 @@
     "gatsby": "2.32.4",
     "gatsby-plugin-utils": "0.9.0",
     "jest": "26.6.3",
+    "postcss": "8.2.9",
     "semantic-release": "17.4.2",
     "typescript": "4.2.3"
   },
   "peerDependencies": {
-    "gatsby": ">=2.25.4"
+    "gatsby": ">=2.25.4",
+    "postcss": ">=8.2.1"
   },
   "engines": {
     "node": ">=10.13.0"

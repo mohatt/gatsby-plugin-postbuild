@@ -12,7 +12,7 @@ export const PLUGIN = 'gatsby-plugin-postbuild'
 /**
  * Core plugin tasks
  */
-export const CORE_TASKS = ['purgecss', 'netlify-headers']
+export const CORE_TASKS = ['minify', 'purgecss', 'netlify-headers']
 
 /**
  * Reporter error map
