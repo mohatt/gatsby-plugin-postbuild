@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.2.0...v2.2.1) (2021-04-09)
+
+
+### Bug Fixes
+
+* **task:purgecss:** shallow clone purgecss options before purging ([8f6d754](https://github.com/mohatt/gatsby-plugin-postbuild/commit/8f6d754aa7f80b11af6de072d02c8b1916800e67))
+
 # [2.2.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.1.1...v2.2.0) (2021-04-05)
 
 
