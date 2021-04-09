@@ -14,7 +14,8 @@ export type IFileHtmlOptions = IExtensionOptions<{
 
 const DEFAULTS = {
   commons: {
-    style: ['gatsby-global-css']
+    style: ['gatsby-global-css'],
+    script: ['gatsby-chunk-mapping']
   }
 }
 

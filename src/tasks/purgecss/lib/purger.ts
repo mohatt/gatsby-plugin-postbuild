@@ -83,7 +83,7 @@ export class Purger {
       return cache.rejected
     }
 
-    const opts = this.purgeOptions
+    const opts = { ...this.purgeOptions }
     opts.content = []
     opts.css = []
     try {
