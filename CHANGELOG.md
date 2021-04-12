@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.2.1...v2.2.2) (2021-04-12)
+
+
+### Performance Improvements
+
+* **plugin:** update cssnano to v5 ([9f880c4](https://github.com/mohatt/gatsby-plugin-postbuild/commit/9f880c44d85912532ffa483f89eb3cf5c2a99d2d))
+
 ## [2.2.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.2.0...v2.2.1) (2021-04-09)
 
 
