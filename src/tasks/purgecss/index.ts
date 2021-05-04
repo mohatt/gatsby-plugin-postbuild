@@ -1,4 +1,4 @@
-import HtmlOptimizer from './lib/html'
+import HtmlContext from './lib/context'
 import AssetMapper from './lib/mapper'
 import Purger from './lib/purger'
 import type IOptions from './options'
@@ -8,8 +8,8 @@ import type { ITaskApiEvents, Filesystem, FileHtml } from '@postbuild'
  * Holds refrences to required dependencies
  */
 class DIContainer {
-  optimizers: {
-    [file: string]: HtmlOptimizer
+  contexts: {
+    [file: string]: HtmlContext
   } = {}
 
   readonly options: IOptions
@@ -23,18 +23,19 @@ class DIContainer {
     this.purger = purger ?? new Purger(this.options, this.fs, this.mapper)
   }
 
-  setOptimizer (file: FileHtml): void {
-    this.optimizers[file.relative] = new HtmlOptimizer(
+  createContext (file: FileHtml): HtmlContext {
+    this.contexts[file.relative] = new HtmlContext(
       file, this.options, this.fs, this.mapper, this.purger
     )
+    return this.contexts[file.relative]
   }
 
-  getOptimizer (file: FileHtml): HtmlOptimizer {
-    return this.optimizers[file.relative]
+  getContext (file: FileHtml): HtmlContext {
+    return this.contexts[file.relative]
   }
 
-  unsetOptimizer (file: FileHtml): void {
-    delete this.optimizers[file.relative]
+  deleteContext (file: FileHtml): void {
+    delete this.contexts[file.relative]
   }
 }
 
@@ -51,15 +52,14 @@ export const events: ITaskApiEvents<IOptions> = {
       config.strategy = 'sequential'
     },
     tree: ({ file }) => {
-      di.setOptimizer(file)
-      return di.getOptimizer(file).load()
+      return di.createContext(file).load()
     },
     node: ({ node, file }) => {
-      di.getOptimizer(file).processNode(node)
+      di.getContext(file).processNode(node)
     },
     serialize: ({ file }) => {
-      return di.getOptimizer(file).purgeStyles()
-        .then(() => di.unsetOptimizer(file))
+      return di.getContext(file).purgeStyles()
+        .then(() => di.deleteContext(file))
     }
   }
 }

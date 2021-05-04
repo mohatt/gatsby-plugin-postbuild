@@ -21,16 +21,11 @@ function createStyleId (css: string): string {
 /**
  * Interface for style objects
  */
-export abstract class HtmlStyle {
+export abstract class Style {
   /**
    * Style ID used for linking styles to html files
    */
-  protected id?: string
-  getID = (): string => this.id !== undefined ? this.id : ''
-  hasID = (): boolean => this.id !== undefined
-  setID = (id: string): void => {
-    this.id = id
-  }
+  id: string = ''
 
   /**
    * Reads the original css string
@@ -46,7 +41,7 @@ export abstract class HtmlStyle {
 /**
  * Handles inline style nodes
  */
-export class HtmlStyleInline extends HtmlStyle {
+export class StyleInline extends Style {
   private textNode: parse5.TextNode
   constructor (node: parse5.TextNode) {
     super()
@@ -65,7 +60,7 @@ export class HtmlStyleInline extends HtmlStyle {
 /**
  * Handles external css files
  */
-export class HtmlStyleFile extends HtmlStyle {
+export class StyleFile extends Style {
   private readonly fs: Filesystem
   private readonly options: IOptions
   private readonly path: string
@@ -73,6 +68,7 @@ export class HtmlStyleFile extends HtmlStyle {
     super()
     this.fs = fs
     this.options = options
+    this.id = path
     this.path = path
   }
 
@@ -94,7 +90,7 @@ export class HtmlStyleFile extends HtmlStyle {
 /**
  * Handles html parsing/serialization and asset searching
  */
-export class HtmlOptimizer {
+export class HtmlContext {
   /**
    * File object received from postbuild
    */
@@ -113,7 +109,7 @@ export class HtmlOptimizer {
   /**
    * List of styles found in html with their metadata
    */
-  private readonly styles: HtmlStyle[] = []
+  private readonly styles: Style[] = []
 
   private readonly options: IOptions
   private readonly fs: Filesystem
@@ -185,22 +181,20 @@ export class HtmlOptimizer {
         this.mapper.shouldIgnoreFile(stylePath)) {
         return
       }
-      const style = new HtmlStyleFile(stylePath, this.options, this.fs)
-      style.setID(stylePath)
-      this.mapper.linkStyleToHtml(stylePath, this)
+      const style = new StyleFile(stylePath, this.options, this.fs)
+      this.mapper.createStyleLink(style, this)
       this.styles.push(style)
       return
     }
 
     if (node.childNodes.length === 0) return
-    const style = new HtmlStyleInline(node.childNodes[0] as parse5.TextNode)
+    const style = new StyleInline(node.childNodes[0] as parse5.TextNode)
     if (this._inHead) {
       const idAttr = node.attrs.find(a => a.name === 'id')
-      const id = idAttr !== undefined && idAttr.value !== ''
+      style.id = idAttr !== undefined && idAttr.value !== ''
         ? idAttr.value
         : createStyleId(style.read())
-      style.setID(id)
-      this.mapper.linkStyleToHtml(id, this)
+      this.mapper.createStyleLink(style, this)
     }
     this.styles.push(style)
   }
@@ -236,4 +230,4 @@ export class HtmlOptimizer {
   }
 }
 
-export default HtmlOptimizer
+export default HtmlContext

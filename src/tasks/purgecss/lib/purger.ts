@@ -2,7 +2,7 @@ import { Promise } from 'bluebird'
 import _ from 'lodash'
 import PurgeCSS from 'purgecss'
 import { createDebug } from '@postbuild/common'
-import { HtmlOptimizer, HtmlStyle, HtmlStyleFile } from './html'
+import { HtmlContext, Style, StyleFile } from './context'
 import { IOptions, PurgecssOptions, purgecssImportedOptions } from '../options'
 import type { Filesystem } from '@postbuild'
 import type AssetMapper from './mapper'
@@ -71,14 +71,15 @@ export class Purger {
   /**
    * Purges a style object based on its metadata
    */
-  async purge (style: HtmlStyle, file: HtmlOptimizer): Promise<string[]> {
-    if (style.hasID() && style.getID() in this.cachedStyles) {
-      if (style instanceof HtmlStyleFile) {
-        debug('Ignoring rewriting file', style.getID())
+  async purge (style: Style, context: HtmlContext): Promise<string[]> {
+    const { id } = style
+    if (id in this.cachedStyles) {
+      if (style instanceof StyleFile) {
+        debug('Ignoring rewriting file', id)
         return []
       }
-      debug('Retreiving cached purge result for style', style.getID())
-      const cache = this.cachedStyles[style.getID()]
+      debug('Retreiving cached purge result for style', id)
+      const cache = this.cachedStyles[id]
       await style.update(cache)
       return cache.rejected
     }
@@ -89,14 +90,14 @@ export class Purger {
     try {
       opts.css.push({ raw: await style.read() })
     } catch (e) {
-      if (style instanceof HtmlStyleFile) return []
+      if (style instanceof StyleFile) return []
       throw e
     }
 
-    const files = style.hasID() ? this.mapper.getStyleLinks(style.getID()) : [file]
-    for (const sfile of files) {
-      opts.content.push({ raw: sfile.html, extension: 'html' })
-      await Promise.map(sfile.scripts, async script => {
+    const contexts = id ? this.mapper.getStyleContexts(style) : [context]
+    for (const ctx of contexts) {
+      opts.content.push({ raw: ctx.html, extension: 'html' })
+      await Promise.map(ctx.scripts, async script => {
         if (!(script in this.cachedScripts)) {
           try {
             this.cachedScripts[script] = await this.fs.read(script)
@@ -111,11 +112,11 @@ export class Purger {
     return this.purgeCSS.purge(opts).then(async results => {
       const result = results[0] as IPurgeResult
       await style.update(result)
-      if (style.hasID()) {
-        debug('Caching purge result on style', style.getID())
-        this.cachedStyles[style.getID()] = result
+      if (id) {
+        debug('Caching purge result on style', id)
+        this.cachedStyles[id] = result
       }
-      return (style instanceof HtmlStyleFile) ? [] : result.rejected
+      return (style instanceof StyleFile) ? [] : result.rejected
     })
   }
 }

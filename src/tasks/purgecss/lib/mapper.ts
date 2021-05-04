@@ -1,7 +1,7 @@
 import path from 'path'
 import { createDebug } from '@postbuild/common'
 import type { Filesystem } from '@postbuild'
-import type HtmlOptimizer from './html'
+import type { HtmlContext, Style } from './context'
 import type IOptions from '../options'
 const debug = createDebug('purgecss/mapper')
 
@@ -13,7 +13,7 @@ export default class AssetMapper {
    * Styles shared between multiple html files
    */
   sharedStyles: {
-    [id: string]: HtmlOptimizer[]
+    [id: string]: HtmlContext[]
   } = {}
 
   /**
@@ -106,18 +106,24 @@ export default class AssetMapper {
   /**
    * Links a given style id to a html file
    */
-  linkStyleToHtml (id: string, html: HtmlOptimizer): void {
+  createStyleLink (style: Style, context: HtmlContext): void {
+    const { id } = style
+    if (!id) {
+      return
+    }
+
     this.sharedStyles[id] ??= []
-    if (!this.sharedStyles[id].includes(html)) {
-      this.sharedStyles[id].push(html)
-      debug('Linked style with file', [id, html.file.relative])
+    if (!this.sharedStyles[id].includes(context)) {
+      this.sharedStyles[id].push(context)
+      debug('Linked style with file', [id, context.file.relative])
     }
   }
 
   /**
    * Returns the list of html files linked to a given style id
    */
-  getStyleLinks (id: string): HtmlOptimizer[] {
+  getStyleContexts (style: Style): HtmlContext[] {
+    const { id } = style
     if (id in this.sharedStyles) {
       return this.sharedStyles[id]
     }
