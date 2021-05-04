@@ -7,7 +7,7 @@ specifiers:
   '@babel/runtime': ^7.12.5
   '@semantic-release/changelog': 5.0.1
   '@semantic-release/git': 9.0.0
-  '@types/bluebird': 3.5.33
+  '@types/bluebird': 3.5.34
   '@types/glob': ^7.1.3
   '@types/jest': 26.0.22
   '@types/lodash': 4.14.168
@@ -62,7 +62,7 @@ devDependencies:
   '@babel/eslint-parser': 7.13.14_8c298b33b3270b62faf532d9218eff22
   '@semantic-release/changelog': 5.0.1_semantic-release@17.4.2
   '@semantic-release/git': 9.0.0_semantic-release@17.4.2
-  '@types/bluebird': 3.5.33
+  '@types/bluebird': 3.5.34
   '@types/jest': 26.0.22
   '@types/lodash': 4.14.168
   '@types/react-dom': 17.0.3
@@ -2247,8 +2247,8 @@ packages:
       '@babel/types': 7.13.14
     dev: true
 
-  /@types/bluebird/3.5.33:
-    resolution: {integrity: sha512-ndEo1xvnYeHxm7I/5sF6tBvnsA4Tdi3zj1keRKRs12SP+2ye2A27NDJ1B6PqkfMbGAcT+mqQVqbZRIrhfOp5PQ==}
+  /@types/bluebird/3.5.34:
+    resolution: {integrity: sha512-QMc57Pf067Rr78l6f4FftvuIXPYxu0VYFRKrZk1Clv+LWy7gN2fTBiAiv68askFHEHZcTLPFd01kNlpKOiSPgQ==}
     dev: true
 
   /@types/common-tags/1.8.0:
