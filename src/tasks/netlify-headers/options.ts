@@ -1,39 +1,41 @@
 import type { ITaskApiOptions, ITaskOptions } from '@postbuild'
+import { ProviderSymbol } from './lib/providers'
 import type Link from './lib/link'
 
 /**
- * Either a string for single-entry headers or
- *  an array of strings for multi-entry headers
+ * Header value is either a string for single-value headers or
+ *  an array of strings for multi-value headers
  *
- *  Example of a single-entry header:
- *   'Cache-Control: public, max-age=31536000, immutable'
+ *  Example of a single-value header:
+ *   {
+ *     'cache-control': 'public, max-age=31536000, immutable'
+ *   }
  *
- *  Examples of a multi-entry header:
- *   [
- *    'Cache-Control: public',
- *    'Cache-Control: max-age=31536000',
- *    'Cache-Control: immutable'
- *   ]
- *   or
- *   [
- *    'Link: </script.js>; rel=preload; as=script',
- *    'Link: </image.png>; rel=preload; as=image'
- *   ]
+ *  Examples of a multi-value header:
+ *   {
+ *    'link': [
+ *      '</script.js>; rel=preload; as=script',
+ *      '</image.png>; rel=preload; as=image'
+ *    ]
+ *   }
  */
-export type IHeader = string|string[]
+export interface IHeadersMap {
+  [name: string]: string|string[]
+}
 
 /**
  * Map of paths to path headers
  */
-export interface IHeadersMap {
-  [path: string]: IHeader[]
+export interface IPathHeadersMap {
+  [path: string]: IHeadersMap
 }
 
 /**
  * Task options interface
  */
 export type IOptions = ITaskOptions & {
-  headers: IHeadersMap
+  provider: ProviderSymbol
+  headers: IPathHeadersMap
   security: boolean
   caching: boolean
   cachingAssetTypes: string[]
@@ -48,6 +50,7 @@ export const options: ITaskApiOptions<IOptions> = {
   defaults: {
     enabled: false,
     ignore: [],
+    provider: ProviderSymbol.Netlify,
     headers: {},
     security: true,
     caching: true,
@@ -56,14 +59,18 @@ export const options: ITaskApiOptions<IOptions> = {
     removeLinkTags: true
   },
   schema: (joi) => {
+    const nonEmptyString = joi.string().trim().required()
     return joi.object({
+      provider: joi.string().valid(...Object.values(ProviderSymbol))
+        .description('Headers file provider.'),
       headers: joi.object()
         .pattern(
-          joi.string(),
-          joi.array().items(
+          nonEmptyString,
+          joi.object().pattern(
+            joi.string().pattern(/^[\w-]+$/),
             joi.alternatives().try(
-              joi.string(),
-              joi.array().items(joi.string())
+              nonEmptyString,
+              joi.array().items(nonEmptyString)
             )
           )
         )
@@ -73,7 +80,7 @@ export const options: ITaskApiOptions<IOptions> = {
       caching: joi.boolean()
         .description('Adds useful caching headers to immutable asset paths.'),
       cachingAssetTypes: joi.array()
-        .items(joi.string())
+        .items(nonEmptyString)
         .description('Specifies the types of assets that are considered immutable.'),
       transformPathLinks: joi.function().maxArity(2)
         .description('Callback for manipulating links under each path.'),

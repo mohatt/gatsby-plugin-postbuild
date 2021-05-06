@@ -1,46 +1,69 @@
 import _ from 'lodash'
-import { PLUGIN } from '@postbuild/common'
 import Link from './link'
+import Provider from './providers'
 import type { Filesystem } from '@postbuild'
-import type { IOptions, IHeadersMap, IHeader } from '../options'
+import type { IOptions, IHeadersMap, IPathHeadersMap } from '../options'
+
+export enum PathPlaceholder {
+  All = '[*]',
+  Pages = '[pages]',
+  PageData = '[page-data]',
+  Static = '[static]',
+  Assets = '[assets]'
+}
+
+/**
+ * Cache control headers
+ */
+const HEADER_CACHE_IMMUTABLE = 'public, max-age=31536000, immutable'
+const HEADER_CACHE_NEVER = 'public, max-age=0, must-revalidate'
 
 /**
  * Default security headers
  */
-const HEADERS_SECURITY = {
-  '/*': [
-    'X-Frame-Options: DENY',
-    'X-XSS-Protection: 1; mode=block',
-    'X-Content-Type-Options: nosniff',
-    'Referrer-Policy: same-origin'
-  ]
+const HEADERS_SECURITY: IPathHeadersMap = {
+  [PathPlaceholder.All]: {
+    'x-frame-options': 'DENY',
+    'x-xss-protection': '1; mode=block',
+    'x-content-type-options': 'nosniff',
+    'referrer-policy': 'same-origin'
+  }
 }
-
-/**
- * Cache control header for immutable assets
- */
-const HEADER_CACHE_IMMUTABLE = 'Cache-Control: public, max-age=31536000, immutable'
 
 /**
  * Default caching headers
  */
-const HEADERS_CACHING = {
-  '/static/*': [HEADER_CACHE_IMMUTABLE]
+const HEADERS_CACHING: IPathHeadersMap = {
+  [PathPlaceholder.Pages]: {
+    'cache-control': HEADER_CACHE_NEVER
+  },
+  [PathPlaceholder.PageData]: {
+    'cache-control': HEADER_CACHE_NEVER
+  },
+  [PathPlaceholder.Static]: {
+    'cache-control': HEADER_CACHE_IMMUTABLE
+  },
+  [PathPlaceholder.Assets]: {
+    'cache-control': HEADER_CACHE_IMMUTABLE
+  }
 }
 
 /**
  * Headers file builder
  */
 export default class Builder {
-  headers: IHeadersMap
+  headers: IPathHeadersMap
+  cachedAssets: string[] = []
   pages: {
     [path: string]: Link[]
   } = {}
 
+  readonly provider: Provider
   readonly options: IOptions
   readonly fs: Filesystem
   readonly pathPrefix: string
   constructor (options: IOptions, fs: Filesystem, pathPrefix: string) {
+    this.provider = Provider.factory(options, fs)
     this.options = options
     this.fs = fs
     this.pathPrefix = pathPrefix
@@ -63,7 +86,7 @@ export default class Builder {
       link.href.indexOf('/static/') === 0
     ) return
     if (this.options.cachingAssetTypes.includes(link.attrs.as)) {
-      this.headers[link.href] = [HEADER_CACHE_IMMUTABLE]
+      this.cachedAssets.push(link.href)
     }
   }
 
@@ -83,55 +106,101 @@ export default class Builder {
       : href
   }
 
+  protected isPathPlaceholder (path: string): path is PathPlaceholder {
+    return /^\[[^\]]+]$/.test(path)
+  }
+
+  protected getUserHeaders (): IPathHeadersMap {
+    const placeholders = Object.values(PathPlaceholder)
+    const multiValueHeaders = ['link']
+
+    const source = this.options.headers
+    const dest: IPathHeadersMap = {}
+    for (const path in source) {
+      if (this.isPathPlaceholder(path) && !placeholders.includes(path)) {
+        throw new Error(
+          `Invalid path placeholder "${path}". ` +
+          `Available placeholders are: ${placeholders.join(', ')}`
+        )
+      }
+
+      dest[path] = {}
+      for (const key in source[path]) {
+        const name = key.toLowerCase()
+        if (name in dest[path]) {
+          throw new Error(`Header name "${name}" cannot be defined twice`)
+        }
+        const value = source[path][key]
+        if (Array.isArray(value) && !multiValueHeaders.includes(name)) {
+          throw new TypeError(
+            `Value for Header name "${name}" must be a string. ` +
+            `Headers with multi-value support are: ${multiValueHeaders.join(', ')}`
+          )
+        }
+        dest[path][name] = value
+      }
+    }
+
+    return dest
+  }
+
+  protected mergeHeaders (dest: IHeadersMap, source?: IHeadersMap): IHeadersMap {
+    for (const name in source) {
+      const value = source[name]
+      if (name in dest && Array.isArray(value) && Array.isArray(dest[name])) {
+        dest[name] = value.concat(dest[name])
+        continue
+      }
+      dest[name] = value
+    }
+    return dest
+  }
+
   /**
-   * Builds the netlify `_headers` file
+   * Builds the headers file
    */
   build (): Promise<void> {
-    /**
-     * - When used as an Array.filter(user-defined, predicate: callback):
-     *   - Filters out invalid user-defined headers by returning undefined
-     *
-     * - When used as a _.unionBy(user-defined, current, predicate: callback):
-     *   - Overwrites user-defined headers based on lower-cased header name (either single or multi-entry headers)
-     *   - Merges user-defined 'Link' headers (either single or multi-entry headers) into current headers
-     *   - By default, any user-defined headers are moved to the top of the array
-     **/
-    const hcallback = (h: IHeader): string|number|undefined => {
-      const matches = (typeof h === 'string' ? h : h[0] || '').match(/^([^:]+):/)
-      const hname = matches?.[1].toLowerCase().trim()
-      return hname === 'link' ? Math.random() : hname
+    const userHeaders = this.getUserHeaders()
+    for (const path in userHeaders) {
+      if (path in this.headers) {
+        this.mergeHeaders(this.headers[path], userHeaders[path])
+        continue
+      }
+      this.headers[path] = userHeaders[path]
+    }
+
+    if (this.options.caching && this.cachedAssets.length) {
+      for (const asset of this.cachedAssets) {
+        this.headers[asset] = this.mergeHeaders({
+          ...this.headers[PathPlaceholder.Assets]
+        }, this.headers[asset])
+      }
     }
 
     for (const path in this.pages) {
+      // @todo: Validate the return value of a user-defined callback
       const links = this.options.transformPathLinks(this.pages[path], path)
-      if (!Array.isArray(links)) continue
-      this.headers[path] = [
-        _.sortBy(links, 'priority')
-          .filter(link => link instanceof Link)
-          .map(link => `Link: ${String(link)}`)
-      ]
-      if ('[page]' in this.options.headers) {
-        this.headers[path] = _.unionBy(this.options.headers['[page]'], this.headers[path], hcallback)
+      const pathHeaders = {
+        link: _.sortBy(links, 'priority').map(link => String(link))
       }
+      this.mergeHeaders(pathHeaders, this.headers[PathPlaceholder.Pages])
+      this.headers[path] = this.mergeHeaders(pathHeaders, this.headers[path])
     }
 
-    for (const path in this.options.headers) {
-      if (path === '[page]') continue
-      const headers = this.options.headers[path].filter(hcallback)
-      if (path in this.headers) {
-        this.headers[path] = _.unionBy(headers, this.headers[path], hcallback)
+    const headers: IPathHeadersMap = {}
+    const omitPlaceholders = [PathPlaceholder.Pages, PathPlaceholder.Assets]
+    for (const path in this.headers) {
+      if (omitPlaceholders.includes(path as PathPlaceholder)) {
         continue
       }
-      this.headers[path] = headers
+      headers[this.provider.processPath(path)] = this.headers[path]
     }
 
-    const lines = [`## Created with ${PLUGIN}`, '']
-    for (const path in this.headers) {
-      lines.push(path)
-      this.headers[path].flat().forEach(h => lines.push('  ' + h))
-    }
-
-    // Write _headers file
-    return this.fs.create('_headers', lines.join('\n'))
+    const filename = this.provider.getFilename()
+    return this.provider.build(headers)
+      .then(data => this.fs.create(filename, data))
+      .catch(e => {
+        throw new Error(`Unable to write headers file "${filename}": ${String(e.message)}`)
+      })
   }
 }
