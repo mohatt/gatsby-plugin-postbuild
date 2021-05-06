@@ -1,3 +1,16 @@
+# [2.3.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.2.2...v2.3.0) (2021-05-06)
+
+
+### Features
+
+* **task:http-headers:** add support for other providers (Vercel, Firebase) ([6289f61](https://github.com/mohatt/gatsby-plugin-postbuild/commit/6289f6158b00110d8f4af62906c15f68b73d4f21))
+* **task:http-headers:** change task name to `http-headers` ([9e35fb7](https://github.com/mohatt/gatsby-plugin-postbuild/commit/9e35fb795b975732809321d5c79f338d2f7d1679))
+
+
+### Performance Improvements
+
+* **task:purgecss:** code refactorings, no api changes ([ccf5f9d](https://github.com/mohatt/gatsby-plugin-postbuild/commit/ccf5f9dbc6b41adf76540401b081d7140aecfc99))
+
 ## [2.2.2](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.2.1...v2.2.2) (2021-04-12)
 
 
