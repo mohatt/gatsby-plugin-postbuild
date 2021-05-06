@@ -8,8 +8,8 @@ events emitted by [file transformers](#file-transformers).
 The plugin comes with these tasks out of the box:
 - [Purgecss](https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/src/tasks/purgecss)  
   Optimizes HTML/CSS files by removing unused CSS selectors.
-- [Netlify Headers](https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/src/tasks/netlify-headers)  
-  Transforms HTML link tags with resource hints into HTTP Link headers using Netlify's `_headers` file.
+- [HTTP Headers](https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/src/tasks/http-headers)  
+  Transforms HTML link tags with resource hints into HTTP Link headers using config file formats from different providers.
 - [Minify](https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/src/tasks/minify)  
   Minifies HTML inline scripts and styles using [terser](https://github.com/terser/terser) and [cssnano](https://github.com/cssnano/cssnano).
 
