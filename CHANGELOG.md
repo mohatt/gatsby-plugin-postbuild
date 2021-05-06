@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.3.0...v2.3.1) (2021-05-06)
+
+
+### Bug Fixes
+
+* **task:http-headers:** fix `/` page path ([9a2db7c](https://github.com/mohatt/gatsby-plugin-postbuild/commit/9a2db7cf4b6e6788bbd85ef8b2560cff415ccb26))
+
 # [2.3.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.2.2...v2.3.0) (2021-05-06)
 
 
