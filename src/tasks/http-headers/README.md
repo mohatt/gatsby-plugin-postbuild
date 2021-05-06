@@ -1,6 +1,6 @@
 # HTTP Headers
 A Postbuild task that transforms HTML link tags with resource hints eg. `<link rel=preload>` into HTTP Link headers using configuration
-file formats from different providers. Available providers are:
+file formats for different providers. Available providers are:
  - [Netlify](https://docs.netlify.com/routing/headers/)
  - [Vercel](https://vercel.com/docs/configuration#project/headers)
  - [Firebase](https://firebase.google.com/docs/hosting/full-config#headers)

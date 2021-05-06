@@ -12,7 +12,7 @@ export default class FirebaseProvider extends Provider {
 
   processPath (path: string): string {
     path = super.processPath(path)
-    if (path.startsWith('/')) {
+    if (path.startsWith('/') && path !== '/') {
       path = path.replace('/', '')
     }
     return path
