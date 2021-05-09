@@ -1,3 +1,25 @@
+# [3.0.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.3.1...v3.0.0) (2021-05-09)
+
+
+### Bug Fixes
+
+* **task:http-headers:** add support for `asset` paths ([98d42cb](https://github.com/mohatt/gatsby-plugin-postbuild/commit/98d42cb4efd0b1551be2beb38702639c6897dc18))
+
+
+### Documentation
+
+* **plugin:** bump minimum gatsby version to 3.0 ([98aa63e](https://github.com/mohatt/gatsby-plugin-postbuild/commit/98aa63efbcdf08d4426c66d6441e202d8f3b628e))
+
+
+### Features
+
+* **plugin:** add `assets` api to allow fetching assets by their original filename ([9d64f79](https://github.com/mohatt/gatsby-plugin-postbuild/commit/9d64f79a480d2a791e493253279333fb8f60cce5))
+
+
+### BREAKING CHANGES
+
+* **plugin:** The plugin now requires at least Gatsby v3.0.4
+
 ## [2.3.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.3.0...v2.3.1) (2021-05-06)
 
 
