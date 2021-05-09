@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v3.0.0...v3.0.1) (2021-05-09)
+
+
+### Bug Fixes
+
+* **task:http-headers:** fix paths with no headers ([8db02b3](https://github.com/mohatt/gatsby-plugin-postbuild/commit/8db02b3fe6e45b513a80530aa7d21158453d7b85))
+
 # [3.0.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v2.3.1...v3.0.0) (2021-05-09)
 
 
