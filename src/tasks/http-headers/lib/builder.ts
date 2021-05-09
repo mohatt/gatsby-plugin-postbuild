@@ -206,7 +206,7 @@ export default class Builder {
     const headers: IPathHeadersMap = {}
     const omitPlaceholders = [PathPlaceholder.Pages, PathPlaceholder.Assets]
     for (const path in this.headers) {
-      if (omitPlaceholders.includes(path as PathPlaceholder)) {
+      if (omitPlaceholders.includes(path as PathPlaceholder) || Object.keys(this.headers[path]).length === 0) {
         continue
       }
       headers[this.provider.processPath(path)] = this.headers[path]
