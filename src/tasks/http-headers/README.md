@@ -12,7 +12,7 @@ plugins: [
   {
     resolve: `gatsby-plugin-postbuild`,
     options: {
-      'netlify-headers': {
+      'http-headers': {
         enabled: true, // Enable the task
         provider: 'netlify', // Headers config file provider [netlify, vercel, firebase]
         headers: {
