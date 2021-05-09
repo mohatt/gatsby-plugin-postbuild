@@ -2,6 +2,7 @@ import { Promise } from 'bluebird'
 import path from 'path'
 import { SUPPORTS } from './index'
 import type Tasks from '../tasks'
+import type { IAssetsManifest } from '../postbuild'
 import type { Filesystem, IFilesystemReportMeta } from '../filesystem'
 import type { IExtensionOptions } from '../options'
 import type { GatsbyNodeArgs } from '../gatsby'
@@ -10,6 +11,7 @@ import type { GatsbyNodeArgs } from '../gatsby'
 export interface FileConstructorArgs {
   filesystem: Filesystem
   tasks: Tasks
+  assets: IAssetsManifest
   gatsby: GatsbyNodeArgs
 }
 
@@ -61,6 +63,7 @@ export default abstract class File {
   protected readonly emitPayload: <F extends File>() => {
     file: F
     filesystem: Filesystem
+    assets: IAssetsManifest
     gatsby: GatsbyNodeArgs
   }
 
@@ -69,7 +72,7 @@ export default abstract class File {
    * needed for processing the file by child classes
    * @internal
    */
-  constructor (rel: string, options: IExtensionOptions, { filesystem, tasks, gatsby }: FileConstructorArgs) {
+  constructor (rel: string, options: IExtensionOptions, { filesystem, tasks, assets, gatsby }: FileConstructorArgs) {
     this.path = path.join(filesystem.root, rel)
     this.relative = rel
     this.extension = filesystem.extension(rel) as string
@@ -83,6 +86,7 @@ export default abstract class File {
     this.emit = tasks.run.bind(tasks)
     const payload = {
       file: this as any,
+      assets,
       filesystem,
       gatsby
     }

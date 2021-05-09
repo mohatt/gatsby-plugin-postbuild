@@ -1,6 +1,7 @@
 import { Promise } from 'bluebird'
 import path from 'path'
 import _ from 'lodash'
+import WebpackAssetsManifest from 'webpack-assets-manifest'
 import Filesystem from './filesystem'
 import Tasks from './tasks'
 import { DEFAULTS, schema } from './options'
@@ -37,12 +38,22 @@ export type IPostbuildArg<O extends ITaskOptions, F extends File | undefined = u
   filesystem: Filesystem
 
   /**
+   * Reference to AssetsManifest instance
+   */
+  assets: IAssetsManifest
+
+  /**
    * Reference to Gatsby node helpers object
    */
   gatsby: GatsbyNodeArgs
 } & {
   [K in keyof P]: P[K]
 }
+
+/**
+ * Map of original asset filenames to the hashed ones
+ */
+export type IAssetsManifest = Map<string, string>
 
 /**
  * Handles core plugin functionality
@@ -66,6 +77,8 @@ export class Postbuild {
    */
   private readonly fs: Filesystem
   private readonly tasks: Tasks
+  private readonly manifest: { [key: string]: string }
+  private manifestMap: IAssetsManifest
 
   /**
    * Loads dependencies and sets default options
@@ -74,6 +87,8 @@ export class Postbuild {
     this.options = { ...DEFAULTS }
     this.fs = fs ?? new Filesystem(this.options)
     this.tasks = tasks ?? new Tasks(this.fs, this.options)
+    this.manifest = {}
+    this.manifestMap = new Map()
   }
 
   /**
@@ -81,6 +96,29 @@ export class Postbuild {
    */
   init (tasks: string[]): void {
     tasks.forEach(task => this.tasks.register(task))
+  }
+
+  /**
+   * Returns the webpack config object for the given stage
+   */
+  getWebpackConfig (stage: string): Object {
+    if (stage !== 'build-javascript') {
+      return {}
+    }
+
+    return {
+      plugins: [
+        new WebpackAssetsManifest({
+          assets: this.manifest,
+          customize (entry: any) {
+            const entryName = entry.key.toLowerCase() as string
+            if (entryName.endsWith('.map') || entryName.endsWith('.txt')) {
+              return false
+            }
+          }
+        })
+      ]
+    }
   }
 
   /**
@@ -125,6 +163,7 @@ export class Postbuild {
     await this.tasks.run('on', 'bootstrap', {
       file: undefined,
       filesystem: this.fs,
+      assets: this.manifestMap,
       gatsby
     })
     debug('Postbuild initialized', this)
@@ -135,10 +174,13 @@ export class Postbuild {
    */
   async run (gatsby: GatsbyNodeArgs, setStatus: (s: string) => void): Promise<void> {
     if (!this.options.enabled) return
+
+    this.manifestMap = new Map(Object.entries(this.manifest))
     // Run on.postbuild events
     const payload = {
       file: undefined,
       filesystem: this.fs,
+      assets: this.manifestMap,
       gatsby
     }
     await this.tasks.run('on', 'postbuild', payload)
@@ -173,6 +215,7 @@ export class Postbuild {
           this.files[ext] = filenames[ext].map(file => File.factory(ext, file, config, {
             filesystem: this.fs,
             tasks: this.tasks,
+            assets: this.manifestMap,
             gatsby
           }))
           await this.process(ext, config, tick)

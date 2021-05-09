@@ -41,6 +41,13 @@ export async function onPreBootstrap (
 }
 
 /**
+ * Sets webpack config for the current stage
+ */
+export function onCreateWebpackConfig ({ actions, stage }: GatsbyNodeArgs): void {
+  actions.setWebpackConfig(postbuild.getWebpackConfig(stage as string))
+}
+
+/**
  * Runs Postbuild on the generated static files
  */
 export async function onPostBuild (gatsby: GatsbyNodeArgs): Promise<void> {

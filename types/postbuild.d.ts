@@ -26,9 +26,17 @@ export declare type IPostbuildArg<O extends ITaskOptions, F extends File | undef
      */
   filesystem: Filesystem
   /**
+     * Reference to AssetsManifest instance
+     */
+  assets: IAssetsManifest
+  /**
      * Reference to Gatsby node helpers object
      */
   gatsby: GatsbyNodeArgs
 } & {
   [K in keyof P]: P[K];
 }
+/**
+ * Map of original asset filenames to the hashed ones
+ */
+export declare type IAssetsManifest = Map<string, string>
