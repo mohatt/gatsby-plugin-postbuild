@@ -38,7 +38,6 @@ export type IOptions = ITaskOptions & {
   headers: IPathHeadersMap
   security: boolean
   caching: boolean
-  cachingAssetTypes: string[]
   transformPathLinks: (links: Link[], path: string) => Link[]
   removeLinkTags: boolean
 }
@@ -54,7 +53,6 @@ export const options: ITaskApiOptions<IOptions> = {
     headers: {},
     security: true,
     caching: true,
-    cachingAssetTypes: ['image', 'script', 'style', 'font'],
     transformPathLinks: links => links,
     removeLinkTags: true
   },
@@ -79,9 +77,6 @@ export const options: ITaskApiOptions<IOptions> = {
         .description('Adds useful security headers.'),
       caching: joi.boolean()
         .description('Adds useful caching headers to immutable asset paths.'),
-      cachingAssetTypes: joi.array()
-        .items(nonEmptyString)
-        .description('Specifies the types of assets that are considered immutable.'),
       transformPathLinks: joi.function().maxArity(2)
         .description('Callback for manipulating links under each path.'),
       removeLinkTags: joi.boolean()

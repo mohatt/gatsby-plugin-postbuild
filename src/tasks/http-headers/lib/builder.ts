@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import Link from './link'
 import Provider from './providers'
-import type { Filesystem } from '@postbuild'
+import type { Filesystem, IAssetsManifest } from '@postbuild'
 import type { IOptions, IHeadersMap, IPathHeadersMap } from '../options'
 
 export enum PathPlaceholder {
@@ -53,40 +53,24 @@ const HEADERS_CACHING: IPathHeadersMap = {
  */
 export default class Builder {
   headers: IPathHeadersMap
-  cachedAssets: string[] = []
   pages: {
     [path: string]: Link[]
   } = {}
 
   readonly provider: Provider
   readonly options: IOptions
+  readonly assets: IAssetsManifest
   readonly fs: Filesystem
   readonly pathPrefix: string
-  constructor (options: IOptions, fs: Filesystem, pathPrefix: string) {
+  constructor (options: IOptions, assets: IAssetsManifest, fs: Filesystem, pathPrefix: string) {
     this.provider = Provider.factory(options, fs)
     this.options = options
+    this.assets = assets
     this.fs = fs
     this.pathPrefix = pathPrefix
     this.headers = {
       ...(options.security ? HEADERS_SECURITY : {}),
       ...(options.caching ? HEADERS_CACHING : {})
-    }
-  }
-
-  /**
-   * Adds a Link's href path as an immutable cached asset if
-   *  it matches certain critiria
-   */
-  addCachedAsset (link: Link): void {
-    if (
-      !this.options.caching ||
-      this.options.cachingAssetTypes.length === 0 ||
-      link.type !== 'preload' ||
-      link.href.indexOf('/page-data/') === 0 ||
-      link.href.indexOf('/static/') === 0
-    ) return
-    if (this.options.cachingAssetTypes.includes(link.attrs.as)) {
-      this.cachedAssets.push(link.href)
     }
   }
 
@@ -104,6 +88,32 @@ export default class Builder {
     return href.indexOf(this.pathPrefix) === 0
       ? href.replace(this.pathPrefix, '') || '/'
       : href
+  }
+
+  processHeaderValue (value: string[]): string[]
+  processHeaderValue (value: string): string
+  processHeaderValue (value: string|string[]): string|string[] {
+    if (Array.isArray(value)) {
+      return value.map(this.processHeaderValue.bind(this))
+    }
+
+    const matches = value.match(/\[(\w+):([^\]]+)]/)
+    if (matches?.[1] != null && matches[2]) {
+      const placeholder = matches[1].toLowerCase()
+      const placeholderValue = matches[2]
+
+      if (placeholder === 'asset') {
+        const asset = placeholderValue.slice(1)
+        if (this.assets.has(asset)) {
+          return value.replace(matches[0], '/' + (this.assets.get(asset) as string))
+        }
+        throw new Error(`Unable to find asset "${placeholderValue}" in value "${value}"`)
+      }
+
+      throw new Error(`Invalid dynamic placeholder "${placeholder}" in value "${value}"`)
+    }
+
+    return value
   }
 
   protected isPathPlaceholder (path: string): path is PathPlaceholder {
@@ -137,7 +147,7 @@ export default class Builder {
             `Headers with multi-value support are: ${multiValueHeaders.join(', ')}`
           )
         }
-        dest[path][name] = value
+        dest[path][name] = this.processHeaderValue(value as any)
       }
     }
 
@@ -169,13 +179,19 @@ export default class Builder {
       this.headers[path] = userHeaders[path]
     }
 
-    if (this.options.caching && this.cachedAssets.length) {
-      for (const asset of this.cachedAssets) {
-        this.headers[asset] = this.mergeHeaders({
-          ...this.headers[PathPlaceholder.Assets]
-        }, this.headers[asset])
+    this.assets.forEach((hashed, original) => {
+      hashed = `/${hashed}`
+      original = `/${original}`
+      if (hashed.startsWith('/static/') || original === '/styles.css') {
+        return
       }
-    }
+      this.headers[hashed] = this.mergeHeaders({
+        ...this.headers[PathPlaceholder.Assets]
+      }, this.headers[original])
+      if (original in this.headers) {
+        delete this.headers[original]
+      }
+    })
 
     for (const path in this.pages) {
       // @todo: Validate the return value of a user-defined callback

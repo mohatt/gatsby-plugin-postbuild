@@ -11,8 +11,8 @@ let builder: Builder
 // @ts-expect-error
 export const events: ITaskApiEvents<IOptions> = {
   on: {
-    postbuild: ({ options, filesystem, gatsby }) => {
-      builder = new Builder(options, filesystem, gatsby.pathPrefix)
+    postbuild: ({ options, filesystem, gatsby, assets }) => {
+      builder = new Builder(options, assets, filesystem, gatsby.pathPrefix)
     },
     shutdown: () => {
       return builder.build()
@@ -45,12 +45,6 @@ export const events: ITaskApiEvents<IOptions> = {
 
           // Add the created link to the current page path
           builder.addPageLink(path, link)
-
-          // If the link's href refers to a local path send it to the builder
-          // to decide whether it should be listed as an immutable cached asset
-          if (!/^\w+:\/\//.test(link.href)) {
-            builder.addCachedAsset(link)
-          }
         }
 
         // Remove the link node if specified in task options
