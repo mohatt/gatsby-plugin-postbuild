@@ -190,10 +190,7 @@ export class HtmlContext {
     if (node.childNodes.length === 0) return
     const style = new StyleInline(node.childNodes[0] as parse5.TextNode)
     if (this._inHead) {
-      const idAttr = node.attrs.find(a => a.name === 'id')
-      style.id = idAttr !== undefined && idAttr.value !== ''
-        ? idAttr.value
-        : createStyleId(style.read())
+      style.id = createStyleId(style.read())
       this.mapper.createStyleLink(style, this)
     }
     this.styles.push(style)
