@@ -1,3 +1,11 @@
+## [3.0.2](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v3.0.1...v3.0.2) (2021-07-29)
+
+
+### Bug Fixes
+
+* **plugin:** fix license ([aec6be9](https://github.com/mohatt/gatsby-plugin-postbuild/commit/aec6be933a760e33ee9eec8aa0607c1f22547bf7))
+* **task:purgecss:** ignore `id` attribute on inline styles ([332f797](https://github.com/mohatt/gatsby-plugin-postbuild/commit/332f797f7e023cc9b44409957e54fd56a6956d79))
+
 ## [3.0.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v3.0.0...v3.0.1) (2021-05-09)
 
 
