@@ -48,7 +48,7 @@ plugins: [
       purgecss: {
         enabled: true
       },
-      'netlify-headers': {
+      'http-headers': {
         enabled: true
       }
     }
@@ -67,11 +67,14 @@ plugins: [
         ignore: ['resume/index.html'],
         allowSymbols: true
       },
-      'netlify-headers': {
+      'http-headers': {
         enabled: true,
-        security: true,
+        provider: 'netlify',
         headers: {
-          '/*': ['X-Frame-Options: SAMEORIGIN']
+          '[*]': {
+            'X-Frame-Options': 'DENY',
+            'X-XSS-Protection': '1; mode=block'
+          }
         }
       }
     }
