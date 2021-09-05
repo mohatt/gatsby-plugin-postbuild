@@ -6,7 +6,7 @@ specifiers:
   '@babel/eslint-parser': 7.14.7
   '@babel/runtime': ^7.14.0
   '@semantic-release/changelog': 5.0.1
-  '@semantic-release/git': 9.0.0
+  '@semantic-release/git': 9.0.1
   '@types/bluebird': 3.5.36
   '@types/glob': ^7.1.3
   '@types/jest': 26.0.24
@@ -37,7 +37,7 @@ specifiers:
   parse5: ^6.0.1
   postcss: 8.2.6
   purgecss: ^4.0.3
-  semantic-release: 17.4.4
+  semantic-release: 17.4.7
   terser: ^5.7.0
   typescript: 4.3.5
   webpack-assets-manifest: ^5.0.6
@@ -62,8 +62,8 @@ devDependencies:
   '@babel/cli': 7.14.8_@babel+core@7.14.8
   '@babel/core': 7.14.8
   '@babel/eslint-parser': 7.14.7_@babel+core@7.14.8+eslint@7.31.0
-  '@semantic-release/changelog': 5.0.1_semantic-release@17.4.4
-  '@semantic-release/git': 9.0.0_semantic-release@17.4.4
+  '@semantic-release/changelog': 5.0.1_semantic-release@17.4.7
+  '@semantic-release/git': 9.0.1_semantic-release@17.4.7
   '@types/bluebird': 3.5.36
   '@types/jest': 26.0.24
   '@types/lodash': 4.14.171
@@ -83,7 +83,7 @@ devDependencies:
   gatsby-plugin-utils: 1.10.0_gatsby@3.0.4
   jest: 27.0.6
   postcss: 8.2.6
-  semantic-release: 17.4.4
+  semantic-release: 17.4.7
   typescript: 4.3.5
 
 packages:
@@ -2210,7 +2210,7 @@ packages:
       webpack-dev-server: 3.11.2_webpack@5.47.0
     dev: true
 
-  /@semantic-release/changelog/5.0.1_semantic-release@17.4.4:
+  /@semantic-release/changelog/5.0.1_semantic-release@17.4.7:
     resolution: {integrity: sha512-unvqHo5jk4dvAf2nZ3aw4imrlwQ2I50eVVvq9D47Qc3R+keNqepx1vDYwkjF8guFXnOYaYcR28yrZWno1hFbiw==}
     engines: {node: '>=10.18'}
     peerDependencies:
@@ -2220,10 +2220,10 @@ packages:
       aggregate-error: 3.1.0
       fs-extra: 9.1.0
       lodash: 4.17.21
-      semantic-release: 17.4.4
+      semantic-release: 17.4.7
     dev: true
 
-  /@semantic-release/commit-analyzer/8.0.1_semantic-release@17.4.4:
+  /@semantic-release/commit-analyzer/8.0.1_semantic-release@17.4.7:
     resolution: {integrity: sha512-5bJma/oB7B4MtwUkZC2Bf7O1MHfi4gWe4mA+MIQ3lsEV0b422Bvl1z5HRpplDnMLHH3EXMoRdEng6Ds5wUqA3A==}
     engines: {node: '>=10.18'}
     peerDependencies:
@@ -2236,7 +2236,7 @@ packages:
       import-from: 3.0.0
       lodash: 4.17.21
       micromatch: 4.0.4
-      semantic-release: 17.4.4
+      semantic-release: 17.4.7
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -2245,8 +2245,8 @@ packages:
     resolution: {integrity: sha512-9Tj/qn+y2j+sjCI3Jd+qseGtHjOAeg7dU2/lVcqIQ9TV3QDaDXDYXcoOHU+7o2Hwh8L8ymL4gfuO7KxDs3q2zg==}
     dev: true
 
-  /@semantic-release/git/9.0.0_semantic-release@17.4.4:
-    resolution: {integrity: sha512-AZ4Zha5NAPAciIJH3ipzw/WU9qLAn8ENaoVAhD6srRPxTpTzuV3NhNh14rcAo8Paj9dO+5u4rTKcpetOBluYVw==}
+  /@semantic-release/git/9.0.1_semantic-release@17.4.7:
+    resolution: {integrity: sha512-75P03s9v0xfrH9ffhDVWRIX0fgWBvJMmXhUU0rMTKYz47oMXU5O95M/ocgIKnVJlWZYoC+LpIe4Ye6ev8CrlUQ==}
     engines: {node: '>=10.18'}
     peerDependencies:
       semantic-release: '>=16.0.0 <18.0.0'
@@ -2255,16 +2255,16 @@ packages:
       aggregate-error: 3.1.0
       debug: 4.3.2
       dir-glob: 3.0.1
-      execa: 4.1.0
+      execa: 5.1.1
       lodash: 4.17.21
       micromatch: 4.0.4
       p-reduce: 2.1.0
-      semantic-release: 17.4.4
+      semantic-release: 17.4.7
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /@semantic-release/github/7.2.3_semantic-release@17.4.4:
+  /@semantic-release/github/7.2.3_semantic-release@17.4.7:
     resolution: {integrity: sha512-lWjIVDLal+EQBzy697ayUNN8MoBpp+jYIyW2luOdqn5XBH4d9bQGfTnjuLyzARZBHejqh932HVjiH/j4+R7VHw==}
     engines: {node: '>=10.18'}
     peerDependencies:
@@ -2285,13 +2285,13 @@ packages:
       mime: 2.5.2
       p-filter: 2.1.0
       p-retry: 4.6.1
-      semantic-release: 17.4.4
+      semantic-release: 17.4.7
       url-join: 4.0.1
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /@semantic-release/npm/7.1.3_semantic-release@17.4.4:
+  /@semantic-release/npm/7.1.3_semantic-release@17.4.7:
     resolution: {integrity: sha512-x52kQ/jR09WjuWdaTEHgQCvZYMOTx68WnS+TZ4fya5ZAJw4oRtJETtrvUw10FdfM28d/keInQdc66R1Gw5+OEQ==}
     engines: {node: '>=10.19'}
     peerDependencies:
@@ -2308,12 +2308,12 @@ packages:
       rc: 1.2.8
       read-pkg: 5.2.0
       registry-auth-token: 4.2.1
-      semantic-release: 17.4.4
+      semantic-release: 17.4.7
       semver: 7.3.5
       tempy: 1.0.1
     dev: true
 
-  /@semantic-release/release-notes-generator/9.0.3_semantic-release@17.4.4:
+  /@semantic-release/release-notes-generator/9.0.3_semantic-release@17.4.7:
     resolution: {integrity: sha512-hMZyddr0u99OvM2SxVOIelHzly+PP3sYtJ8XOLHdMp8mrluN5/lpeTnIO27oeCYdupY/ndoGfvrqDjHqkSyhVg==}
     engines: {node: '>=10.18'}
     peerDependencies:
@@ -2329,7 +2329,7 @@ packages:
       into-stream: 6.0.0
       lodash: 4.17.21
       read-pkg-up: 7.0.1
-      semantic-release: 17.4.4
+      semantic-release: 17.4.7
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -12232,16 +12232,16 @@ packages:
       node-forge: 0.10.0
     dev: true
 
-  /semantic-release/17.4.4:
-    resolution: {integrity: sha512-fQIA0lw2Sy/9+TcoM/BxyzKCSwdUd8EPRwGoOuBLgxKigPCY6kaKs8TOsgUVy6QrlTYwni2yzbMb5Q2107P9eA==}
-    engines: {node: '>=10.18'}
+  /semantic-release/17.4.7:
+    resolution: {integrity: sha512-3Ghu8mKCJgCG3QzE5xphkYWM19lGE3XjFdOXQIKBM2PBpBvgFQ/lXv31oX0+fuN/UjNFO/dqhNs8ATLBhg6zBg==}
+    engines: {node: '>=10.19'}
     hasBin: true
     dependencies:
-      '@semantic-release/commit-analyzer': 8.0.1_semantic-release@17.4.4
+      '@semantic-release/commit-analyzer': 8.0.1_semantic-release@17.4.7
       '@semantic-release/error': 2.2.0
-      '@semantic-release/github': 7.2.3_semantic-release@17.4.4
-      '@semantic-release/npm': 7.1.3_semantic-release@17.4.4
-      '@semantic-release/release-notes-generator': 9.0.3_semantic-release@17.4.4
+      '@semantic-release/github': 7.2.3_semantic-release@17.4.7
+      '@semantic-release/npm': 7.1.3_semantic-release@17.4.7
+      '@semantic-release/release-notes-generator': 9.0.3_semantic-release@17.4.7
       aggregate-error: 3.1.0
       cosmiconfig: 7.0.0
       debug: 4.3.2
