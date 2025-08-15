@@ -2,8 +2,8 @@ import { Promise } from 'bluebird'
 import { minify } from 'terser'
 import cssnano from 'cssnano'
 import HtmlContext from './context'
-import { FileHtml } from '@postbuild'
-import type IOptions from './options'
+import { FileHtml, ITask } from '@postbuild'
+import { options, IOptions } from './options'
 import type { ITaskApiEvents } from '@postbuild'
 
 /**
@@ -68,7 +68,6 @@ class Container {
 }
 
 let di: Container
-// @ts-expect-error
 export const events: ITaskApiEvents<IOptions> = {
   on: {
     postbuild: ({ options }) => {
@@ -93,4 +92,10 @@ export const events: ITaskApiEvents<IOptions> = {
   }
 }
 
-export { options } from './options'
+const task: ITask<IOptions> = {
+  id: 'minify',
+  events,
+  options,
+}
+
+export default task

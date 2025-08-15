@@ -1,16 +1,16 @@
 import { testPluginOptionsSchema } from 'gatsby-plugin-utils'
-import optionsFixtures from '../../test/__fixtures__/options'
+import optionsFixtures from './__fixtures__/options'
 import Postbuild from '../postbuild'
-import { File } from '../files'
+import { FileType } from '../files'
 import { DEFAULTS } from '../options'
 
 // Async mock fn
-jest.fnAsync = v => jest.fn().mockImplementation(() => Promise.resolve(v))
+const fnAsync = v => vi.fn().mockImplementation(() => Promise.resolve(v))
 
 describe('init', () => {
   let postbuild
   const tasks = {
-    register: jest.fn(),
+    register: vi.fn(),
     getOptionsSchemas: joi => ({
       foo: joi.object({ bar: joi.string() }),
       lorem: joi.object({ ipsum: joi.boolean() })
@@ -20,7 +20,7 @@ describe('init', () => {
   test('options defaults', () => {
     expect(() => {
       postbuild = new Postbuild(tasks, {})
-      postbuild.init(['foo', 'lorem'])
+      postbuild.init([])
     }).not.toThrow()
     expect(postbuild.options).toMatchObject(DEFAULTS)
     expect(tasks.register.mock.calls).toMatchSnapshot()
@@ -45,13 +45,13 @@ describe('init', () => {
 
 describe('bootstrap', () => {
   const tasks = {
-    register: jest.fn(),
-    setOptions: jest.fn(),
-    run: jest.fnAsync(),
+    register: vi.fn(),
+    setOptions: vi.fn(),
+    run: fnAsync(),
     getActiveTasks: () => [{}]
   }
   const filesystem = {
-    setRoot: jest.fn()
+    setRoot: vi.fn()
   }
   const gatsby = {
     store: {
@@ -60,7 +60,7 @@ describe('bootstrap', () => {
       })
     },
     reporter: {
-      setErrorMap: jest.fn()
+      setErrorMap: vi.fn()
     }
   }
 
@@ -108,16 +108,16 @@ describe('bootstrap', () => {
 })
 
 describe('run', () => {
-  File.factory = jest.fn()
+  FileType.factory = vi.fn()
   const tasks = {
-    getFilenames: jest.fnAsync({
+    getFilenames: fnAsync({
       foo: ['file1.foo', 'file2.foo']
     }),
-    run: jest.fnAsync()
+    run: fnAsync()
   }
-  const setStatus = jest.fn()
+  const setStatus = vi.fn()
   const filesystem = {
-    create: jest.fnAsync(),
+    create: fnAsync(),
     reporter: {
       getReports: () => ['report1', 'report2'],
       getTotalSaved: () => [5, 5]
@@ -126,7 +126,7 @@ describe('run', () => {
   const gatsby = {}
 
   beforeEach(() => {
-    File.factory.mockClear()
+    FileType.factory.mockClear()
     setStatus.mockClear()
     tasks.run.mockClear()
     filesystem.create.mockClear()
@@ -135,14 +135,14 @@ describe('run', () => {
   const runTest = (options = {}) => {
     const pb = new Postbuild(tasks, filesystem)
     pb.options = { ...pb.options, ...options }
-    pb.process = jest.fn().mockImplementation((a, b, tick) => {
+    pb.process = vi.fn().mockImplementation((a, b, tick) => {
       [0, 0].forEach(() => {
         tick('read'); tick('process'); tick('write')
       })
     })
     return expect(pb.run(gatsby, setStatus)).resolves.toBe(undefined).then(() => {
       const config = { ...pb.options.processing, ...pb.options.extensions.foo }
-      expect(File.factory.mock.calls)
+      expect(FileType.factory.mock.calls)
         .toMatchObject([
           ['foo', 'file1.foo', config, { filesystem, tasks, gatsby }],
           ['foo', 'file2.foo', config, { filesystem, tasks, gatsby }]
@@ -192,11 +192,11 @@ describe('run', () => {
 })
 
 describe('process', () => {
-  const tick = jest.fn()
+  const tick = vi.fn()
   const file = {
-    read: jest.fnAsync(),
-    process: jest.fnAsync(),
-    write: jest.fnAsync()
+    read: fnAsync(),
+    process: fnAsync(),
+    write: fnAsync()
   }
   const files = [file, file, file, file]
 

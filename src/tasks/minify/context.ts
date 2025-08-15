@@ -1,7 +1,7 @@
 import { Promise } from 'bluebird'
-import type { Node, Element, TextNode } from 'parse5'
+import type { DefaultTreeAdapterTypes as parse5 } from 'parse5'
 import type { FileHtml } from '@postbuild'
-import type IOptions from './options'
+import type { IOptions } from './options'
 import type { Minifier } from './index'
 
 /**
@@ -11,12 +11,12 @@ export default class HtmlContext {
   /**
    * List of html styles/scripts that should be minized
    */
-  private readonly assets: TextNode[] = []
+  private readonly assets: parse5.TextNode[] = []
 
   /**
    * List of html nodes that could be removed
    */
-  private readonly removable: Node[] = []
+  private readonly removable: parse5.ChildNode[] = []
 
   private readonly file: FileHtml
   private readonly options: IOptions
@@ -32,8 +32,7 @@ export default class HtmlContext {
   /**
    * Searches for optimizable nodes in ast
    */
-  processNode (node: Node): void {
-    // @ts-expect-error
+  processNode (node: parse5.Node): void {
     if (this.options[node.nodeName] === false) return
     switch (node.nodeName) {
       case '#comment':
@@ -49,7 +48,7 @@ export default class HtmlContext {
         if (node.childNodes.length) {
           const text = node.childNodes[0]
           if (text.nodeName === '#text') {
-            this.assets.push(text as TextNode)
+            this.assets.push(text as parse5.TextNode)
           }
         }
         break
@@ -62,7 +61,7 @@ export default class HtmlContext {
    */
   minify (minifiers: Record<string, Minifier>): Promise<void> {
     return Promise.map(this.assets, (text, i) => {
-      const node = text.parentNode as Element
+      const node = text.parentNode as parse5.Element
       const type = node.nodeName
       const id = node.attrs.find(a => a.name === 'id')?.value.trim() as string
       const minifier = minifiers[type]
@@ -70,10 +69,10 @@ export default class HtmlContext {
         const cached = minifier.cache.get(id) as string
         if (cached === '') {
           this.removable.push(node)
-          return
+          return null
         }
         text.value = cached
-        return
+        return null
       }
       return minifier.minify(text.value)
         .catch(e => {

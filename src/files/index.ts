@@ -1,13 +1,4 @@
-import File from './base'
-import FileGeneric from './generic'
-import FileHtml from './html'
-
-/**
- * @internal
- */
-export const SUPPORTS: { [ext: string]: typeof File } = {
-  '*': FileGeneric,
-  html: FileHtml
-}
-
-export { File, FileGeneric, FileHtml }
+export { default as FileType } from './type'
+export { default as File } from './base'
+export { default as FileGeneric } from './generic'
+export { default as FileHtml } from './html'

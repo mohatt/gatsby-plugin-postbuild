@@ -1,11 +1,11 @@
 import { Promise } from 'bluebird'
 import crypto from 'crypto'
-import * as parse5 from 'parse5'
+import { DefaultTreeAdapterTypes as parse5, serialize } from 'parse5'
 import { cloneDeep } from 'lodash'
 import type { Filesystem, FileHtml } from '@postbuild'
 import type { Purger, IPurgeResult } from './purger'
 import type AssetMapper from './mapper'
-import type IOptions from '../options'
+import type { IOptions } from '../options'
 
 /**
  * Utility function to create an id for an inline
@@ -72,18 +72,17 @@ export class StyleFile extends Style {
     this.path = path
   }
 
-  read (): Promise<string> {
+  async read (): Promise<string> {
     return this.fs.read(this.path)
   }
 
-  update (result: IPurgeResult): Promise<void> {
-    return this.fs.update(this.path, result.css, {
+  async update (result: IPurgeResult): Promise<void> {
+    await this.fs.update(this.path, result.css, {
       purgecss: String(result.rejected.length)
-    }).then(() => {
-      if (this.options.writeRejected) {
-        return this.fs.create(this.path + '.rejected.txt', result.rejected.join(' '))
-      }
     })
+    if (this.options.writeRejected) {
+      await this.fs.create(this.path + '.rejected.txt', result.rejected.join(' '))
+    }
   }
 }
 
@@ -141,7 +140,7 @@ export class HtmlContext {
       }
     }, purgedTree)
     // then serialize it back to HTML
-    this.html = parse5.serialize(purgedTree)
+    this.html = serialize(purgedTree)
   }
 
   /**
@@ -214,16 +213,15 @@ export class HtmlContext {
   /**
    * Purges all style nodes
    */
-  purgeStyles (): Promise<void> {
-    return Promise.map(this.styles, style => {
+  async purgeStyles (): Promise<void> {
+    const result = await Promise.map(this.styles, style => {
       return this.purger.purge(style, this)
-    }).then(result => {
-      const rejected = result.flat()
-      this.file.reportMeta.purgecss = String(rejected.length)
-      if (this.options.writeRejected) {
-        return this.fs.create(this.file.relative + '.rejected.txt', rejected.join(' '))
-      }
     })
+    const rejected = result.flat()
+    this.file.reportMeta.purgecss = String(rejected.length)
+    if (this.options.writeRejected) {
+      await this.fs.create(this.file.relative + '.rejected.txt', rejected.join(' '))
+    }
   }
 }
 

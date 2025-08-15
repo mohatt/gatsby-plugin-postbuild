@@ -5,8 +5,8 @@ import glob, { IOptions as IGlobOptions } from 'glob'
 import chalk from 'chalk'
 import filesize from 'filesize'
 import { toInteger } from 'lodash'
-import { PostbuildError } from './common'
-import type { IOptions } from './index'
+import { PluginError } from './common'
+import type { IOptions } from './interfaces'
 const globAsync = Promise.promisify(glob) as typeof glob.__promisify__
 
 /**
@@ -157,7 +157,7 @@ export class Filesystem {
       await fs.access(abs)
       return await fs.readFile(abs, 'utf-8')
     } catch (e) {
-      throw new PostbuildError(
+      throw new PluginError(
         `Unable to read file "${rel}": ${String(e.message)}`,
         e
       )
@@ -173,7 +173,7 @@ export class Filesystem {
       await fs.access(path.dirname(abs))
       await fs.writeFile(abs, data)
     } catch (e) {
-      throw new PostbuildError(
+      throw new PluginError(
         `Unable to create file "${rel}": ${String(e.message)}`,
         e
       )
@@ -193,7 +193,7 @@ export class Filesystem {
       size = [Buffer.byteLength(data), (await fs.stat(abs)).size]
       await fs.writeFile(abs, data)
     } catch (e) {
-      throw new PostbuildError(
+      throw new PluginError(
         `Unable to update file "${rel}": ${String(e.message)}`,
         e
       )

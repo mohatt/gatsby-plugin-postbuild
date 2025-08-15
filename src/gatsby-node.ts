@@ -1,65 +1,52 @@
 import Postbuild from './postbuild'
-import { createGatsbyError, CORE_TASKS, PLUGIN } from './common'
-import type {
-  GatsbyJoi,
-  GatsbyNodeArgs,
-  GatsbyPluginOptions
-} from './gatsby'
+import { createPluginExport, PLUGIN, reporter } from './common'
+import MinifyTask from './tasks/minify'
+import PurgeCssTask from './tasks/purgecss'
+import HttpHeadersTask from './tasks/http-headers'
 
-/**
- * The main plugin object that handles core functionalities
- */
+// The main plugin object that handles core functionality
 const postbuild = new Postbuild()
 
-/**
- * Initializes Postbuild and validates user-defined options against
- * the final options schema. Runs before any other node API
- */
-export function pluginOptionsSchema ({ Joi }: { Joi: GatsbyJoi }): void {
-  try {
-    postbuild.init(CORE_TASKS)
-    return postbuild.getOptionsSchemas(Joi)
-  } catch (e) {
-    throw new Error(
-      `Error occured while initializing "${PLUGIN}" plugin: ${String(e.message)}`
-    )
-  }
-}
+// Register core tasks
+postbuild.init([MinifyTask, PurgeCssTask, HttpHeadersTask])
 
-/**
- * Triggers Postbuild initial setup and loads user-defined options
- */
-export async function onPreBootstrap (
-  gatsby: GatsbyNodeArgs,
-  pluginOptions: GatsbyPluginOptions
-): Promise<void> {
-  try {
-    await postbuild.bootstrap(gatsby, pluginOptions)
-  } catch (e) {
-    gatsby.reporter.panic(createGatsbyError(e))
-  }
-}
+// Validates user-defined options against schema (runs before onPluginInit)
+export const pluginOptionsSchema = createPluginExport('pluginOptionsSchema', ({ Joi }) => {
+  return postbuild.getOptionsSchemas(Joi)
+})
 
-/**
- * Sets webpack config for the current stage
- */
-export function onCreateWebpackConfig ({ actions, stage }: GatsbyNodeArgs): void {
-  actions.setWebpackConfig(postbuild.getWebpackConfig(stage as string))
-}
+// Initializes plugin state
+export const onPluginInit = createPluginExport(
+  'onPluginInit',
+  async (args, pluginOptions) => {
+    await postbuild.bootstrap(args, pluginOptions)
+  },
+)
+
+// Sets webpack config for the current stage
+export const onCreateWebpackConfig = createPluginExport(
+  'onCreateWebpackConfig',
+  ({ actions, stage }) => {
+    actions.setWebpackConfig(postbuild.getWebpackConfig(stage as string))
+  },
+)
 
 /**
  * Runs Postbuild on the generated static files
  */
-export async function onPostBuild (gatsby: GatsbyNodeArgs): Promise<void> {
-  const activity = gatsby.reporter.activityTimer(PLUGIN, {
-    // @ts-expect-error
-    parentSpan: gatsby.tracing.parentSpan
-  })
-  activity.start()
-  try {
-    await postbuild.run(gatsby, activity.setStatus)
-  } catch (e) {
-    activity.panic(createGatsbyError(e))
-  }
-  activity.end()
-}
+export const onPostBuild = createPluginExport(
+  'onPostBuild',
+  async (args) => {
+    const activity = args.reporter.activityTimer(PLUGIN, {
+      // @ts-expect-error
+      parentSpan: args.tracing.parentSpan
+    })
+    activity.start()
+    try {
+      await postbuild.run(args, activity.setStatus)
+    } catch (e) {
+      activity.panic(reporter.createError('onPostBuild', e))
+    }
+    activity.end()
+  },
+)

@@ -1,4 +1,4 @@
-import type * as parse5 from 'parse5'
+import type { Token } from 'parse5'
 
 export default class Link {
   static supports: {
@@ -49,7 +49,7 @@ export default class Link {
       .join('; ')
   }
 
-  static create (type: string, href: string, attrs: parse5.Attribute[]): Link {
+  static create (type: string, href: string, attrs: Token.Attribute[]): Link {
     if (!(type in Link.supports)) {
       throw new TypeError(`Link type "${type}" is not supported`)
     }

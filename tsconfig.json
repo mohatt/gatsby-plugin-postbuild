@@ -1,22 +1,26 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
     "paths": {
       "@postbuild": ["src"],
       "@postbuild/*": ["src/*"],
+      "@test/*": ["./test/*"]
     },
-    "target": "ESNext",
-    // Search under node_modules for non-relative imports
-    "moduleResolution": "node",
-    // Do type-checking only, leave trasformation to Babel
-    "noEmit": true,
-    // Enable strictest settings like strictNullChecks & noImplicitAny
-    "strict": true,
-    // Disallow features that require cross-file information for emit
-    // Cross-file information is not supported by Babel
+    "types": ["node", "vitest/globals"],
+    "allowJs": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "isolatedModules": true,
-    // Import non-ES modules as default imports
-    "esModuleInterop": true
+    "strict": false,
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "strictBindCallApply": true,
+    "stripInternal": true
   },
-  "include": ["src", "types"]
+  "include": ["src", "test"]
 }

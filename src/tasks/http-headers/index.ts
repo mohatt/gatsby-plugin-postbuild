@@ -1,14 +1,12 @@
 import Builder from './lib/builder'
 import Link from './lib/link'
-import type IOptions from './options'
-import type { ITaskApiEvents } from '@postbuild'
+import { options, IOptions } from './options'
+import type { ITask, ITaskApiEvents } from '@postbuild'
 
 /**
  * Headers file builder
  */
 let builder: Builder
-
-// @ts-expect-error
 export const events: ITaskApiEvents<IOptions> = {
   on: {
     postbuild: ({ options, filesystem, gatsby, assets }) => {
@@ -56,4 +54,10 @@ export const events: ITaskApiEvents<IOptions> = {
   }
 }
 
-export { options } from './options'
+const task: ITask<IOptions> = {
+  id: 'http-headers',
+  events,
+  options,
+}
+
+export default task

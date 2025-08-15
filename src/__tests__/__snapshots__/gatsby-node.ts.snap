@@ -1,0 +1,132 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`onCreateWebpackConfig > runs correctly 1`] = `[Error: foo]`;
+
+exports[`onCreateWebpackConfig > runs correctly 2`] = `
+[
+  [
+    "test-stage",
+  ],
+  [
+    "test-stage",
+  ],
+]
+`;
+
+exports[`onPluginInit > runs correctly 1`] = `[Error: foo]`;
+
+exports[`onPluginInit > runs correctly 2`] = `[Error: something wrong]`;
+
+exports[`onPluginInit > runs correctly 3`] = `
+[
+  [
+    {
+      "reporter": {
+        "activityTimer": [MockFunction spy],
+      },
+      "tracing": {
+        "parentSpan": "foo",
+      },
+    },
+    {},
+  ],
+  [
+    {
+      "reporter": {
+        "activityTimer": [MockFunction spy],
+      },
+      "tracing": {
+        "parentSpan": "foo",
+      },
+    },
+    {},
+  ],
+  [
+    {
+      "reporter": {
+        "activityTimer": [MockFunction spy],
+      },
+      "tracing": {
+        "parentSpan": "foo",
+      },
+    },
+    {},
+  ],
+]
+`;
+
+exports[`onPostBuild > runs correctly 1`] = `
+[
+  [
+    "gatsby-plugin-postbuild",
+    {
+      "parentSpan": "foo",
+    },
+  ],
+  [
+    "gatsby-plugin-postbuild",
+    {
+      "parentSpan": "foo",
+    },
+  ],
+  [
+    "gatsby-plugin-postbuild",
+    {
+      "parentSpan": "foo",
+    },
+  ],
+]
+`;
+
+exports[`onPostBuild > runs correctly 2`] = `
+[
+  [],
+  [],
+  [],
+]
+`;
+
+exports[`onPostBuild > runs correctly 3`] = `
+[
+  [
+    {
+      "context": {
+        "message": "The plugin threw an error during "onPostBuild" hook",
+      },
+      "error": [Error: foo],
+      "id": "1400",
+    },
+  ],
+  [
+    {
+      "context": {
+        "message": "The plugin threw an error during "onPostBuild" hook:
+ something wrong",
+      },
+      "error": [TypeError: foo],
+      "id": "1400",
+    },
+  ],
+]
+`;
+
+exports[`onPostBuild > runs correctly 4`] = `
+[
+  [],
+  [],
+  [],
+]
+`;
+
+exports[`pluginOptionsSchema > runs correctly 1`] = `[Error: foo]`;
+
+exports[`pluginOptionsSchema > runs correctly 2`] = `
+[
+  [
+    undefined,
+  ],
+  [
+    undefined,
+  ],
+]
+`;

@@ -2,7 +2,7 @@ import path from 'path'
 import { createDebug } from '@postbuild/common'
 import type { Filesystem } from '@postbuild'
 import type { HtmlContext, Style } from './context'
-import type IOptions from '../options'
+import type { IOptions } from '../options'
 const debug = createDebug('purgecss/mapper')
 
 /**

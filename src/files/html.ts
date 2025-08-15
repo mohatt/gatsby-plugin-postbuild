@@ -1,10 +1,9 @@
 import { Promise } from 'bluebird'
 import path from 'path'
 import _ from 'lodash'
-import * as parse5 from 'parse5'
-import parse5Adaptor from 'parse5/lib/tree-adapters/default'
+import { DefaultTreeAdapterTypes as parse5, parse, serialize, defaultTreeAdapter } from 'parse5'
 import File, { FileConstructorArgs } from './base'
-import type { IExtensionOptions } from '../index'
+import type { IExtensionOptions } from '../interfaces'
 
 export type IFileHtmlOptions = IExtensionOptions<{
   commons: {
@@ -42,12 +41,12 @@ export class FileHtml extends File {
   /**
    * Parse5 tree adaptor
    */
-  adaptor: typeof parse5Adaptor = parse5Adaptor
+  adaptor = defaultTreeAdapter
 
   /**
    * Html extension options
    */
-  options: IFileHtmlOptions
+  declare options: IFileHtmlOptions
 
   /**
    * Sets the page path and creates an empty parse5 document
@@ -83,7 +82,7 @@ export class FileHtml extends File {
         html
       }, 'html'))
       .then(html => {
-        this.tree = parse5.parse(html)
+        this.tree = parse(html)
         return this.emit('html', 'tree', payload)
       }) as Promise<void>
   }
@@ -111,7 +110,7 @@ export class FileHtml extends File {
     const payload = this.emitPayload<FileHtml>()
     return this.emit('html', 'serialize', payload)
       .then(() => {
-        const html = parse5.serialize(this.tree)
+        const html = serialize(this.tree)
         return this.emit('html', 'write', {
           ...payload,
           html

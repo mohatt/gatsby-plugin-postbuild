@@ -1,18 +1,16 @@
 import { Promise } from 'bluebird'
 import path from 'path'
-import { SUPPORTS } from './index'
+import type { NodePluginArgs } from 'gatsby'
 import type Tasks from '../tasks'
-import type { IAssetsManifest } from '../postbuild'
+import type { IExtensionOptions, IAssetsManifest } from '../interfaces'
 import type { Filesystem, IFilesystemReportMeta } from '../filesystem'
-import type { IExtensionOptions } from '../options'
-import type { GatsbyNodeArgs } from '../gatsby'
 
 /** @internal */
 export interface FileConstructorArgs {
   filesystem: Filesystem
   tasks: Tasks
   assets: IAssetsManifest
-  gatsby: GatsbyNodeArgs
+  gatsby: NodePluginArgs
 }
 
 /**
@@ -64,7 +62,7 @@ export default abstract class File {
     file: F
     filesystem: Filesystem
     assets: IAssetsManifest
-    gatsby: GatsbyNodeArgs
+    gatsby: NodePluginArgs
   }
 
   /**
@@ -91,25 +89,6 @@ export default abstract class File {
       gatsby
     }
     this.emitPayload = () => payload
-  }
-
-  /**
-   * Creates a new file instance for the given path based on the given extension
-   * @internal
-   */
-  static factory = (ext: string, rel: string, options: IExtensionOptions, args: FileConstructorArgs): File => {
-    if (!(ext in SUPPORTS)) {
-      ext = '*'
-    }
-    // @ts-expect-error
-    return new SUPPORTS[ext](rel, options, args)
-  }
-
-  /**
-   * Checks if a file extension is supported
-   */
-  static supports = (ext: string): boolean|typeof File => {
-    return ext in SUPPORTS ? SUPPORTS[ext] : false
   }
 
   /**

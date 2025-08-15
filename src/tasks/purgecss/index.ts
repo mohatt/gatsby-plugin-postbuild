@@ -1,8 +1,8 @@
 import HtmlContext from './lib/context'
 import AssetMapper from './lib/mapper'
 import Purger from './lib/purger'
-import type IOptions from './options'
-import type { ITaskApiEvents, Filesystem, FileHtml } from '@postbuild'
+import { options, IOptions } from './options'
+import type { ITask, ITaskApiEvents, Filesystem, FileHtml } from '@postbuild'
 
 /**
  * Holds refrences to required dependencies
@@ -40,7 +40,6 @@ class DIContainer {
 }
 
 let di: DIContainer
-// @ts-expect-error
 export const events: ITaskApiEvents<IOptions> = {
   on: {
     postbuild: ({ filesystem, options }) => {
@@ -64,4 +63,10 @@ export const events: ITaskApiEvents<IOptions> = {
   }
 }
 
-export { options } from './options'
+const task: ITask<IOptions> = {
+  id: 'purgecss',
+  events,
+  options,
+}
+
+export default task

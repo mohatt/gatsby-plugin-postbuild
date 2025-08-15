@@ -1,6 +1,6 @@
 import { Promise } from 'bluebird'
 import _ from 'lodash'
-import PurgeCSS from 'purgecss'
+import { PurgeCSS } from 'purgecss'
 import { createDebug } from '@postbuild/common'
 import { HtmlContext, Style, StyleFile } from './context'
 import { IOptions, PurgecssOptions, purgecssImportedOptions } from '../options'
@@ -42,7 +42,7 @@ export class Purger {
 
   private readonly options: IOptions
   private readonly fs: Filesystem
-  private readonly mapper
+  private readonly mapper: AssetMapper
 
   /**
    * Sets PurgeCSS options

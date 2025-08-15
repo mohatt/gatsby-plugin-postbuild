@@ -1,37 +1,5 @@
-import type { GatsbyJoi } from './gatsby'
-import type { ITaskApiEvents, ITaskOptions } from './index'
-
-// Available processing strategies
-export type IOptionProcessingStrategy = 'sequential' | 'parallel'
-// Processing options interface
-export interface IOptionProcessing {
-  concurrency: number
-  strategy: IOptionProcessingStrategy
-}
-
-// Extensio options interface
-export type IExtensionOptions<O = {
-  [option: string]: any
-}> = IOptionProcessing & O
-
-/**
- * Plugin options interface
- */
-export type IOptions = {
-  enabled: boolean
-  reporting: {
-    log: boolean
-    console: boolean
-  } | boolean
-  ignore: string[]
-  events: ITaskApiEvents<any>
-  processing: IOptionProcessing
-  extensions: {
-    [ext: string]: Partial<IExtensionOptions>
-  }
-} & {
-  [task: string]: ITaskOptions
-}
+import type { PluginOptionsSchemaJoi, ObjectSchema } from 'gatsby-plugin-utils'
+import type { IOptions } from './interfaces'
 
 /**
  * Plugin options defaults
@@ -54,7 +22,7 @@ export const DEFAULTS: IOptions = {
  * Plugin options schema
  * @internal
  */
-export function schema (joi: GatsbyJoi): GatsbyJoi {
+export function schema (joi: PluginOptionsSchemaJoi): ObjectSchema {
   const processingSchema = joi.object({
     concurrency: joi.number().min(1)
       .description('How many files to process at once.'),
@@ -62,7 +30,7 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
       .valid('sequential', 'parallel')
       .description('Determines how the files are processed.')
   })
-  const EventTypeSchema = (events?: string[]): GatsbyJoi => joi.object()
+  const EventTypeSchema = (events?: string[]) => joi.object()
     .pattern(
       (events === undefined) ? joi.string() : joi.string().valid(...events),
       joi.function().maxArity(1)
@@ -90,5 +58,3 @@ export function schema (joi: GatsbyJoi): GatsbyJoi {
       .description('Changes how files of a specific extension are processed.')
   })
 }
-
-export default IOptions

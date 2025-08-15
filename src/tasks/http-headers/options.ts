@@ -84,5 +84,3 @@ export const options: ITaskApiOptions<IOptions> = {
     })
   }
 }
-
-export default IOptions

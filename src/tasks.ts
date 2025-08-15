@@ -1,23 +1,16 @@
 import { Promise } from 'bluebird'
 import _ from 'lodash'
-import { createDebug, PostbuildError } from './common'
-import type { Node as parse5Node } from 'parse5'
-import type { GatsbyJoi } from './gatsby'
+import type { PluginOptionsSchemaJoi, ObjectSchema } from 'gatsby-plugin-utils'
 import type {
-  IPostbuildArg,
+  ITask,
+  IEvents,
   IOptions,
-  IExtensionOptions,
-  Filesystem,
-  File,
-  FileGeneric,
-  FileHtml
-} from './index'
+  ITaskOptions,
+} from './interfaces'
+import type Filesystem from './filesystem'
+import type File from './files/base'
+import { createDebug, PluginError } from './common'
 const debug = createDebug('tasks')
-
-/**
- * Generic type for async/sync functions
- */
-type Fn<A extends any[], R> = (...args: A) => Promise<R>|R
 
 /**
  * Extracts keys from O whose values match a C condition
@@ -30,103 +23,13 @@ type Fn<A extends any[], R> = (...args: A) => Promise<R>|R
 type Keys<O, C> = { [K in keyof O]: O[K] extends C ? K : never }[keyof O]
 
 /**
- * Interface for an event callback
- */
-type IEvent<
-  O extends ITaskOptions,
-  P extends Object = {},
-  F extends File | undefined = undefined,
-  R = void
-> = Fn<[IPostbuildArg<O, F, P>], R>
-
-/**
- * Defines every event api within the plugin
- */
-export interface IEvents<O extends ITaskOptions> {
-  on: {
-    bootstrap: IEvent<O>
-    postbuild: IEvent<O>
-    shutdown: IEvent<O>
-  }
-  html: {
-    configure: IEvent<O, { config: IExtensionOptions }>
-    parse: IEvent<O, { html: string }, FileHtml, string>
-    tree: IEvent<O, {}, FileHtml>
-    node: IEvent<O, { node: parse5Node, previousNode?: parse5Node, nextNode?: parse5Node }, FileHtml>
-    serialize: IEvent<O, {}, FileHtml>
-    write: IEvent<O, { html: string }, FileHtml, string>
-  }
-  unknown: {
-    configure: IEvent<O, { config: IExtensionOptions }>
-    content: IEvent<O, { raw: string }, FileGeneric, string>
-  }
-}
-
-/**
  * Event type helpers
  */
 type IEventType = keyof IEvents<any>
-type IEventName<T extends IEventType> = Keys<IEvents<any>[T], Fn<any[], any>>
+type IEventName<T extends IEventType> = Keys<IEvents<any>[T], (...args: any[]) => any>
 type IEventFunc<T extends IEventType, K extends IEventName<T>> = IEvents<any>[T][K]
 type IEventFuncIn<T extends IEventType, K extends IEventName<T>> = Omit<Parameters<IEventFunc<T, K>>[0], 'task'|'event'|'options'>
 type IEventFuncOut<T extends IEventType, K extends IEventName<T>, R = ReturnType<IEventFunc<T, K>>> = R extends PromiseLike<infer U> ? U : R
-
-/**
- * Interface for task options
- */
-export interface ITaskOptions {
-  enabled: boolean
-  ignore: string[]
-}
-
-/**
- * Interface for task events api
- * Note: This type partially works due to lack of negated types
- * @see https://github.com/Microsoft/TypeScript/pull/29317
- * @see https://github.com/microsoft/TypeScript/pull/41524
- */
-export type ITaskApiEvents<O extends ITaskOptions> = {
-  [K in Exclude<IEventType, 'unknown'>]?: Partial<IEvents<O>[K]>
-} & {
-  [glob: string]: Partial<IEvents<O>['unknown']>
-}
-
-/**
- * Interface for task options definition
- */
-export interface ITaskApiOptions<O extends ITaskOptions> {
-  defaults: O
-  schema: (joi: GatsbyJoi) => GatsbyJoi
-}
-
-/**
- * Interface for task main exports
- */
-export interface ITaskApi<O extends ITaskOptions> {
-  events: ITaskApiEvents<O>
-  options?: ITaskApiOptions<O>
-}
-
-/**
- * Interface for a plugin task
- * @internal
- */
-export interface ITask<O extends ITaskOptions> {
-  /**
-   * Task ID
-   */
-  id: string
-
-  /**
-   * Task API entry file
-   */
-  main?: string
-
-  /**
-   * Task API exports
-   */
-  api: ITaskApi<O>
-}
 
 /**
  * Handles tasks defined within the plugin
@@ -156,34 +59,15 @@ export class Tasks {
    * Registers a new task, task exports needs to be either
    * an object or a module file to require
    */
-  register<O extends ITaskOptions = any> (id: string, exports?: string|ITaskApi<O>): void {
-    let main
-    if (this.tasks.find(t => t.id === id) !== undefined) {
-      throw new Error(`Can't register task "${id}" with duplicate id`)
+  register<O extends ITaskOptions = any> (task: ITask<O>): void {
+    if (this.tasks.some(t => t.id === task.id)) {
+      throw new Error(`Can't register task "${task.id}" with duplicate id`)
     }
 
-    if (typeof exports !== 'object') {
-      main = exports === undefined
-        ? `./tasks/${id}`
-        : exports
-      try {
-        exports = require(main) as ITaskApi<O>
-      } catch (e) {
-        throw new Error(`Unable to resolve task entry file "${main}": ${String(e.message)}`)
-      }
+    if (_.isEmpty(task.events)) {
+      throw new Error(`Can't register task "${task.id}" with no events`)
     }
 
-    if (_.isEmpty(exports.events)) {
-      throw new Error(`Can't register task "${id}" with no events`)
-    }
-
-    const task = {
-      id,
-      main: main !== undefined
-        ? require.resolve(main)
-        : undefined,
-      api: exports
-    }
     debug('Registered a new task', task)
     this.tasks.unshift(task)
   }
@@ -193,11 +77,11 @@ export class Tasks {
    * Should be called before running any task events
    */
   setOptions (): void {
-    this.tasks = this.tasks.filter(({ id, api }) => {
+    this.tasks = this.tasks.filter(({ id, options }) => {
       const td = {
         enabled: true,
         ignore: [],
-        ...api.options?.defaults
+        ...options?.defaults
       }
       if (this.options[id] === undefined) {
         this.options[id] = td
@@ -218,7 +102,7 @@ export class Tasks {
    */
   getFilenames (): Promise<{ [ext: string]: string[] }> {
     const extensions = this.tasks.reduce((res: Tasks['fileEvents'], task) => {
-      for (const ext in task.api.events) {
+      for (const ext in task.events) {
         if (ext === 'on') continue
         (res[ext] ||= []).push([task, ext])
       }
@@ -260,12 +144,12 @@ export class Tasks {
   /**
    * Returns a map of task ids and their options schemas
    */
-  getOptionsSchemas (joi: GatsbyJoi): { [task: string]: GatsbyJoi } {
-    return this.tasks.reduce((res: { [task: string]: GatsbyJoi }, task) => {
-      const tos = task.api.options?.schema
+  getOptionsSchemas (joi: PluginOptionsSchemaJoi): { [task: string]: ObjectSchema } {
+    return this.tasks.reduce((res: { [task: string]: ObjectSchema }, task) => {
+      const tos = task.options?.schema
       const schema = tos === undefined
         ? joi.object()
-        : tos.call(task.api.options, joi)
+        : tos.call(task.options, joi)
       res[task.id] = schema.append({
         enabled: joi.boolean()
           .description('Whether to run the task or not'),
@@ -303,11 +187,11 @@ export class Tasks {
       const fileEvents = this.fileEvents[file.relative] ?? []
       for (const fe of fileEvents) {
         // no need to check for event type here
-        if (event in fe[0].api.events[fe[1]]) events.push(fe)
+        if (event in fe[0].events[fe[1]]) events.push(fe)
       }
     } else {
       for (const task of this.tasks) {
-        if (type in task.api.events && event in task.api.events[type]) {
+        if (type in task.events && event in task.events[type as any]) {
           events.push([task, type])
         }
       }
@@ -321,9 +205,7 @@ export class Tasks {
             name: event
           }
         }
-        // @ts-expect-error
-        const res = await task.api.events[et][event] // eslint-disable-line
-        ({ ...args, ...payload }) // eslint-disable-line
+        const res = await task.events[et][event]({ ...args, ...payload })
         if (accumulator !== undefined) {
           if (typeof payload[accumulator] !== typeof res) {
             // @todo handle this gracefully
@@ -333,7 +215,7 @@ export class Tasks {
         }
         return res
       } catch (e) {
-        throw new PostbuildError(
+        throw new PluginError(
           `The task "${task.id}" encountered an error while running event ` +
           `"${[et, event].join('.')}": ${String(e.message)}`,
           e

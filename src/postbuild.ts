@@ -1,59 +1,15 @@
 import { Promise } from 'bluebird'
 import path from 'path'
 import _ from 'lodash'
-import WebpackAssetsManifest from 'webpack-assets-manifest'
+import { WebpackAssetsManifest } from 'webpack-assets-manifest'
+import type { PluginOptions, NodePluginArgs } from 'gatsby'
+import type { PluginOptionsSchemaJoi, ObjectSchema } from 'gatsby-plugin-utils'
+import type { ITask, IOptions, IOptionProcessing, IAssetsManifest } from './interfaces'
 import Filesystem from './filesystem'
 import Tasks from './tasks'
+import { File, FileType } from './files'
 import { DEFAULTS, schema } from './options'
-import { ERROR_MAP, debug } from './common'
-import { ITaskOptions, IOptions, IOptionProcessing, File } from './index'
-import type { GatsbyJoi, GatsbyNodeArgs, GatsbyPluginOptions } from './gatsby'
-
-/**
- * Interface for the main postbuild object thats is passed
- * to all event callbacks
- */
-export type IPostbuildArg<O extends ITaskOptions, F extends File | undefined = undefined, P extends Object = {}> = {
-  /**
-   * Options for current task
-   */
-  options: O
-
-  /**
-   * Reference to current File instance being processed
-   */
-  file: F
-
-  /**
-   * Current event being excuted
-   */
-  event: {
-    type: string
-    name: string
-  }
-
-  /**
-   * Reference to Filesystem instance
-   */
-  filesystem: Filesystem
-
-  /**
-   * Reference to AssetsManifest instance
-   */
-  assets: IAssetsManifest
-
-  /**
-   * Reference to Gatsby node helpers object
-   */
-  gatsby: GatsbyNodeArgs
-} & {
-  [K in keyof P]: P[K]
-}
-
-/**
- * Map of original asset filenames to the hashed ones
- */
-export type IAssetsManifest = Map<string, string>
+import { reporter, debug } from './common'
 
 /**
  * Handles core plugin functionality
@@ -94,7 +50,7 @@ export class Postbuild {
   /**
    * Registers core tasks
    */
-  init (tasks: string[]): void {
+  init (tasks: ITask<any>[]): void {
     tasks.forEach(task => this.tasks.register(task))
   }
 
@@ -110,11 +66,14 @@ export class Postbuild {
       plugins: [
         new WebpackAssetsManifest({
           assets: this.manifest,
-          customize (entry: any) {
-            const entryName = entry.key.toLowerCase() as string
-            if (entryName.endsWith('.map') || entryName.endsWith('.txt')) {
-              return false
+          customize: (entry, _, manifest) => {
+            if (manifest.utils.isKeyValuePair(entry) && typeof entry.key === 'string') {
+              const entryName = entry.key.toLowerCase()
+              if (entryName.endsWith('.map') || entryName.endsWith('.txt')) {
+                return false
+              }
             }
+            return entry
           }
         })
       ]
@@ -124,14 +83,14 @@ export class Postbuild {
   /**
    * Returns the final plugin options schema
    */
-  getOptionsSchemas (joi: GatsbyJoi): GatsbyJoi {
+  getOptionsSchemas (joi: PluginOptionsSchemaJoi): ObjectSchema {
     return schema(joi).append(this.tasks.getOptionsSchemas(joi))
   }
 
   /**
    * Loads user-defined options, environment constants and task options
    */
-  async bootstrap (gatsby: GatsbyNodeArgs, pluginOptions: GatsbyPluginOptions): Promise<void> {
+  async bootstrap (gatsby: NodePluginArgs, pluginOptions: PluginOptions): Promise<void> {
     // Merge user-defined options with defaults
     _.merge(this.options, pluginOptions)
 
@@ -139,13 +98,12 @@ export class Postbuild {
     this.fs.setRoot(path.join(gatsby.store.getState().program.directory, 'public'))
 
     // Initialize reporter
-    if (typeof gatsby.reporter.setErrorMap === 'function') {
-      gatsby.reporter.setErrorMap(ERROR_MAP)
-    }
+    reporter.initialize(gatsby.reporter)
 
     // Register user task if events is set
     if (!_.isEmpty(this.options.events)) {
-      this.tasks.register('user', {
+      this.tasks.register({
+        id: 'user',
         events: this.options.events
       })
     }
@@ -172,7 +130,7 @@ export class Postbuild {
   /**
    * Searches for and processes all files defined by all tasks
    */
-  async run (gatsby: GatsbyNodeArgs, setStatus: (s: string) => void): Promise<void> {
+  async run (gatsby: NodePluginArgs, setStatus: (s: string) => void): Promise<void> {
     if (!this.options.enabled) return
 
     this.manifestMap = new Map(Object.entries(this.manifest))
@@ -212,7 +170,7 @@ export class Postbuild {
             this.options.extensions[ext]
           )
           await this.tasks.run(ext as 'unknown', 'configure', { ...payload, config })
-          this.files[ext] = filenames[ext].map(file => File.factory(ext, file, config, {
+          this.files[ext] = filenames[ext].map(file => FileType.factory(ext, file, config, {
             filesystem: this.fs,
             tasks: this.tasks,
             assets: this.manifestMap,
