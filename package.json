@@ -89,7 +89,7 @@
     "postcss": ">=8.4.38"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   },
   "renovate": {
     "extends": [
