@@ -1,3 +1,15 @@
+# [4.0.0-beta.2](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2025-09-16)
+
+
+### Bug Fixes
+
+* **plugin:** skip incremental build runs ([cefc1ed](https://github.com/mohatt/gatsby-plugin-postbuild/commit/cefc1edecea83ce6423d23df1012d65a0931ece3))
+
+
+### Features
+
+* **plugin:** support meta tags in `http-headers` task ([2646385](https://github.com/mohatt/gatsby-plugin-postbuild/commit/26463851ceff0d383d5dbbad15e802e9c480747c))
+
 # [4.0.0-beta.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v3.0.2...v4.0.0-beta.1) (2025-08-15)
 
 
