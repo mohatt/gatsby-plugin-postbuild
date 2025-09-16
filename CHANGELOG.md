@@ -1,3 +1,39 @@
+# [4.0.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v3.0.2...v4.0.0) (2025-09-16)
+
+
+### Bug Fixes
+
+* **plugin:** skip incremental build runs ([cefc1ed](https://github.com/mohatt/gatsby-plugin-postbuild/commit/cefc1edecea83ce6423d23df1012d65a0931ece3))
+
+
+### chore
+
+* **deps:** update deps ([6e110f3](https://github.com/mohatt/gatsby-plugin-postbuild/commit/6e110f301865732ecb1b18e4d630dcf176ed4083))
+
+
+### fear
+
+* **plugin:** migrate to Gatsby v5 ([7333212](https://github.com/mohatt/gatsby-plugin-postbuild/commit/733321252bac65af1903275dcc09417e27952b11))
+
+
+### Features
+
+* **plugin:** migrate the plugin to native ES modules, add CJS & ESM builds ([09ac8b8](https://github.com/mohatt/gatsby-plugin-postbuild/commit/09ac8b847f14357bf2be480699c582ef44b93d39))
+* **plugin:** support meta tags in `http-headers` task ([2646385](https://github.com/mohatt/gatsby-plugin-postbuild/commit/26463851ceff0d383d5dbbad15e802e9c480747c))
+
+
+### BREAKING CHANGES
+
+* **plugin:** The plugin now requires at least Gatsby v5.10.
+
+Signed-off-by: Mohamed Elkholy <mkh117@gmail.com>
+* **deps:** Drop support for node < 18.
+
+Signed-off-by: Mohamed Elkholy <mkh117@gmail.com>
+* **plugin:** The plugin is now built with native ES module syntax.
+
+Signed-off-by: Mohamed Elkholy <mkh117@gmail.com>
+
 # [4.0.0-beta.2](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2025-09-16)
 
 

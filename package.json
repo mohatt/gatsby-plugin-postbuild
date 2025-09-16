@@ -1,6 +1,6 @@
 {
   "name": "gatsby-plugin-postbuild",
-  "version": "4.0.0-beta.2",
+  "version": "4.0.0",
   "description": "Gatsby plugin for optimizing/transforming generated static files.",
   "keywords": [
     "gatsby",
