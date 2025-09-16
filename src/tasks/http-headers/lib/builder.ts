@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import Link from './link'
+import Meta from './meta'
 import Provider from './providers'
 import type { Filesystem, IAssetsManifest } from '@postbuild'
 import type { IOptions, IHeadersMap, IPathHeadersMap } from '../options'
@@ -9,7 +10,7 @@ export enum PathPlaceholder {
   Pages = '[pages]',
   PageData = '[page-data]',
   Static = '[static]',
-  Assets = '[assets]'
+  Assets = '[assets]',
 }
 
 /**
@@ -26,8 +27,8 @@ const HEADERS_SECURITY: IPathHeadersMap = {
     'x-frame-options': 'DENY',
     'x-xss-protection': '1; mode=block',
     'x-content-type-options': 'nosniff',
-    'referrer-policy': 'same-origin'
-  }
+    'referrer-policy': 'same-origin',
+  },
 }
 
 /**
@@ -35,17 +36,17 @@ const HEADERS_SECURITY: IPathHeadersMap = {
  */
 const HEADERS_CACHING: IPathHeadersMap = {
   [PathPlaceholder.Pages]: {
-    'cache-control': HEADER_CACHE_NEVER
+    'cache-control': HEADER_CACHE_NEVER,
   },
   [PathPlaceholder.PageData]: {
-    'cache-control': HEADER_CACHE_NEVER
+    'cache-control': HEADER_CACHE_NEVER,
   },
   [PathPlaceholder.Static]: {
-    'cache-control': HEADER_CACHE_IMMUTABLE
+    'cache-control': HEADER_CACHE_IMMUTABLE,
   },
   [PathPlaceholder.Assets]: {
-    'cache-control': HEADER_CACHE_IMMUTABLE
-  }
+    'cache-control': HEADER_CACHE_IMMUTABLE,
+  },
 }
 
 /**
@@ -54,7 +55,10 @@ const HEADERS_CACHING: IPathHeadersMap = {
 export default class Builder {
   headers: IPathHeadersMap
   pages: {
-    [path: string]: Link[]
+    [path: string]: {
+      links: Link[]
+      metas: Meta[]
+    }
   } = {}
 
   readonly provider: Provider
@@ -62,7 +66,7 @@ export default class Builder {
   readonly assets: IAssetsManifest
   readonly fs: Filesystem
   readonly pathPrefix: string
-  constructor (options: IOptions, assets: IAssetsManifest, fs: Filesystem, pathPrefix: string) {
+  constructor(options: IOptions, assets: IAssetsManifest, fs: Filesystem, pathPrefix: string) {
     this.provider = Provider.factory(options, fs)
     this.options = options
     this.assets = assets
@@ -70,29 +74,34 @@ export default class Builder {
     this.pathPrefix = pathPrefix
     this.headers = {
       ...(options.security ? HEADERS_SECURITY : {}),
-      ...(options.caching ? HEADERS_CACHING : {})
+      ...(options.caching ? HEADERS_CACHING : {}),
     }
   }
 
   /**
    * Adds a Link to a page path
    */
-  addPageLink (page: string, link: Link): void {
-    (this.pages[page] ||= []).push(link)
+  addPageLink(page: string, link: Link): void {
+    ;(this.pages[page] ||= { metas: [], links: [] }).links.push(link)
+  }
+
+  /**
+   * Adds a Meta to a page path
+   */
+  addPageMeta(page: string, meta: Meta): void {
+    ;(this.pages[page] ||= { metas: [], links: [] }).metas.push(meta)
   }
 
   /**
    * Strips gatsby's pathPrefix from a given href
    */
-  normalizeHref (href: string): string {
-    return href.indexOf(this.pathPrefix) === 0
-      ? href.replace(this.pathPrefix, '') || '/'
-      : href
+  normalizeHref(href: string): string {
+    return href.indexOf(this.pathPrefix) === 0 ? href.replace(this.pathPrefix, '') || '/' : href
   }
 
-  processHeaderValue (value: string[]): string[]
-  processHeaderValue (value: string): string
-  processHeaderValue (value: string|string[]): string|string[] {
+  processHeaderValue(value: string[]): string[]
+  processHeaderValue(value: string): string
+  processHeaderValue(value: string | string[]): string | string[] {
     if (Array.isArray(value)) {
       return value.map(this.processHeaderValue.bind(this))
     }
@@ -116,11 +125,11 @@ export default class Builder {
     return value
   }
 
-  protected isPathPlaceholder (path: string): path is PathPlaceholder {
+  protected isPathPlaceholder(path: string): path is PathPlaceholder {
     return /^\[[^\]]+]$/.test(path)
   }
 
-  protected getUserHeaders (): IPathHeadersMap {
+  protected getUserHeaders(): IPathHeadersMap {
     const placeholders = Object.values(PathPlaceholder)
     const multiValueHeaders = ['link']
 
@@ -130,7 +139,7 @@ export default class Builder {
       if (this.isPathPlaceholder(path) && !placeholders.includes(path)) {
         throw new Error(
           `Invalid path placeholder "${path}". ` +
-          `Available placeholders are: ${placeholders.join(', ')}`
+            `Available placeholders are: ${placeholders.join(', ')}`,
         )
       }
 
@@ -144,7 +153,7 @@ export default class Builder {
         if (Array.isArray(value) && !multiValueHeaders.includes(name)) {
           throw new TypeError(
             `Value for Header name "${name}" must be a string. ` +
-            `Headers with multi-value support are: ${multiValueHeaders.join(', ')}`
+              `Headers with multi-value support are: ${multiValueHeaders.join(', ')}`,
           )
         }
         dest[path][name] = this.processHeaderValue(value as any)
@@ -154,7 +163,7 @@ export default class Builder {
     return dest
   }
 
-  protected mergeHeaders (dest: IHeadersMap, source?: IHeadersMap): IHeadersMap {
+  protected mergeHeaders(dest: IHeadersMap, source?: IHeadersMap): IHeadersMap {
     for (const name in source) {
       const value = source[name]
       if (name in dest && Array.isArray(value) && Array.isArray(dest[name])) {
@@ -169,7 +178,7 @@ export default class Builder {
   /**
    * Builds the headers file
    */
-  build (): Promise<void> {
+  build(): Promise<void> {
     const userHeaders = this.getUserHeaders()
     for (const path in userHeaders) {
       if (path in this.headers) {
@@ -185,20 +194,50 @@ export default class Builder {
       if (hashed.startsWith('/static/') || original === '/styles.css') {
         return
       }
-      this.headers[hashed] = this.mergeHeaders({
-        ...this.headers[PathPlaceholder.Assets]
-      }, this.headers[original])
+      this.headers[hashed] = this.mergeHeaders(
+        {
+          ...this.headers[PathPlaceholder.Assets],
+        },
+        this.headers[original],
+      )
       if (original in this.headers) {
         delete this.headers[original]
       }
     })
 
     for (const path in this.pages) {
+      const pathHeaders: IHeadersMap = {}
+
+      // Add meta headers first
       // @todo: Validate the return value of a user-defined callback
-      const links = this.options.transformPathLinks(this.pages[path], path)
-      const pathHeaders = {
-        link: _.sortBy(links, 'priority').map(link => String(link))
+      const metas = this.options.transformPathMetas(this.pages[path].metas, path)
+      for (const meta of _.sortBy(metas, 'priority')) {
+        const key = meta.header.toLowerCase()
+        const value = meta.value
+        const acceptsMultiValue = Meta.MULTI_VALUE_META_HEADERS.includes(key)
+
+        if (key in pathHeaders) {
+          if (acceptsMultiValue) {
+            // allow multiple values
+            if (Array.isArray(pathHeaders[key])) {
+              ;(pathHeaders[key] as string[]).push(value)
+            } else {
+              pathHeaders[key] = [pathHeaders[key] as string, value]
+            }
+          } else {
+            // single-value header → overwrite or strict mode error
+            pathHeaders[key] = value
+          }
+        } else {
+          pathHeaders[key] = acceptsMultiValue ? [value] : value
+        }
       }
+
+      // Add link headers
+      // @todo: Validate the return value of a user-defined callback
+      const links = this.options.transformPathLinks(this.pages[path].links, path)
+      pathHeaders.link = _.sortBy(links, 'priority').map((link) => String(link))
+
       this.mergeHeaders(pathHeaders, this.headers[PathPlaceholder.Pages])
       this.headers[path] = this.mergeHeaders(pathHeaders, this.headers[path])
     }
@@ -206,16 +245,20 @@ export default class Builder {
     const headers: IPathHeadersMap = {}
     const omitPlaceholders = [PathPlaceholder.Pages, PathPlaceholder.Assets]
     for (const path in this.headers) {
-      if (omitPlaceholders.includes(path as PathPlaceholder) || Object.keys(this.headers[path]).length === 0) {
+      if (
+        omitPlaceholders.includes(path as PathPlaceholder) ||
+        Object.keys(this.headers[path]).length === 0
+      ) {
         continue
       }
       headers[this.provider.processPath(path)] = this.headers[path]
     }
 
     const filename = this.provider.getFilename()
-    return this.provider.build(headers)
-      .then(data => this.fs.create(filename, data))
-      .catch(e => {
+    return this.provider
+      .build(headers)
+      .then((data) => this.fs.create(filename, data))
+      .catch((e) => {
         throw new Error(`Unable to write headers file "${filename}": ${String(e.message)}`)
       })
   }

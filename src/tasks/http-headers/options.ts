@@ -1,6 +1,7 @@
 import type { ITaskApiOptions, ITaskOptions } from '@postbuild'
 import { ProviderSymbol } from './lib/providers'
 import type Link from './lib/link'
+import type Meta from './lib/meta'
 
 /**
  * Header value is either a string for single-value headers or
@@ -20,7 +21,7 @@ import type Link from './lib/link'
  *   }
  */
 export interface IHeadersMap {
-  [name: string]: string|string[]
+  [name: string]: string | string[]
 }
 
 /**
@@ -40,6 +41,8 @@ export type IOptions = ITaskOptions & {
   caching: boolean
   transformPathLinks: (links: Link[], path: string) => Link[]
   removeLinkTags: boolean
+  transformPathMetas: (metas: Meta[], path: string) => Meta[]
+  removeMetaTags: boolean
 }
 
 /**
@@ -53,34 +56,46 @@ export const options: ITaskApiOptions<IOptions> = {
     headers: {},
     security: true,
     caching: true,
-    transformPathLinks: links => links,
-    removeLinkTags: true
+    transformPathLinks: (links) => links,
+    removeLinkTags: true,
+    transformPathMetas: (metas) => metas,
+    removeMetaTags: true,
   },
   schema: (joi) => {
     const nonEmptyString = joi.string().trim().required()
     return joi.object({
-      provider: joi.string().valid(...Object.values(ProviderSymbol))
+      provider: joi
+        .string()
+        .valid(...Object.values(ProviderSymbol))
         .description('Headers file provider.'),
-      headers: joi.object()
+      headers: joi
+        .object()
         .pattern(
           nonEmptyString,
-          joi.object().pattern(
-            joi.string().pattern(/^[\w-]+$/),
-            joi.alternatives().try(
-              nonEmptyString,
-              joi.array().items(nonEmptyString)
-            )
-          )
+          joi
+            .object()
+            .pattern(
+              joi.string().pattern(/^[\w-]+$/),
+              joi.alternatives().try(nonEmptyString, joi.array().items(nonEmptyString)),
+            ),
         )
         .description('Headers to merge with the generated headers.'),
-      security: joi.boolean()
-        .description('Adds useful security headers.'),
-      caching: joi.boolean()
-        .description('Adds useful caching headers to immutable asset paths.'),
-      transformPathLinks: joi.function().maxArity(2)
+      security: joi.boolean().description('Adds useful security headers.'),
+      caching: joi.boolean().description('Adds useful caching headers to immutable asset paths.'),
+      transformPathLinks: joi
+        .function()
+        .maxArity(2)
         .description('Callback for manipulating links under each path.'),
-      removeLinkTags: joi.boolean()
-        .description('Removes the HTML link tags processed by the task.')
+      removeLinkTags: joi
+        .boolean()
+        .description('Removes the HTML link tags processed by the task.'),
+      transformPathMetas: joi
+        .function()
+        .maxArity(2)
+        .description('Callback for manipulating metas under each path.'),
+      removeMetaTags: joi
+        .boolean()
+        .description('Removes the HTML meta tags processed by the task.'),
     })
-  }
+  },
 }
