@@ -17,6 +17,9 @@ export const pluginOptionsSchema = createPluginExport('pluginOptionsSchema', ({ 
 
 // Initializes plugin state
 export const onPluginInit = createPluginExport('onPluginInit', async (args, pluginOptions) => {
+  args.emitter.on('HTML_GENERATED', (action) => {
+    postbuild.setBuildPaths(action.payload)
+  })
   await postbuild.bootstrap(args, pluginOptions)
 })
 

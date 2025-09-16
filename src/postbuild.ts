@@ -7,7 +7,7 @@ import type { PluginOptionsSchemaJoi, ObjectSchema } from 'gatsby-plugin-utils'
 import type { ITask, IOptions, IOptionProcessing, IAssetsManifest } from './interfaces'
 import Filesystem from './filesystem'
 import Tasks from './tasks'
-import { File, FileType } from './files'
+import { File, FileHtml, FileType } from './files'
 import { DEFAULTS, schema } from './options'
 import { reporter, debug } from './common'
 
@@ -20,6 +20,11 @@ export class Postbuild {
    * Plugin options
    */
   private readonly options: IOptions
+
+  /**
+   * Page paths built by Gatsby during this run
+   */
+  private builtPaths: string[] = []
 
   /**
    * Files being processed by the plugin
@@ -127,6 +132,10 @@ export class Postbuild {
     debug('Postbuild initialized', this)
   }
 
+  setBuildPaths(paths: string[]) {
+    this.builtPaths = paths.map((path) => (path !== '/' ? path.replace(/\/$/, '') : path))
+  }
+
   /**
    * Searches for and processes all files defined by all tasks
    */
@@ -161,22 +170,33 @@ export class Postbuild {
 
     // Get filenames then create a File instance for every file based on extension
     // Group files per extension and process them in series
-    await this.tasks.getFilenames().then(async (filenames) => {
-      for (const ext in filenames) {
-        status.total += filenames[ext].length
-        const config = Object.assign({}, this.options.processing, this.options.extensions[ext])
-        await this.tasks.run(ext as 'unknown', 'configure', { ...payload, config })
-        this.files[ext] = filenames[ext].map((file) =>
-          FileType.factory(ext, file, config, {
-            filesystem: this.fs,
-            tasks: this.tasks,
-            assets: this.manifestMap,
-            gatsby,
-          }),
-        )
-        await this.process(ext, config, tick)
+    const filenames = await this.tasks.getFilenames()
+    for (const ext in filenames) {
+      const config = Object.assign({}, this.options.processing, this.options.extensions[ext])
+      await this.tasks.run(ext as 'unknown', 'configure', { ...payload, config })
+      this.files[ext] = []
+      for (const file of filenames[ext]) {
+        const fileObj = FileType.factory(ext, file, config, {
+          filesystem: this.fs,
+          tasks: this.tasks,
+          assets: this.manifestMap,
+          gatsby,
+        })
+        if (fileObj instanceof FileHtml) {
+          const { pagePath } = fileObj
+          if (pagePath.startsWith('/_gatsby/')) {
+            continue
+          }
+          if (!this.builtPaths.includes(pagePath)) {
+            setStatus(`Incremental build detected, skipping`)
+            return
+          }
+        }
+        this.files[ext].push(fileObj)
       }
-    })
+      status.total += this.files[ext].length
+      await this.process(ext, config, tick)
+    }
 
     // Run on.shutdown events
     await this.tasks.run('on', 'shutdown', payload)
