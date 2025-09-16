@@ -24,6 +24,9 @@ const gatsby = {
   tracing: {
     parentSpan: 'foo',
   },
+  emitter: {
+    on: () => {},
+  }
 }
 
 describe('pluginOptionsSchema', () => {

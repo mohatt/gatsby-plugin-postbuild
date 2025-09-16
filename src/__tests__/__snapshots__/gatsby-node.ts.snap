@@ -21,6 +21,9 @@ exports[`onPluginInit > runs correctly 3`] = `
 [
   [
     {
+      "emitter": {
+        "on": [Function],
+      },
       "reporter": {
         "activityTimer": [MockFunction spy],
       },
@@ -32,6 +35,9 @@ exports[`onPluginInit > runs correctly 3`] = `
   ],
   [
     {
+      "emitter": {
+        "on": [Function],
+      },
       "reporter": {
         "activityTimer": [MockFunction spy],
       },
@@ -43,6 +49,9 @@ exports[`onPluginInit > runs correctly 3`] = `
   ],
   [
     {
+      "emitter": {
+        "on": [Function],
+      },
       "reporter": {
         "activityTimer": [MockFunction spy],
       },
