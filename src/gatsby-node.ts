@@ -41,7 +41,6 @@ export const onPostBuild = createPluginExport('onPostBuild', async (args) => {
   })
   activity.start()
   try {
-    // @todo need to check for incremental build before running postbuild
     await postbuild.run(args, activity.setStatus)
   } catch (e) {
     activity.panic(reporter.createError('onPostBuild', e))

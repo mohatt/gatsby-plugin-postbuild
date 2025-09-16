@@ -126,7 +126,11 @@ export const reporter = (() => {
     ref.warn(warning)
   }
 
-  return { initialize, get, error, createError, warning }
+  const verbose = (message: string): void => {
+    ref.verbose(`[${PLUGIN}]: ${message}`)
+  }
+
+  return { initialize, get, error, createError, warning, verbose }
 })()
 
 /**

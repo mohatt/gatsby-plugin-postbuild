@@ -26,7 +26,7 @@ const gatsby = {
   },
   emitter: {
     on: () => {},
-  }
+  },
 }
 
 describe('pluginOptionsSchema', () => {

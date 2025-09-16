@@ -133,7 +133,9 @@ export class Postbuild {
   }
 
   setBuildPaths(paths: string[]) {
-    this.builtPaths = paths.map((path) => (path !== '/' ? path.replace(/\/$/, '') : path))
+    this.builtPaths = this.builtPaths.concat(
+      paths.map((path) => (path !== '/' ? path.replace(/\/$/, '') : path)),
+    )
   }
 
   /**
@@ -188,6 +190,7 @@ export class Postbuild {
             continue
           }
           if (!this.builtPaths.includes(pagePath)) {
+            reporter.verbose(`Skipping "${pagePath}" as it's not built in this run`)
             setStatus(`Incremental build detected, skipping`)
             return
           }
