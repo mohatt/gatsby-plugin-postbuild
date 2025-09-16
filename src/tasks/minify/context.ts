@@ -24,7 +24,7 @@ export default class HtmlContext {
   /**
    * Creates a new instance for the given html file
    */
-  constructor (file: FileHtml, options: IOptions) {
+  constructor(file: FileHtml, options: IOptions) {
     this.options = options
     this.file = file
   }
@@ -32,14 +32,14 @@ export default class HtmlContext {
   /**
    * Searches for optimizable nodes in ast
    */
-  processNode (node: parse5.Node): void {
+  processNode(node: parse5.Node): void {
     if (this.options[node.nodeName] === false) return
     switch (node.nodeName) {
       case '#comment':
         this.removable.push(node)
         break
       case 'meta':
-        if (node.attrs.find(a => a.name === 'name' && a.value === 'generator') !== undefined) {
+        if (node.attrs.find((a) => a.name === 'name' && a.value === 'generator') !== undefined) {
           this.removable.push(node)
         }
         break
@@ -59,11 +59,11 @@ export default class HtmlContext {
    * Minifies all style/script nodes then writes the final
    * optimized html file
    */
-  minify (minifiers: Record<string, Minifier>): Promise<void> {
+  minify(minifiers: Record<string, Minifier>): Promise<void> {
     return Promise.map(this.assets, (text, i) => {
       const node = text.parentNode as parse5.Element
       const type = node.nodeName
-      const id = node.attrs.find(a => a.name === 'id')?.value.trim() as string
+      const id = node.attrs.find((a) => a.name === 'id')?.value.trim() as string
       const minifier = minifiers[type]
       if (minifier.cache.has(id)) {
         const cached = minifier.cache.get(id) as string
@@ -74,12 +74,17 @@ export default class HtmlContext {
         text.value = cached
         return null
       }
-      return minifier.minify(text.value)
-        .catch(e => {
+      return minifier
+        .minify(text.value)
+        .catch((e) => {
           throw new Error(`Unable to minify ${type} node#${i}: ${String(e)}`)
         })
-        .then(res => {
-          if (id && type in this.file.options.commons && this.file.options.commons[type].includes(id)) {
+        .then((res) => {
+          if (
+            id &&
+            type in this.file.options.commons &&
+            this.file.options.commons[type].includes(id)
+          ) {
             minifier.cache.set(id, res)
           }
           if (res === '') {
@@ -88,8 +93,6 @@ export default class HtmlContext {
           }
           text.value = res
         })
-    }).then(() => this.removable
-      .forEach(node => this.file.adaptor.detachNode(node))
-    )
+    }).then(() => this.removable.forEach((node) => this.file.adaptor.detachNode(node)))
   }
 }

@@ -17,7 +17,7 @@ export abstract class Provider {
   protected abstract placeholders: IPathPlaceholders
   protected readonly options: IOptions
   protected readonly fs: Filesystem
-  constructor (options: IOptions, fs: Filesystem) {
+  constructor(options: IOptions, fs: Filesystem) {
     this.options = options
     this.fs = fs
   }
@@ -31,17 +31,15 @@ export abstract class Provider {
     return new SUPPORTS[options.provider](options, fs)
   }
 
-  public getFilename (): string {
+  public getFilename(): string {
     return this.filename
   }
 
-  public processPath (path: string): string {
-    return path in this.placeholders
-      ? this.placeholders[path as keyof IPathPlaceholders]
-      : path
+  public processPath(path: string): string {
+    return path in this.placeholders ? this.placeholders[path as keyof IPathPlaceholders] : path
   }
 
-  public abstract build (headers: IPathHeadersMap): Promise<string>
+  public abstract build(headers: IPathHeadersMap): Promise<string>
 }
 
 export default Provider

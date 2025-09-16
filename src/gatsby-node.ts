@@ -16,12 +16,9 @@ export const pluginOptionsSchema = createPluginExport('pluginOptionsSchema', ({ 
 })
 
 // Initializes plugin state
-export const onPluginInit = createPluginExport(
-  'onPluginInit',
-  async (args, pluginOptions) => {
-    await postbuild.bootstrap(args, pluginOptions)
-  },
-)
+export const onPluginInit = createPluginExport('onPluginInit', async (args, pluginOptions) => {
+  await postbuild.bootstrap(args, pluginOptions)
+})
 
 // Sets webpack config for the current stage
 export const onCreateWebpackConfig = createPluginExport(
@@ -34,19 +31,17 @@ export const onCreateWebpackConfig = createPluginExport(
 /**
  * Runs Postbuild on the generated static files
  */
-export const onPostBuild = createPluginExport(
-  'onPostBuild',
-  async (args) => {
-    const activity = args.reporter.activityTimer(PLUGIN, {
-      // @ts-expect-error
-      parentSpan: args.tracing.parentSpan
-    })
-    activity.start()
-    try {
-      await postbuild.run(args, activity.setStatus)
-    } catch (e) {
-      activity.panic(reporter.createError('onPostBuild', e))
-    }
-    activity.end()
-  },
-)
+export const onPostBuild = createPluginExport('onPostBuild', async (args) => {
+  const activity = args.reporter.activityTimer(PLUGIN, {
+    // @ts-expect-error
+    parentSpan: args.tracing.parentSpan,
+  })
+  activity.start()
+  try {
+    // @todo need to check for incremental build before running postbuild
+    await postbuild.run(args, activity.setStatus)
+  } catch (e) {
+    activity.panic(reporter.createError('onPostBuild', e))
+  }
+  activity.end()
+})

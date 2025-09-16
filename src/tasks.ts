@@ -1,12 +1,7 @@
 import { Promise } from 'bluebird'
 import _ from 'lodash'
 import type { PluginOptionsSchemaJoi, ObjectSchema } from 'gatsby-plugin-utils'
-import type {
-  ITask,
-  IEvents,
-  IOptions,
-  ITaskOptions,
-} from './interfaces'
+import type { ITask, IEvents, IOptions, ITaskOptions } from './interfaces'
 import type Filesystem from './filesystem'
 import type File from './files/base'
 import { createDebug, PluginError } from './common'
@@ -28,8 +23,15 @@ type Keys<O, C> = { [K in keyof O]: O[K] extends C ? K : never }[keyof O]
 type IEventType = keyof IEvents<any>
 type IEventName<T extends IEventType> = Keys<IEvents<any>[T], (...args: any[]) => any>
 type IEventFunc<T extends IEventType, K extends IEventName<T>> = IEvents<any>[T][K]
-type IEventFuncIn<T extends IEventType, K extends IEventName<T>> = Omit<Parameters<IEventFunc<T, K>>[0], 'task'|'event'|'options'>
-type IEventFuncOut<T extends IEventType, K extends IEventName<T>, R = ReturnType<IEventFunc<T, K>>> = R extends PromiseLike<infer U> ? U : R
+type IEventFuncIn<T extends IEventType, K extends IEventName<T>> = Omit<
+  Parameters<IEventFunc<T, K>>[0],
+  'task' | 'event' | 'options'
+>
+type IEventFuncOut<
+  T extends IEventType,
+  K extends IEventName<T>,
+  R = ReturnType<IEventFunc<T, K>>,
+> = R extends PromiseLike<infer U> ? U : R
 
 /**
  * Handles tasks defined within the plugin
@@ -50,7 +52,7 @@ export class Tasks {
 
   private readonly fs: Filesystem
   private readonly options: IOptions
-  constructor (fs: Filesystem, options: IOptions) {
+  constructor(fs: Filesystem, options: IOptions) {
     this.fs = fs
     this.options = options
   }
@@ -59,8 +61,8 @@ export class Tasks {
    * Registers a new task, task exports needs to be either
    * an object or a module file to require
    */
-  register<O extends ITaskOptions = any> (task: ITask<O>): void {
-    if (this.tasks.some(t => t.id === task.id)) {
+  register<O extends ITaskOptions = any>(task: ITask<O>): void {
+    if (this.tasks.some((t) => t.id === task.id)) {
       throw new Error(`Can't register task "${task.id}" with duplicate id`)
     }
 
@@ -76,12 +78,12 @@ export class Tasks {
    * Sets the user-defined options for all tasks defined
    * Should be called before running any task events
    */
-  setOptions (): void {
+  setOptions(): void {
     this.tasks = this.tasks.filter(({ id, options }) => {
       const td = {
         enabled: true,
         ignore: [],
-        ...options?.defaults
+        ...options?.defaults,
       }
       if (this.options[id] === undefined) {
         this.options[id] = td
@@ -100,61 +102,62 @@ export class Tasks {
   /**
    * Returns a map of file extensions with file names to be processed
    */
-  getFilenames (): Promise<{ [ext: string]: string[] }> {
+  getFilenames(): Promise<{ [ext: string]: string[] }> {
     const extensions = this.tasks.reduce((res: Tasks['fileEvents'], task) => {
       for (const ext in task.events) {
         if (ext === 'on') continue
-        (res[ext] ||= []).push([task, ext])
+        ;(res[ext] ||= []).push([task, ext])
       }
       return res
     }, {})
     const files: Tasks['fileEvents'] = {}
     const filesOrder: { [file: string]: number } = {}
     const result: { [ext: string]: string[] } = {}
-    return Promise
-      .map(Object.keys(extensions), (ext, i) =>
-        this.fs.glob(ext.indexOf('/') === 0 ? ext.slice(1) : `**/*.${ext}`, { nodir: true })
-          .then(matchs => matchs.forEach(f => {
+    return Promise.map(Object.keys(extensions), (ext, i) =>
+      this.fs
+        .glob(ext.indexOf('/') === 0 ? ext.slice(1) : `**/*.${ext}`, { nodir: true })
+        .then((matchs) =>
+          matchs.forEach((f) => {
             if (this.options.ignore.includes(f)) return
             files[f] = (files[f] ||= []).concat(extensions[ext])
             filesOrder[f] = Math.max(i, filesOrder[f] ?? 0)
-          })))
-      .then(() => {
-        const sortedFiles = Object.entries(filesOrder).sort(([,a], [,b]) => {
-          return a - b
-        })
-        for (const [f] of sortedFiles) {
-          files[f] = files[f].filter(([task, ext]) => {
-            if (this.options[task.id].ignore.includes(f)) return false
-            ext = this.fs.extension(f) as string
-            result[ext] ??= []
-            if (!result[ext].includes(f)) result[ext].push(f)
-            return true
-          })
-          if (files[f].length === 0) {
-            delete files[f]
-          }
-        }
-        this.fileEvents = files
-        debug('Updated file-events map', this.fileEvents)
-        return result
+          }),
+        ),
+    ).then(() => {
+      const sortedFiles = Object.entries(filesOrder).sort(([, a], [, b]) => {
+        return a - b
       })
+      for (const [f] of sortedFiles) {
+        files[f] = files[f].filter(([task, ext]) => {
+          if (this.options[task.id].ignore.includes(f)) return false
+          ext = this.fs.extension(f) as string
+          result[ext] ??= []
+          if (!result[ext].includes(f)) result[ext].push(f)
+          return true
+        })
+        if (files[f].length === 0) {
+          delete files[f]
+        }
+      }
+      this.fileEvents = files
+      debug('Updated file-events map', this.fileEvents)
+      return result
+    })
   }
 
   /**
    * Returns a map of task ids and their options schemas
    */
-  getOptionsSchemas (joi: PluginOptionsSchemaJoi): { [task: string]: ObjectSchema } {
+  getOptionsSchemas(joi: PluginOptionsSchemaJoi): { [task: string]: ObjectSchema } {
     return this.tasks.reduce((res: { [task: string]: ObjectSchema }, task) => {
       const tos = task.options?.schema
-      const schema = tos === undefined
-        ? joi.object()
-        : tos.call(task.options, joi)
+      const schema = tos === undefined ? joi.object() : tos.call(task.options, joi)
       res[task.id] = schema.append({
-        enabled: joi.boolean()
-          .description('Whether to run the task or not'),
-        ignore: joi.array().items(joi.string())
-          .description('File paths to ignore for this task only')
+        enabled: joi.boolean().description('Whether to run the task or not'),
+        ignore: joi
+          .array()
+          .items(joi.string())
+          .description('File paths to ignore for this task only'),
       })
       return res
     }, {})
@@ -164,14 +167,23 @@ export class Tasks {
    * Runs all callbacks attached to the given event type/name
    * and returns all their return values as an array
    */
-  async run<T extends IEventType, E extends IEventName<T>> (type: T, event: E, payload: IEventFuncIn<T, E>): Promise<Array<IEventFuncOut<T, E>>>
+  async run<T extends IEventType, E extends IEventName<T>>(
+    type: T,
+    event: E,
+    payload: IEventFuncIn<T, E>,
+  ): Promise<Array<IEventFuncOut<T, E>>>
 
   /**
    * Reduces the return values from all callbacks attached to
    * the given event type/name to a single value based on the
    * accumulator field provided
    */
-  async run<T extends IEventType, E extends IEventName<T>> (type: T, event: E, payload: IEventFuncIn<T, E>, accumulator: keyof IEventFuncIn<T, E>): Promise<IEventFuncOut<T, E>>
+  async run<T extends IEventType, E extends IEventName<T>>(
+    type: T,
+    event: E,
+    payload: IEventFuncIn<T, E>,
+    accumulator: keyof IEventFuncIn<T, E>,
+  ): Promise<IEventFuncOut<T, E>>
 
   /**
    * Implementation
@@ -179,7 +191,12 @@ export class Tasks {
    * some inconsistencies with the current version of TypeScript (v4.1)
    * @see Keys
    */
-  async run<T extends IEventType, E extends IEventName<T>> (type: T, event: E, payload: IEventFuncIn<T, E>, accumulator?: keyof IEventFuncIn<T, E>): Promise<Array<IEventFuncOut<T, E>>|IEventFuncOut<T, E>> {
+  async run<T extends IEventType, E extends IEventName<T>>(
+    type: T,
+    event: E,
+    payload: IEventFuncIn<T, E>,
+    accumulator?: keyof IEventFuncIn<T, E>,
+  ): Promise<Array<IEventFuncOut<T, E>> | IEventFuncOut<T, E>> {
     const events: Array<[ITask<any>, string]> = []
     // @ts-expect-error
     const file = payload.file as File | undefined
@@ -202,8 +219,8 @@ export class Tasks {
           options: this.options[task.id],
           event: {
             type: et,
-            name: event
-          }
+            name: event,
+          },
         }
         const res = await task.events[et][event]({ ...args, ...payload })
         if (accumulator !== undefined) {
@@ -217,15 +234,13 @@ export class Tasks {
       } catch (e) {
         throw new PluginError(
           `The task "${task.id}" encountered an error while running event ` +
-          `"${[et, event].join('.')}": ${String(e.message)}`,
-          e
+            `"${[et, event].join('.')}": ${String(e.message)}`,
+          e,
         )
       }
-    }).then(res => {
+    }).then((res) => {
       if (accumulator !== undefined) {
-        return res.length > 0
-          ? res.pop()
-          : payload[accumulator]
+        return res.length > 0 ? res.pop() : payload[accumulator]
       }
       return res
     })
@@ -234,8 +249,8 @@ export class Tasks {
   /**
    * Returns a list of enabled tasks
    */
-  getActiveTasks (): Array<ITask<any>> {
-    return this.tasks.filter(task => this.options[task.id].enabled)
+  getActiveTasks(): Array<ITask<any>> {
+    return this.tasks.filter((task) => this.options[task.id].enabled)
   }
 }
 

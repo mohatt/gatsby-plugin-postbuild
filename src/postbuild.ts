@@ -39,7 +39,7 @@ export class Postbuild {
   /**
    * Loads dependencies and sets default options
    */
-  constructor (tasks?: Tasks, fs?: Filesystem) {
+  constructor(tasks?: Tasks, fs?: Filesystem) {
     this.options = { ...DEFAULTS }
     this.fs = fs ?? new Filesystem(this.options)
     this.tasks = tasks ?? new Tasks(this.fs, this.options)
@@ -50,14 +50,14 @@ export class Postbuild {
   /**
    * Registers core tasks
    */
-  init (tasks: ITask<any>[]): void {
-    tasks.forEach(task => this.tasks.register(task))
+  init(tasks: ITask<any>[]): void {
+    tasks.forEach((task) => this.tasks.register(task))
   }
 
   /**
    * Returns the webpack config object for the given stage
    */
-  getWebpackConfig (stage: string): Object {
+  getWebpackConfig(stage: string): Object {
     if (stage !== 'build-javascript') {
       return {}
     }
@@ -74,23 +74,23 @@ export class Postbuild {
               }
             }
             return entry
-          }
-        })
-      ]
+          },
+        }),
+      ],
     }
   }
 
   /**
    * Returns the final plugin options schema
    */
-  getOptionsSchemas (joi: PluginOptionsSchemaJoi): ObjectSchema {
+  getOptionsSchemas(joi: PluginOptionsSchemaJoi): ObjectSchema {
     return schema(joi).append(this.tasks.getOptionsSchemas(joi))
   }
 
   /**
    * Loads user-defined options, environment constants and task options
    */
-  async bootstrap (gatsby: NodePluginArgs, pluginOptions: PluginOptions): Promise<void> {
+  async bootstrap(gatsby: NodePluginArgs, pluginOptions: PluginOptions): Promise<void> {
     // Merge user-defined options with defaults
     _.merge(this.options, pluginOptions)
 
@@ -104,7 +104,7 @@ export class Postbuild {
     if (!_.isEmpty(this.options.events)) {
       this.tasks.register({
         id: 'user',
-        events: this.options.events
+        events: this.options.events,
       })
     }
 
@@ -122,7 +122,7 @@ export class Postbuild {
       file: undefined,
       filesystem: this.fs,
       assets: this.manifestMap,
-      gatsby
+      gatsby,
     })
     debug('Postbuild initialized', this)
   }
@@ -130,7 +130,7 @@ export class Postbuild {
   /**
    * Searches for and processes all files defined by all tasks
    */
-  async run (gatsby: NodePluginArgs, setStatus: (s: string) => void): Promise<void> {
+  async run(gatsby: NodePluginArgs, setStatus: (s: string) => void): Promise<void> {
     if (!this.options.enabled) return
 
     this.manifestMap = new Map(Object.entries(this.manifest))
@@ -139,7 +139,7 @@ export class Postbuild {
       file: undefined,
       filesystem: this.fs,
       assets: this.manifestMap,
-      gatsby
+      gatsby,
     }
     await this.tasks.run('on', 'postbuild', payload)
 
@@ -148,37 +148,35 @@ export class Postbuild {
       total: 0,
       read: 0,
       process: 0,
-      write: 0
+      write: 0,
     }
     const tick = (tag: keyof typeof status): void => {
       status[tag]++
       setStatus(
         `Loaded ${status.read}/${status.total} ` +
-        `Processed ${status.process}/${status.total} ` +
-        `Wrote ${status.write}/${status.total}`
+          `Processed ${status.process}/${status.total} ` +
+          `Wrote ${status.write}/${status.total}`,
       )
     }
 
     // Get filenames then create a File instance for every file based on extension
     // Group files per extension and process them in series
-    await this.tasks.getFilenames()
-      .then(async filenames => {
-        for (const ext in filenames) {
-          status.total += filenames[ext].length
-          const config = Object.assign({},
-            this.options.processing,
-            this.options.extensions[ext]
-          )
-          await this.tasks.run(ext as 'unknown', 'configure', { ...payload, config })
-          this.files[ext] = filenames[ext].map(file => FileType.factory(ext, file, config, {
+    await this.tasks.getFilenames().then(async (filenames) => {
+      for (const ext in filenames) {
+        status.total += filenames[ext].length
+        const config = Object.assign({}, this.options.processing, this.options.extensions[ext])
+        await this.tasks.run(ext as 'unknown', 'configure', { ...payload, config })
+        this.files[ext] = filenames[ext].map((file) =>
+          FileType.factory(ext, file, config, {
             filesystem: this.fs,
             tasks: this.tasks,
             assets: this.manifestMap,
-            gatsby
-          }))
-          await this.process(ext, config, tick)
-        }
-      })
+            gatsby,
+          }),
+        )
+        await this.process(ext, config, tick)
+      }
+    })
 
     // Run on.shutdown events
     await this.tasks.run('on', 'shutdown', payload)
@@ -188,22 +186,21 @@ export class Postbuild {
     if (reporting === true || (typeof reporting === 'object' && reporting.log)) {
       await this.fs.create(
         'postbuild.log.json',
-        JSON.stringify(this.fs.reporter.getReports(), null, 2)
+        JSON.stringify(this.fs.reporter.getReports(), null, 2),
       )
     }
 
     const saving = this.fs.reporter.getTotalSaved()
-    setStatus(`Done processing ${status.total} files` + (
-      saving[0] > 0
-        ? ` saving a total of ${saving[1]}`
-        : ''
-    ))
+    setStatus(
+      `Done processing ${status.total} files` +
+        (saving[0] > 0 ? ` saving a total of ${saving[1]}` : ''),
+    )
   }
 
   /**
    * Processes files of a given extension using the given processing options
    */
-  async process (ext: string, options: IOptionProcessing, tick: Function): Promise<void> {
+  async process(ext: string, options: IOptionProcessing, tick: Function): Promise<void> {
     const files = this.files[ext]
     if (files === undefined) return
     debug(`Processing ${files.length} files with extension "${ext}" using`, options)
@@ -211,22 +208,38 @@ export class Postbuild {
     const conc = { concurrency: options.concurrency }
     // Process all files at one step all at the same time
     if (strat === 'parallel') {
-      await Promise.map(files, (file, i) => {
-        return file.read()
-          .then(() => { tick('read'); return file.process() })
-          .then(() => { tick('process'); return file.write() })
-          .then(() => { tick('write'); delete files[i] })
-      }, conc)
+      await Promise.map(
+        files,
+        (file, i) => {
+          return file
+            .read()
+            .then(() => {
+              tick('read')
+              return file.process()
+            })
+            .then(() => {
+              tick('process')
+              return file.write()
+            })
+            .then(() => {
+              tick('write')
+              delete files[i]
+            })
+        },
+        conc,
+      )
       return
     }
 
     // Process files in 3 steps with the last step being run in sequential order
-    await Promise.map(files, file => file.read().then(() => tick('read')), conc)
-    await Promise.map(files, file => file.process().then(() => tick('process')), conc)
-    await Promise.each(files, (file, i) => file.write().then(() => {
-      tick('write')
-      delete files[i]
-    }))
+    await Promise.map(files, (file) => file.read().then(() => tick('read')), conc)
+    await Promise.map(files, (file) => file.process().then(() => tick('process')), conc)
+    await Promise.each(files, (file, i) =>
+      file.write().then(() => {
+        tick('write')
+        delete files[i]
+      }),
+    )
   }
 }
 

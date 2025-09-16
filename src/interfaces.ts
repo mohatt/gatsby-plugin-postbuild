@@ -2,11 +2,7 @@ import type { NodePluginArgs } from 'gatsby'
 import type { PluginOptionsSchemaJoi, ObjectSchema } from 'gatsby-plugin-utils'
 import type { DefaultTreeAdapterTypes as parse5 } from 'parse5'
 import type Filesystem from './filesystem'
-import type {
-  File,
-  FileGeneric,
-  FileHtml
-} from './files'
+import type { File, FileGeneric, FileHtml } from './files'
 
 // Available processing strategies
 export type IOptionProcessingStrategy = 'sequential' | 'parallel'
@@ -18,19 +14,23 @@ export interface IOptionProcessing {
 }
 
 // Extensio options interface
-export type IExtensionOptions<O = {
-  [option: string]: any
-}> = IOptionProcessing & O
+export type IExtensionOptions<
+  O = {
+    [option: string]: any
+  },
+> = IOptionProcessing & O
 
 /**
  * Plugin options interface
  */
 export type IOptions = {
   enabled: boolean
-  reporting: {
-    log: boolean
-    console: boolean
-  } | boolean
+  reporting:
+    | {
+        log: boolean
+        console: boolean
+      }
+    | boolean
   ignore: string[]
   events: ITaskApiEvents<any>
   processing: IOptionProcessing
@@ -44,7 +44,7 @@ export type IOptions = {
 /**
  * Generic type for async/sync functions
  */
-type Fn<A extends any[], R> = (...args: A) => Promise<R>|R
+type Fn<A extends any[], R> = (...args: A) => Promise<R> | R
 
 /**
  * Interface for an event callback
@@ -53,7 +53,7 @@ type IEvent<
   O extends ITaskOptions,
   P extends Object = {},
   F extends File | undefined = undefined,
-  R = void
+  R = void,
 > = Fn<[IPostbuildArg<O, F, P>], R>
 
 /**
@@ -69,7 +69,11 @@ export interface IEvents<O extends ITaskOptions> {
     configure: IEvent<O, { config: IExtensionOptions }>
     parse: IEvent<O, { html: string }, FileHtml, string>
     tree: IEvent<O, {}, FileHtml>
-    node: IEvent<O, { node: parse5.Node, previousNode?: parse5.Node, nextNode?: parse5.Node }, FileHtml>
+    node: IEvent<
+      O,
+      { node: parse5.Node; previousNode?: parse5.Node; nextNode?: parse5.Node },
+      FileHtml
+    >
     serialize: IEvent<O, {}, FileHtml>
     write: IEvent<O, { html: string }, FileHtml, string>
   }
@@ -93,11 +97,13 @@ export interface ITaskOptions {
  * @see https://github.com/Microsoft/TypeScript/pull/29317
  * @see https://github.com/microsoft/TypeScript/pull/41524
  */
-export type ITaskApiEvents<O extends ITaskOptions> = {
-  [K in Exclude<keyof IEvents<any>, 'unknown'>]?: Partial<IEvents<O>[K]>
-} | {
-  [glob: string]: Partial<IEvents<O>['unknown']>
-}
+export type ITaskApiEvents<O extends ITaskOptions> =
+  | {
+      [K in Exclude<keyof IEvents<any>, 'unknown'>]?: Partial<IEvents<O>[K]>
+    }
+  | {
+      [glob: string]: Partial<IEvents<O>['unknown']>
+    }
 
 /**
  * Interface for task options definition
@@ -121,7 +127,11 @@ export interface ITask<O extends ITaskOptions> {
  * Interface for the main postbuild object thats is passed
  * to all event callbacks
  */
-export type IPostbuildArg<O extends ITaskOptions, F extends File | undefined = undefined, P extends Object = {}> = {
+export type IPostbuildArg<
+  O extends ITaskOptions,
+  F extends File | undefined = undefined,
+  P extends Object = {},
+> = {
   /**
    * Options for current task
    */

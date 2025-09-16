@@ -16,25 +16,29 @@ class DIContainer {
   readonly fs: Filesystem
   readonly mapper: AssetMapper
   readonly purger: Purger
-  constructor (options: IOptions, fs: Filesystem, mapper?: AssetMapper, purger?: Purger) {
+  constructor(options: IOptions, fs: Filesystem, mapper?: AssetMapper, purger?: Purger) {
     this.options = options
     this.fs = fs
     this.mapper = mapper ?? new AssetMapper(this.options, this.fs)
     this.purger = purger ?? new Purger(this.options, this.fs, this.mapper)
   }
 
-  createContext (file: FileHtml): HtmlContext {
+  createContext(file: FileHtml): HtmlContext {
     this.contexts[file.relative] = new HtmlContext(
-      file, this.options, this.fs, this.mapper, this.purger
+      file,
+      this.options,
+      this.fs,
+      this.mapper,
+      this.purger,
     )
     return this.contexts[file.relative]
   }
 
-  getContext (file: FileHtml): HtmlContext {
+  getContext(file: FileHtml): HtmlContext {
     return this.contexts[file.relative]
   }
 
-  deleteContext (file: FileHtml): void {
+  deleteContext(file: FileHtml): void {
     delete this.contexts[file.relative]
   }
 }
@@ -44,7 +48,7 @@ export const events: ITaskApiEvents<IOptions> = {
   on: {
     postbuild: ({ filesystem, options }) => {
       di = new DIContainer(options, filesystem)
-    }
+    },
   },
   html: {
     configure: ({ config }) => {
@@ -57,10 +61,12 @@ export const events: ITaskApiEvents<IOptions> = {
       di.getContext(file).processNode(node)
     },
     serialize: ({ file }) => {
-      return di.getContext(file).purgeStyles()
+      return di
+        .getContext(file)
+        .purgeStyles()
         .then(() => di.deleteContext(file))
-    }
-  }
+    },
+  },
 }
 
 const task: ITask<IOptions> = {

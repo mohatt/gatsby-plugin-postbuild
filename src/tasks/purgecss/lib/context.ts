@@ -12,10 +12,8 @@ import type { IOptions } from '../options'
  * style element that is shared between multiple html
  * files
  */
-function createStyleId (css: string): string {
-  return crypto.createHash('sha1')
-    .update(css, 'utf8')
-    .digest('base64')
+function createStyleId(css: string): string {
+  return crypto.createHash('sha1').update(css, 'utf8').digest('base64')
 }
 
 /**
@@ -30,12 +28,12 @@ export abstract class Style {
   /**
    * Reads the original css string
    */
-  abstract read (): Promise<string>|string
+  abstract read(): Promise<string> | string
 
   /**
    * Writes the optimized css string
    */
-  abstract update (result: IPurgeResult): Promise<void>|void
+  abstract update(result: IPurgeResult): Promise<void> | void
 }
 
 /**
@@ -43,16 +41,16 @@ export abstract class Style {
  */
 export class StyleInline extends Style {
   private textNode: parse5.TextNode
-  constructor (node: parse5.TextNode) {
+  constructor(node: parse5.TextNode) {
     super()
     this.textNode = node
   }
 
-  read (): string {
+  read(): string {
     return this.textNode.value
   }
 
-  update (result: IPurgeResult): void {
+  update(result: IPurgeResult): void {
     this.textNode.value = result.css
   }
 }
@@ -64,7 +62,7 @@ export class StyleFile extends Style {
   private readonly fs: Filesystem
   private readonly options: IOptions
   private readonly path: string
-  constructor (path: string, options: IOptions, fs: Filesystem) {
+  constructor(path: string, options: IOptions, fs: Filesystem) {
     super()
     this.fs = fs
     this.options = options
@@ -72,13 +70,13 @@ export class StyleFile extends Style {
     this.path = path
   }
 
-  async read (): Promise<string> {
+  async read(): Promise<string> {
     return this.fs.read(this.path)
   }
 
-  async update (result: IPurgeResult): Promise<void> {
+  async update(result: IPurgeResult): Promise<void> {
     await this.fs.update(this.path, result.css, {
-      purgecss: String(result.rejected.length)
+      purgecss: String(result.rejected.length),
     })
     if (this.options.writeRejected) {
       await this.fs.create(this.path + '.rejected.txt', result.rejected.join(' '))
@@ -119,7 +117,13 @@ export class HtmlContext {
   /**
    * Creates a new instance for the given html file
    */
-  constructor (file: FileHtml, options: IOptions, fs: Filesystem, mapper: AssetMapper, purger: Purger) {
+  constructor(
+    file: FileHtml,
+    options: IOptions,
+    fs: Filesystem,
+    mapper: AssetMapper,
+    purger: Purger,
+  ) {
     this.options = options
     this.file = file
     this.fs = fs
@@ -131,10 +135,10 @@ export class HtmlContext {
    * Clones the ast tree and creates a style-ess
    * copy of it
    */
-  async load (): Promise<void> {
+  async load(): Promise<void> {
     // clone the tree and remove all <style> nodes
     const purgedTree = cloneDeep(this.file.tree)
-    await this.file.walk(node => {
+    await this.file.walk((node) => {
       if (node.nodeName === 'style') {
         this.file.adaptor.detachNode(node)
       }
@@ -146,7 +150,7 @@ export class HtmlContext {
   /**
    * Searches for css/js assets in ast nodes
    */
-  processNode (node: parse5.Node): void {
+  processNode(node: parse5.Node): void {
     if (node.nodeName === 'head') {
       this._inHead = true
       return
@@ -159,7 +163,7 @@ export class HtmlContext {
       return this.addStyle(node)
     }
     if (node.nodeName === 'link') {
-      const rel = node.attrs.find(a => a.name === 'rel')
+      const rel = node.attrs.find((a) => a.name === 'rel')
       if (rel?.value.toLowerCase().trim() !== 'stylesheet') return
       return this.addStyle(node)
     }
@@ -172,12 +176,14 @@ export class HtmlContext {
    * Creates a style object for the given <style> or <link> node
    * then appends it to {self.styles}
    */
-  addStyle (node: parse5.Element): void {
+  addStyle(node: parse5.Element): void {
     if (node.nodeName === 'link') {
       const stylePath = this.file.resolveHref(node)
-      if (typeof stylePath !== 'string' ||
+      if (
+        typeof stylePath !== 'string' ||
         this.fs.extension(stylePath, 'css') === false ||
-        this.mapper.shouldIgnoreFile(stylePath)) {
+        this.mapper.shouldIgnoreFile(stylePath)
+      ) {
         return
       }
       const style = new StyleFile(stylePath, this.options, this.fs)
@@ -200,11 +206,13 @@ export class HtmlContext {
    * checks if the script should be ignored, then appends
    * it to {self.scripts}
    */
-  addScript (node: parse5.Element): void {
+  addScript(node: parse5.Element): void {
     const scriptPath = this.file.resolveHref(node, 'src')
-    if (typeof scriptPath !== 'string' ||
+    if (
+      typeof scriptPath !== 'string' ||
       this.fs.extension(scriptPath, 'js') === false ||
-      this.mapper.shouldIgnoreFile(scriptPath)) {
+      this.mapper.shouldIgnoreFile(scriptPath)
+    ) {
       return
     }
     this.scripts.push(scriptPath)
@@ -213,8 +221,8 @@ export class HtmlContext {
   /**
    * Purges all style nodes
    */
-  async purgeStyles (): Promise<void> {
-    const result = await Promise.map(this.styles, style => {
+  async purgeStyles(): Promise<void> {
+    const result = await Promise.map(this.styles, (style) => {
       return this.purger.purge(style, this)
     })
     const rejected = result.flat()

@@ -7,10 +7,10 @@ export default class VercelProvider extends Provider {
   placeholders = {
     [PathPlaceholder.All]: '/(.*)',
     [PathPlaceholder.PageData]: '/page-data/(.*)',
-    [PathPlaceholder.Static]: '/static/(.*)'
+    [PathPlaceholder.Static]: '/static/(.*)',
   }
 
-  async build (headers: IPathHeadersMap): Promise<string> {
+  async build(headers: IPathHeadersMap): Promise<string> {
     let config: any = {}
     try {
       config = JSON.parse(await this.fs.read('../vercel.json'))
@@ -23,14 +23,12 @@ export default class VercelProvider extends Provider {
         const value = headers[path][header]
         pathHeaders.push({
           key: header,
-          value: Array.isArray(value)
-            ? value.join(', ')
-            : value
+          value: Array.isArray(value) ? value.join(', ') : value,
         })
       }
       config.headers.push({
         source: path,
-        headers: pathHeaders
+        headers: pathHeaders,
       })
     }
 

@@ -70,14 +70,18 @@ export default abstract class File {
    * needed for processing the file by child classes
    * @internal
    */
-  constructor (rel: string, options: IExtensionOptions, { filesystem, tasks, assets, gatsby }: FileConstructorArgs) {
+  constructor(
+    rel: string,
+    options: IExtensionOptions,
+    { filesystem, tasks, assets, gatsby }: FileConstructorArgs,
+  ) {
     this.path = path.join(filesystem.root, rel)
     this.relative = rel
     this.extension = filesystem.extension(rel) as string
 
     this.file = {
       read: () => filesystem.read(rel),
-      update: (data) => filesystem.update(rel, data, this.reportMeta)
+      update: (data) => filesystem.update(rel, data, this.reportMeta),
     }
 
     this.options = options
@@ -86,7 +90,7 @@ export default abstract class File {
       file: this as any,
       assets,
       filesystem,
-      gatsby
+      gatsby,
     }
     this.emitPayload = () => payload
   }
@@ -100,17 +104,17 @@ export default abstract class File {
    * Reads the file contents
    * @internal
    */
-  abstract read (): Promise<void>
+  abstract read(): Promise<void>
 
   /**
    * Performs transformations on the file contents
    * @internal
    */
-  abstract process (): Promise<void>
+  abstract process(): Promise<void>
 
   /**
    * Writes the processed file contents
    * @internal
    */
-  abstract write (): Promise<void>
+  abstract write(): Promise<void>
 }

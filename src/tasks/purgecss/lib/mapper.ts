@@ -23,7 +23,7 @@ export default class AssetMapper {
     [ext: string]: string[]
   } = {
     css: [],
-    js: []
+    js: [],
   }
 
   private readonly fs: Filesystem
@@ -31,7 +31,7 @@ export default class AssetMapper {
   /**
    * Initializes the class and sets excluded files
    */
-  constructor (options: IOptions, fs: Filesystem) {
+  constructor(options: IOptions, fs: Filesystem) {
     this.fs = fs
     this.options = options
     this.loadWebpackIgnores()
@@ -42,7 +42,7 @@ export default class AssetMapper {
   /**
    * Sets scripts ignored by their webpack chunkName
    */
-  loadWebpackIgnores (): void {
+  loadWebpackIgnores(): void {
     const ignoredChunks = this.options.ignoreAssets.webpack
     if (ignoredChunks.length === 0) {
       return
@@ -58,11 +58,11 @@ export default class AssetMapper {
       throw new Error(`Unable to load "webpack.stats.json" from "${statsFile}"`)
     }
 
-    ignoredChunks.forEach(chunk => {
+    ignoredChunks.forEach((chunk) => {
       if (!(chunk in chunks)) {
         return
       }
-      chunks[chunk].forEach(file => {
+      chunks[chunk].forEach((file) => {
         this.fs.extension(file) === 'js' && this.ignoreFile(file)
       })
     })
@@ -71,9 +71,9 @@ export default class AssetMapper {
   /**
    * Sets files ignored by their filepath and extension
    */
-  loadFileIgnores (): void {
+  loadFileIgnores(): void {
     for (const ext of ['css', 'js']) {
-      for (const file of this.options.ignoreAssets[ext as 'css'|'js']) {
+      for (const file of this.options.ignoreAssets[ext as 'css' | 'js']) {
         this.ignoreFile(file)
       }
     }
@@ -83,7 +83,7 @@ export default class AssetMapper {
    * Adds a given file to the ignored files list
    * of the given extension
    */
-  ignoreFile (file: string): void {
+  ignoreFile(file: string): void {
     const ext = this.fs.extension(file) as string
     if (!(ext in this.ignoredFiles)) return
     if (!this.ignoredFiles[ext].includes(file)) {
@@ -94,7 +94,7 @@ export default class AssetMapper {
   /**
    * Decides whether a file is ignored or not
    */
-  shouldIgnoreFile (file: string): boolean {
+  shouldIgnoreFile(file: string): boolean {
     const ext = this.fs.extension(file) as string
     if (!(ext in this.ignoredFiles)) {
       debug('Unknown ignore file type', [file, ext])
@@ -106,7 +106,7 @@ export default class AssetMapper {
   /**
    * Links a given style id to a html file
    */
-  createStyleLink (style: Style, context: HtmlContext): void {
+  createStyleLink(style: Style, context: HtmlContext): void {
     const { id } = style
     if (!id) {
       return
@@ -122,7 +122,7 @@ export default class AssetMapper {
   /**
    * Returns the list of html files linked to a given style id
    */
-  getStyleContexts (style: Style): HtmlContext[] {
+  getStyleContexts(style: Style): HtmlContext[] {
     const { id } = style
     if (id in this.sharedStyles) {
       return this.sharedStyles[id]

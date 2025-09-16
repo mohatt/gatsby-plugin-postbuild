@@ -9,14 +9,19 @@ import FileHtml from './html'
 class FileType {
   static types: { [ext: string]: typeof File } = {
     '*': FileGeneric,
-    html: FileHtml
+    html: FileHtml,
   }
 
   /**
    * Creates a new file instance for the given path based on the given extension
    * @internal
    */
-  static factory = (ext: string, rel: string, options: IExtensionOptions, args: FileConstructorArgs): File => {
+  static factory = (
+    ext: string,
+    rel: string,
+    options: IExtensionOptions,
+    args: FileConstructorArgs,
+  ): File => {
     if (!(ext in this.types)) {
       ext = '*'
     }
@@ -27,7 +32,7 @@ class FileType {
   /**
    * Checks if a file extension is supported
    */
-  static supports = (ext: string): boolean|typeof File => {
+  static supports = (ext: string): boolean | typeof File => {
     return ext in this.types ? this.types[ext] : false
   }
 }

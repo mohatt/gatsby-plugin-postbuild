@@ -5,16 +5,16 @@ import { FileType } from '../files'
 import { DEFAULTS } from '../options'
 
 // Async mock fn
-const fnAsync = v => vi.fn().mockImplementation(() => Promise.resolve(v))
+const fnAsync = (v) => vi.fn().mockImplementation(() => Promise.resolve(v))
 
 describe('init', () => {
   let postbuild
   const tasks = {
     register: vi.fn(),
-    getOptionsSchemas: joi => ({
+    getOptionsSchemas: (joi) => ({
       foo: joi.object({ bar: joi.string() }),
-      lorem: joi.object({ ipsum: joi.boolean() })
-    })
+      lorem: joi.object({ ipsum: joi.boolean() }),
+    }),
   }
 
   test('options defaults', () => {
@@ -30,14 +30,14 @@ describe('init', () => {
     const schema = ({ Joi }) => postbuild.getOptionsSchemas(Joi)
     optionsFixtures.push({
       title: 'should validate default options',
-      options: DEFAULTS
+      options: DEFAULTS,
     })
     for (const { title, options } of optionsFixtures) {
-      test(title, () => testPluginOptionsSchema(schema, options)
-        .then(({ isValid, errors }) => {
+      test(title, () =>
+        testPluginOptionsSchema(schema, options).then(({ isValid, errors }) => {
           expect(isValid).toMatchSnapshot()
           expect(errors).toMatchSnapshot()
-        })
+        }),
       )
     }
   })
@@ -48,33 +48,33 @@ describe('bootstrap', () => {
     register: vi.fn(),
     setOptions: vi.fn(),
     run: fnAsync(),
-    getActiveTasks: () => [{}]
+    getActiveTasks: () => [{}],
   }
   const filesystem = {
-    setRoot: vi.fn()
+    setRoot: vi.fn(),
   }
   const gatsby = {
     store: {
       getState: () => ({
-        program: { directory: '/foo/bar' }
-      })
+        program: { directory: '/foo/bar' },
+      }),
     },
     reporter: {
-      setErrorMap: vi.fn()
-    }
+      setErrorMap: vi.fn(),
+    },
   }
 
   const cases = [
     {
       title: 'correctly loads with defaults',
-      options: {}
+      options: {},
     },
     {
       title: 'correctly loads with user options',
       options: {
-        events: { foo: { bar: () => '' } }
-      }
-    }
+        events: { foo: { bar: () => '' } },
+      },
+    },
   ]
 
   beforeEach(() => {
@@ -91,10 +91,7 @@ describe('bootstrap', () => {
       expect(filesystem.setRoot).toBeCalledWith('/foo/bar/public')
       expect(tasks.register.mock.calls).toMatchSnapshot()
       expect(tasks.setOptions).toBeCalledTimes(1)
-      expect(tasks.run.mock.calls[0])
-        .toMatchObject(
-          ['on', 'bootstrap', { filesystem, gatsby }]
-        )
+      expect(tasks.run.mock.calls[0]).toMatchObject(['on', 'bootstrap', { filesystem, gatsby }])
     })
   }
 
@@ -111,17 +108,17 @@ describe('run', () => {
   FileType.factory = vi.fn()
   const tasks = {
     getFilenames: fnAsync({
-      foo: ['file1.foo', 'file2.foo']
+      foo: ['file1.foo', 'file2.foo'],
     }),
-    run: fnAsync()
+    run: fnAsync(),
   }
   const setStatus = vi.fn()
   const filesystem = {
     create: fnAsync(),
     reporter: {
       getReports: () => ['report1', 'report2'],
-      getTotalSaved: () => [5, 5]
-    }
+      getTotalSaved: () => [5, 5],
+    },
   }
   const gatsby = {}
 
@@ -136,59 +133,66 @@ describe('run', () => {
     const pb = new Postbuild(tasks, filesystem)
     pb.options = { ...pb.options, ...options }
     pb.process = vi.fn().mockImplementation((a, b, tick) => {
-      [0, 0].forEach(() => {
-        tick('read'); tick('process'); tick('write')
+      ;[0, 0].forEach(() => {
+        tick('read')
+        tick('process')
+        tick('write')
       })
     })
-    return expect(pb.run(gatsby, setStatus)).resolves.toBe(undefined).then(() => {
-      const config = { ...pb.options.processing, ...pb.options.extensions.foo }
-      expect(FileType.factory.mock.calls)
-        .toMatchObject([
+    return expect(pb.run(gatsby, setStatus))
+      .resolves.toBe(undefined)
+      .then(() => {
+        const config = { ...pb.options.processing, ...pb.options.extensions.foo }
+        expect(FileType.factory.mock.calls).toMatchObject([
           ['foo', 'file1.foo', config, { filesystem, tasks, gatsby }],
-          ['foo', 'file2.foo', config, { filesystem, tasks, gatsby }]
+          ['foo', 'file2.foo', config, { filesystem, tasks, gatsby }],
         ])
-      expect(tasks.run.mock.calls)
-        .toMatchObject([
+        expect(tasks.run.mock.calls).toMatchObject([
           ['on', 'postbuild', { filesystem, gatsby }],
           ['foo', 'configure', { filesystem, gatsby, config }],
-          ['on', 'shutdown', { filesystem, gatsby }]
+          ['on', 'shutdown', { filesystem, gatsby }],
         ])
-      expect(pb.process).toBeCalledTimes(1)
-      return pb
-    })
+        expect(pb.process).toBeCalledTimes(1)
+        return pb
+      })
   }
 
-  test('correctly runs with default options', () => runTest().then(() => {
-    expect(setStatus.mock.calls).toMatchSnapshot()
-  }))
+  test('correctly runs with default options', () =>
+    runTest().then(() => {
+      expect(setStatus.mock.calls).toMatchSnapshot()
+    }))
 
-  test('correctly runs with custom processing options', () => runTest({
-    processing: { strategy: 'parallel', concurrency: 3 }
-  }).then(pb => {
-    expect(pb.process.mock.calls[0][1]).toMatchObject({
-      strategy: 'parallel',
-      concurrency: 3
-    })
-  }))
+  test('correctly runs with custom processing options', () =>
+    runTest({
+      processing: { strategy: 'parallel', concurrency: 3 },
+    }).then((pb) => {
+      expect(pb.process.mock.calls[0][1]).toMatchObject({
+        strategy: 'parallel',
+        concurrency: 3,
+      })
+    }))
 
-  test('correctly runs with custom extension options', () => runTest({
-    extensions: {
-      foo: { strategy: 'parallel', concurrency: 2 }
-    }
-  }).then(pb => {
-    expect(pb.process.mock.calls[0][1]).toMatchObject({
-      strategy: 'parallel',
-      concurrency: 2
-    })
-  }))
+  test('correctly runs with custom extension options', () =>
+    runTest({
+      extensions: {
+        foo: { strategy: 'parallel', concurrency: 2 },
+      },
+    }).then((pb) => {
+      expect(pb.process.mock.calls[0][1]).toMatchObject({
+        strategy: 'parallel',
+        concurrency: 2,
+      })
+    }))
 
-  test('correctly writes log file', () => runTest({ reporting: { log: true } }).then(() => {
-    expect(filesystem.create.mock.calls).toMatchSnapshot()
-  }))
+  test('correctly writes log file', () =>
+    runTest({ reporting: { log: true } }).then(() => {
+      expect(filesystem.create.mock.calls).toMatchSnapshot()
+    }))
 
-  test('correctly ignores writing log file', () => runTest({ reporting: { log: false } }).then(() => {
-    expect(filesystem.create.mock.calls).toMatchSnapshot()
-  }))
+  test('correctly ignores writing log file', () =>
+    runTest({ reporting: { log: false } }).then(() => {
+      expect(filesystem.create.mock.calls).toMatchSnapshot()
+    }))
 })
 
 describe('process', () => {
@@ -196,7 +200,7 @@ describe('process', () => {
   const file = {
     read: fnAsync(),
     process: fnAsync(),
-    write: fnAsync()
+    write: fnAsync(),
   }
   const files = [file, file, file, file]
 
@@ -213,7 +217,7 @@ describe('process', () => {
     { strategy: 'parallel', concurrency: 3 },
     { strategy: 'sequential', concurrency: 1 },
     { strategy: 'sequential', concurrency: 2 },
-    { strategy: 'sequential', concurrency: 3 }
+    { strategy: 'sequential', concurrency: 3 },
   ]
   for (const c of cases) {
     test(`correctly runs with s:${c.strategy} c:${c.concurrency}`, async () => {

@@ -23,9 +23,7 @@ export const createDebug = (namespace = ''): Function => {
   }
   const debug = Debug(ns)
   return (message: string, ...params: any[]) => {
-    message = params.length > 0
-      ? `${message} %O \n\n`
-      : `${message} \n\n`
+    message = params.length > 0 ? `${message} %O \n\n` : `${message} \n\n`
     debug(message, ...params)
   }
 }
@@ -67,7 +65,10 @@ export const reporter = (() => {
     return ref
   }
 
-  const createError = (api: keyof GatsbyNode, err: string | PluginError | Error): PluginErrorMeta => {
+  const createError = (
+    api: keyof GatsbyNode,
+    err: string | PluginError | Error,
+  ): PluginErrorMeta => {
     const prefix = `The plugin threw an error during "${api}" hook`
 
     let title: string | undefined

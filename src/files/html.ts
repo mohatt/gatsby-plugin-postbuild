@@ -14,15 +14,19 @@ export type IFileHtmlOptions = IExtensionOptions<{
 const DEFAULTS = {
   commons: {
     style: ['gatsby-global-css'],
-    script: ['gatsby-chunk-mapping']
-  }
+    script: ['gatsby-chunk-mapping'],
+  },
 }
 
 /**
  * A callback function to be run on tree nodes
  * @see FileHtml.walk
  */
-export type IFileHtmlNodeWalker = (node: parse5.Node, prev?: parse5.Node, next?: parse5.Node) => Promise<void>|void
+export type IFileHtmlNodeWalker = (
+  node: parse5.Node,
+  prev?: parse5.Node,
+  next?: parse5.Node,
+) => Promise<void> | void
 
 /**
  * Interface for html files
@@ -52,7 +56,7 @@ export class FileHtml extends File {
    * Sets the page path and creates an empty parse5 document
    * @internal
    */
-  constructor (rel: string, options: IFileHtmlOptions, args: FileConstructorArgs) {
+  constructor(rel: string, options: IFileHtmlOptions, args: FileConstructorArgs) {
     super(rel, options, args)
 
     // @todo options should be loaded once
@@ -74,14 +78,22 @@ export class FileHtml extends File {
    * Reads the file then compiles its html to ast
    * @internal
    */
-  read (): Promise<void> {
+  read(): Promise<void> {
     const payload = this.emitPayload<FileHtml>()
-    return this.file.read()
-      .then(html => this.emit('html', 'parse', {
-        ...payload,
-        html
-      }, 'html'))
-      .then(html => {
+    return this.file
+      .read()
+      .then((html) =>
+        this.emit(
+          'html',
+          'parse',
+          {
+            ...payload,
+            html,
+          },
+          'html',
+        ),
+      )
+      .then((html) => {
         this.tree = parse(html)
         return this.emit('html', 'tree', payload)
       }) as Promise<void>
@@ -91,13 +103,13 @@ export class FileHtml extends File {
    * Invokes html.node events on all nodes
    * @internal
    */
-  process (): Promise<void> {
+  process(): Promise<void> {
     return this.walk((node, previousNode, nextNode) => {
       return this.emit('html', 'node', {
         ...this.emitPayload<FileHtml>(),
         node,
         previousNode,
-        nextNode
+        nextNode,
       }) as unknown as Promise<void>
     })
   }
@@ -106,28 +118,45 @@ export class FileHtml extends File {
    * Serializes the tree back to html and writes the file
    * @internal
    */
-  write (): Promise<void> {
+  write(): Promise<void> {
     const payload = this.emitPayload<FileHtml>()
     return this.emit('html', 'serialize', payload)
       .then(() => {
         const html = serialize(this.tree)
-        return this.emit('html', 'write', {
-          ...payload,
-          html
-        }, 'html')
+        return this.emit(
+          'html',
+          'write',
+          {
+            ...payload,
+            html,
+          },
+          'html',
+        )
       })
-      .then(html => this.file.update(html))
+      .then((html) => this.file.update(html))
   }
 
   /**
    * Recursively walks through a parse5 tree invoking a callback
    *  on every node on the tree.
    */
-  walk (cb: IFileHtmlNodeWalker, root: parse5.Node = this.tree, processGatsbyNode = false): Promise<void> {
+  walk(
+    cb: IFileHtmlNodeWalker,
+    root: parse5.Node = this.tree,
+    processGatsbyNode = false,
+  ): Promise<void> {
     let gatsby = processGatsbyNode
-    const walker = async (curr: parse5.Node, prev?: parse5.Node, next?: parse5.Node): Promise<void> => {
+    const walker = async (
+      curr: parse5.Node,
+      prev?: parse5.Node,
+      next?: parse5.Node,
+    ): Promise<void> => {
       // Disallow processing `___gatsby` node and its descendants by default
-      if (!gatsby && 'attrs' in curr && curr.attrs.find(a => a.name === 'id')?.value === '___gatsby') {
+      if (
+        !gatsby &&
+        'attrs' in curr &&
+        curr.attrs.find((a) => a.name === 'id')?.value === '___gatsby'
+      ) {
         gatsby = true
         return
       }
@@ -151,9 +180,14 @@ export class FileHtml extends File {
    * @param strict - Return false if resolved path is outside `/public`. Defaults to `true`
    * @return Resolved file path or false on failure to meet conditions
    */
-  resolveHref (node: parse5.Element, attrib = 'href', relative = true, strict = true): string|boolean {
+  resolveHref(
+    node: parse5.Element,
+    attrib = 'href',
+    relative = true,
+    strict = true,
+  ): string | boolean {
     const { filesystem, gatsby } = this.emitPayload()
-    const attr = node.attrs.find(a => a.name === attrib)
+    const attr = node.attrs.find((a) => a.name === attrib)
     if (attr === undefined) return false
     let href = attr.value.trim()
     if (href === '' || /^\w+:\/\//.test(href)) return false
@@ -161,7 +195,7 @@ export class FileHtml extends File {
     if (prefix !== '') {
       if (href.indexOf(prefix) === 0) {
         href = href.replace(prefix, '')
-      // absolute path oustide gatsby root
+        // absolute path oustide gatsby root
       } else if (path.isAbsolute(href)) {
         return false
       }

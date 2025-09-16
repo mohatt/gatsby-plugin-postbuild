@@ -11,13 +11,21 @@ export default class FileGeneric extends File {
    *
    * @internal
    */
-  read (): Promise<void> {
-    return this.file.read()
-      .then(raw => this.emit('unknown', 'content', {
-        ...this.emitPayload<FileGeneric>(),
-        raw
-      }, 'raw'))
-      .then(data => this.file.update(data))
+  read(): Promise<void> {
+    return this.file
+      .read()
+      .then((raw) =>
+        this.emit(
+          'unknown',
+          'content',
+          {
+            ...this.emitPayload<FileGeneric>(),
+            raw,
+          },
+          'raw',
+        ),
+      )
+      .then((data) => this.file.update(data))
   }
 
   /**
@@ -25,7 +33,7 @@ export default class FileGeneric extends File {
    *
    * @internal
    */
-  process (): Promise<void> {
+  process(): Promise<void> {
     return Promise.resolve()
   }
 
@@ -34,7 +42,7 @@ export default class FileGeneric extends File {
    *
    * @internal
    */
-  write (): Promise<void> {
+  write(): Promise<void> {
     return Promise.resolve()
   }
 }

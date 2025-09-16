@@ -7,10 +7,10 @@ export default class FirebaseProvider extends Provider {
   placeholders = {
     [PathPlaceholder.All]: '**/*',
     [PathPlaceholder.PageData]: 'page-data/**',
-    [PathPlaceholder.Static]: 'static/**'
+    [PathPlaceholder.Static]: 'static/**',
   }
 
-  processPath (path: string): string {
+  processPath(path: string): string {
     path = super.processPath(path)
     if (path.startsWith('/') && path !== '/') {
       path = path.replace('/', '')
@@ -18,16 +18,12 @@ export default class FirebaseProvider extends Provider {
     return path
   }
 
-  async build (headers: IPathHeadersMap): Promise<string> {
+  async build(headers: IPathHeadersMap): Promise<string> {
     let config: any = {
       hosting: {
         public: 'public',
-        ignore: [
-          'firebase.json',
-          '**/.*',
-          '**/node_modules/**'
-        ]
-      }
+        ignore: ['firebase.json', '**/.*', '**/node_modules/**'],
+      },
     }
     try {
       config = JSON.parse(await this.fs.read('../firebase.json'))
@@ -40,14 +36,12 @@ export default class FirebaseProvider extends Provider {
         const value = headers[path][header]
         pathHeaders.push({
           key: header,
-          value: Array.isArray(value)
-            ? value.join(', ')
-            : value
+          value: Array.isArray(value) ? value.join(', ') : value,
         })
       }
       config.hosting.headers.push({
         source: path,
-        headers: pathHeaders
+        headers: pathHeaders,
       })
     }
 

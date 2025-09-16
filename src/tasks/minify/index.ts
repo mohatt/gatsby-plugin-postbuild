@@ -21,48 +21,42 @@ class Container {
   readonly contexts: Map<string, HtmlContext> = new Map()
   readonly minifiers: Record<string, Minifier> = {}
   readonly options: IOptions
-  constructor (options: IOptions) {
+  constructor(options: IOptions) {
     this.options = options
     this.createMinifiers()
   }
 
-  createMinifiers (): void {
-    const terserOptions = typeof this.options.script !== 'boolean'
-      ? this.options.script
-      : {}
+  createMinifiers(): void {
+    const terserOptions = typeof this.options.script !== 'boolean' ? this.options.script : {}
     this.minifiers.script = {
-      minify: source => minify(source, terserOptions)
-        .then(res => {
+      minify: (source) =>
+        minify(source, terserOptions).then((res) => {
           if (res.code !== undefined) {
             return res.code
           }
           return ''
         }),
-      cache: new Map()
+      cache: new Map(),
     }
-    const cssnanoPreset = typeof this.options.style !== 'boolean'
-      ? this.options.style
-      : 'default'
+    const cssnanoPreset = typeof this.options.style !== 'boolean' ? this.options.style : 'default'
     const cssnanoProcessor = cssnano({
-      preset: cssnanoPreset
+      preset: cssnanoPreset,
     })
     this.minifiers.style = {
-      minify: source => cssnanoProcessor
-        .process(source)
-        .then(res => res.css),
-      cache: new Map()
+      minify: (source) => cssnanoProcessor.process(source).then((res) => res.css),
+      cache: new Map(),
     }
   }
 
-  createContext (file: FileHtml): void {
+  createContext(file: FileHtml): void {
     this.contexts.set(file.relative, new HtmlContext(file, this.options))
   }
 
-  getContext (file: FileHtml): HtmlContext {
+  getContext(file: FileHtml): HtmlContext {
     return this.contexts.get(file.relative) as HtmlContext
   }
 
-  deleteContext (file: FileHtml): void {
+  deleteContext(file: FileHtml): void {
     this.contexts.delete(file.relative)
   }
 }
@@ -72,7 +66,7 @@ export const events: ITaskApiEvents<IOptions> = {
   on: {
     postbuild: ({ options }) => {
       di = new Container(options)
-    }
+    },
   },
   html: {
     tree: ({ file }) => {
@@ -82,14 +76,15 @@ export const events: ITaskApiEvents<IOptions> = {
       di.getContext(file).processNode(node)
     },
     serialize: ({ file }) => {
-      return di.getContext(file)
+      return di
+        .getContext(file)
         .minify(di.minifiers)
         .catch((e: string) => {
           throw new Error(`Failed minifying "${file.relative}": ${e}`)
         })
         .then(() => di.deleteContext(file))
-    }
-  }
+    },
+  },
 }
 
 const task: ITask<IOptions> = {

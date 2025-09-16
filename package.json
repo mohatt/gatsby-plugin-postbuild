@@ -2,6 +2,21 @@
   "name": "gatsby-plugin-postbuild",
   "version": "4.0.0-beta.1",
   "description": "Gatsby plugin for optimizing/transforming generated static files.",
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "postbuild",
+    "optimization",
+    "transformation"
+  ],
+  "homepage": "https://github.com/mohatt/gatsby-plugin-postbuild",
+  "bugs": "https://github.com/mohatt/gatsby-plugin-postbuild/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohatt/gatsby-plugin-postbuild.git"
+  },
+  "license": "MIT",
+  "author": "Mohamed Elkholy <mohatt@pm.me>",
   "sideEffects": false,
   "type": "module",
   "exports": {
@@ -34,29 +49,14 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc -p . --noEmit"
   },
-  "keywords": [
-    "gatsby",
-    "gatsby-plugin",
-    "postbuild",
-    "optimization",
-    "transformation"
-  ],
-  "author": "Mohamed Elkholy <mohatt@pm.me>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mohatt/gatsby-plugin-postbuild.git"
-  },
-  "homepage": "https://github.com/mohatt/gatsby-plugin-postbuild",
-  "bugs": "https://github.com/mohatt/gatsby-plugin-postbuild/issues",
   "dependencies": {
     "@types/glob": "^7.1.3",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.1",
     "cssnano": "^7.1.0",
     "debug": "^4.4.0",
-    "gatsby-plugin-utils": "^4.10.0",
     "filesize": "^8.0.0",
+    "gatsby-plugin-utils": "^4.10.0",
     "glob": "^7.1.6",
     "lodash": "^4.17.21",
     "parse5": "^7.3.0",
@@ -68,15 +68,15 @@
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/git": "10.0.1",
     "@types/bluebird": "3.5.42",
+    "@types/debug": "4.1.12",
     "@types/lodash": "4.17.16",
     "@types/node": "18.19.76",
-    "@types/debug": "4.1.12",
     "@vitest/coverage-v8": "3.2.4",
     "@vitest/ui": "3.2.4",
     "gatsby": "5.14.6",
     "memfs": "4.36.0",
-    "postcss": "8.4.38",
     "pkgroll": "2.15.3",
+    "postcss": "8.4.38",
     "prettier": "3.6.2",
     "prettier-plugin-packagejson": "2.5.19",
     "semantic-release": "22.0.12",

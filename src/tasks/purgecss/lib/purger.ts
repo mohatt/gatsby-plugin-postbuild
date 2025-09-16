@@ -47,7 +47,7 @@ export class Purger {
   /**
    * Sets PurgeCSS options
    */
-  constructor (options: IOptions, fs: Filesystem, mapper: AssetMapper) {
+  constructor(options: IOptions, fs: Filesystem, mapper: AssetMapper) {
     this.options = options
     this.fs = fs
     this.mapper = mapper
@@ -56,7 +56,7 @@ export class Purger {
       ..._.pick(options, purgecssImportedOptions),
       content: [],
       css: [],
-      rejected: true
+      rejected: true,
     }
     if (options.allowSymbols) {
       this.purgeOptions.defaultExtractor = (content: string) => {
@@ -71,7 +71,7 @@ export class Purger {
   /**
    * Purges a style object based on its metadata
    */
-  async purge (style: Style, context: HtmlContext): Promise<string[]> {
+  async purge(style: Style, context: HtmlContext): Promise<string[]> {
     const { id } = style
     if (id in this.cachedStyles) {
       if (style instanceof StyleFile) {
@@ -97,7 +97,7 @@ export class Purger {
     const contexts = id ? this.mapper.getStyleContexts(style) : [context]
     for (const ctx of contexts) {
       opts.content.push({ raw: ctx.html, extension: 'html' })
-      await Promise.map(ctx.scripts, async script => {
+      await Promise.map(ctx.scripts, async (script) => {
         if (!(script in this.cachedScripts)) {
           try {
             this.cachedScripts[script] = await this.fs.read(script)
@@ -109,14 +109,14 @@ export class Purger {
       })
     }
 
-    return this.purgeCSS.purge(opts).then(async results => {
+    return this.purgeCSS.purge(opts).then(async (results) => {
       const result = results[0] as IPurgeResult
       await style.update(result)
       if (id) {
         debug('Caching purge result on style', id)
         this.cachedStyles[id] = result
       }
-      return (style instanceof StyleFile) ? [] : result.rejected
+      return style instanceof StyleFile ? [] : result.rejected
     })
   }
 }

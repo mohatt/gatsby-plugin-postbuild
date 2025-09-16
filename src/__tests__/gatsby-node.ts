@@ -1,5 +1,10 @@
 import { MockedObject } from 'vitest'
-import { pluginOptionsSchema, onPluginInit, onCreateWebpackConfig, onPostBuild } from '../gatsby-node'
+import {
+  pluginOptionsSchema,
+  onPluginInit,
+  onCreateWebpackConfig,
+  onPostBuild,
+} from '../gatsby-node'
 import Postbuild from '../postbuild'
 import { PluginError } from '../common'
 
@@ -10,21 +15,23 @@ const gatsbyActivity = {
   start: vi.fn(),
   setStatus: vi.fn(),
   panic: vi.fn(),
-  end: vi.fn()
+  end: vi.fn(),
 }
 const gatsby = {
   reporter: {
-    activityTimer: vi.fn().mockImplementation(() => gatsbyActivity)
+    activityTimer: vi.fn().mockImplementation(() => gatsbyActivity),
   },
   tracing: {
-    parentSpan: 'foo'
-  }
+    parentSpan: 'foo',
+  },
 }
 
 describe('pluginOptionsSchema', () => {
   test('runs correctly', () => {
     expect(() => pluginOptionsSchema({} as any)).not.toThrow()
-    postbuild.getOptionsSchemas.mockImplementationOnce(() => { throw new Error('foo') })
+    postbuild.getOptionsSchemas.mockImplementationOnce(() => {
+      throw new Error('foo')
+    })
     expect(() => pluginOptionsSchema({} as any)).toThrowErrorMatchingSnapshot()
     expect(postbuild.getOptionsSchemas.mock.calls).toMatchSnapshot()
   })
@@ -53,7 +60,9 @@ describe('onCreateWebpackConfig', () => {
       stage: 'test-stage',
     }
     expect(() => onCreateWebpackConfig(args as any)).not.toThrow()
-    postbuild.getWebpackConfig.mockImplementationOnce(() => { throw new Error('foo') })
+    postbuild.getWebpackConfig.mockImplementationOnce(() => {
+      throw new Error('foo')
+    })
     expect(() => onCreateWebpackConfig(args as any)).toThrowErrorMatchingSnapshot()
     expect(postbuild.getWebpackConfig.mock.calls).toMatchSnapshot()
   })

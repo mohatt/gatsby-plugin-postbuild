@@ -16,21 +16,23 @@ export const options: ITaskApiOptions<IOptions> = {
     enabled: false,
     ignore: [],
     script: {},
-    style: ['default', {}]
+    style: ['default', {}],
   },
   schema: (joi) => {
     return joi.object({
       script: joi
-        .alternatives().try(joi.boolean(), joi.object().unknown(true))
+        .alternatives()
+        .try(joi.boolean(), joi.object().unknown(true))
         .description('Options passed to javascript minifier.'),
       style: joi
-        .alternatives().try(
+        .alternatives()
+        .try(
           joi.boolean(),
           joi.object(),
           joi.array().items(joi.string(), joi.object().unknown(true)),
-          joi.function().maxArity(0)
+          joi.function().maxArity(0),
         )
-        .description('Options passed to css minifier.')
+        .description('Options passed to css minifier.'),
     })
-  }
+  },
 }
