@@ -198,13 +198,14 @@ export default class Builder {
       if (hashed.startsWith('/static/') || original === '/styles.css') {
         return
       }
+      const hasUserHeaders = original in this.headers
       this.headers[hashed] = this.mergeHeaders(
         {
           ...this.headers[PathPlaceholder.Assets],
         },
         this.headers[original],
       )
-      if (original in this.headers) {
+      if (hasUserHeaders) {
         delete this.headers[original]
       }
     })
