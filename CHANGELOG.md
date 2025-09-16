@@ -1,3 +1,12 @@
+## [4.0.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v4.0.0...v4.0.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **plugin:** correct caching headers for `/sw.js` ([37d5c9c](https://github.com/mohatt/gatsby-plugin-postbuild/commit/37d5c9c16c7aa98504e34898c19e2f67b841e32f))
+* **plugin:** fix false incremental build warning ([424725e](https://github.com/mohatt/gatsby-plugin-postbuild/commit/424725e5f0292b4c03456bcce6be7be074bf06f1))
+* **plugin:** fix some webpack assets not getting caching headers ([05db295](https://github.com/mohatt/gatsby-plugin-postbuild/commit/05db2956d8056806baef141a20a7cc4adced3b5d))
+
 # [4.0.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v3.0.2...v4.0.0) (2025-09-16)
 
 
