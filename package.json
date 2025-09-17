@@ -70,7 +70,7 @@
     "@types/bluebird": "3.5.42",
     "@types/debug": "4.1.12",
     "@types/lodash": "4.17.16",
-    "@types/node": "18.19.76",
+    "@types/node": "18.19.126",
     "@vitest/coverage-v8": "3.2.4",
     "@vitest/ui": "3.2.4",
     "gatsby": "5.14.6",
