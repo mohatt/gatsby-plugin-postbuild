@@ -28,7 +28,7 @@ jobs:
       - run: pnpm run test:coverage
       - uses: codecov/codecov-action@v2
       - run: mv "$(pnpm pack | tail -n 1)" pkg.tgz
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: package-art
           path: pkg.tgz
