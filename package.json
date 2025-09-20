@@ -55,7 +55,7 @@
     "chalk": "^4.1.1",
     "cssnano": "^7.1.0",
     "debug": "^4.4.0",
-    "filesize": "^8.0.0",
+    "filesize": "^11.0.0",
     "gatsby-plugin-utils": "^4.10.0",
     "glob": "^7.1.6",
     "lodash": "^4.17.21",
