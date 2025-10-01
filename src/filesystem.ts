@@ -67,8 +67,7 @@ export class FilesystemReport {
  */
 export class FilesystemReporter {
   private readonly reports: FilesystemReport[] = []
-  private byetsSaved: number = 0
-  constructor() {}
+  private bytesSaved: number = 0
 
   /**
    * Adds a new report and prints a summary to console if enabled
@@ -76,7 +75,7 @@ export class FilesystemReporter {
   add(report: FilesystemReport): void {
     this.reports.push(report)
     if (report.size[1] !== undefined) {
-      this.byetsSaved += report.size[0] - report.size[1]
+      this.bytesSaved += report.size[0] - report.size[1]
     }
   }
 
@@ -92,7 +91,7 @@ export class FilesystemReporter {
    * Returns the total bytes saved and its formatted form
    */
   getTotalSaved(): [number, string] {
-    const saved = this.byetsSaved * -1
+    const saved = this.bytesSaved * -1
     return [saved, formatSize(saved)]
   }
 }

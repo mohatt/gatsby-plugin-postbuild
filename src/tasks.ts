@@ -32,6 +32,8 @@ type IEventFuncOut<
   R = ReturnType<IEventFunc<T, K>>,
 > = R extends PromiseLike<infer U> ? U : R
 
+type IFileEventEntry = Array<[ITask<any>, string]>
+
 /**
  * Handles tasks defined within the plugin
  * @internal
@@ -45,20 +47,18 @@ export class Tasks {
   /**
    * Registered tasks collection
    */
-  private taskRegistry: Array<ITask<any>> = []
+  private readonly taskRegistry: Array<ITask<any>> = []
 
   /**
    * Map of filenames and task events that need them
    */
-  private fileEvents: {
-    [file: string]: Array<[ITask<any>, string]>
-  } = {}
+  private readonly fileEvents = new Map<string, IFileEventEntry>()
+  private readonly taskOptions = new Map<string, ITaskOptions>()
 
   private readonly fs: Filesystem
-  private options: IOptions
-  constructor(fs: Filesystem, options: IOptions) {
+  private ignore: string[] = []
+  constructor(fs: Filesystem) {
     this.fs = fs
-    this.options = options
   }
 
   /**
@@ -82,71 +82,100 @@ export class Tasks {
    * Sets the user-defined options for all tasks defined
    * Should be called before running any task events
    */
-  setOptions(options: IOptions): void {
-    this.options = options
-    this.tasks = this.taskRegistry.filter(({ id, options }) => {
-      const td = {
+  resolveOptions(options: IOptions) {
+    this.ignore = options.ignore ?? []
+    const resolvedOptions = { ...options }
+    this.taskOptions.clear()
+    this.tasks = []
+    for (const task of this.taskRegistry) {
+      const defaultOptions = {
         enabled: true,
         ignore: [],
-        ...options?.defaults,
+        ...task.options?.defaults,
+      } as ITaskOptions
+      const userTaskOptions = resolvedOptions[task.id] as ITaskOptions
+      const taskOptions = _.defaultsDeep({}, userTaskOptions, defaultOptions) as ITaskOptions
+
+      // delete disabled tasks options
+      if (!taskOptions.enabled) {
+        delete resolvedOptions[task.id]
+        continue
       }
-      if (this.options[id] === undefined) {
-        this.options[id] = td
-      } else {
-        this.options[id] = _.defaultsDeep({}, this.options[id], td)
-      }
-      // delete disabled tasks
-      if (!this.options[id].enabled) {
-        delete this.options[id]
-        return false
-      }
-      return true
-    })
+
+      resolvedOptions[task.id] = taskOptions
+      this.taskOptions.set(task.id, taskOptions)
+      this.tasks.push(task)
+    }
+    return resolvedOptions
   }
 
   /**
    * Returns a map of file extensions with file names to be processed
    */
   async getFilenames(): Promise<{ [ext: string]: string[] }> {
-    const extensions = this.tasks.reduce((res: Tasks['fileEvents'], task) => {
-      for (const ext in task.events) {
+    const extensionTasks: Tasks['fileEvents'] = new Map()
+    for (const task of this.tasks) {
+      for (const ext of Object.keys(task.events as Record<string, unknown>)) {
         if (ext === 'on') continue
-        ;(res[ext] ||= []).push([task, ext])
-      }
-      return res
-    }, {})
-    const files: Tasks['fileEvents'] = {}
-    const filesOrder: { [file: string]: number } = {}
-    const result: { [ext: string]: string[] } = {}
-    const extList = Object.keys(extensions)
-    await Promise.all(
-      extList.map(async (ext, i) => {
-        const matches = await this.fs.glob(ext.indexOf('/') === 0 ? ext.slice(1) : `**/*.${ext}`, {
-          nodir: true,
-        })
-        matches.forEach((f) => {
-          if (this.options.ignore.includes(f)) return
-          files[f] = (files[f] ||= []).concat(extensions[ext])
-          filesOrder[f] = Math.max(i, filesOrder[f] ?? 0)
-        })
-      }),
-    )
-    const sortedFiles = Object.entries(filesOrder).sort(([, a], [, b]) => {
-      return a - b
-    })
-    for (const [f] of sortedFiles) {
-      files[f] = files[f].filter(([task, ext]) => {
-        if (this.options[task.id].ignore.includes(f)) return false
-        ext = this.fs.extension(f) as string
-        result[ext] ??= []
-        if (!result[ext].includes(f)) result[ext].push(f)
-        return true
-      })
-      if (files[f].length === 0) {
-        delete files[f]
+        const entries = extensionTasks.get(ext)
+        if (entries === undefined) {
+          extensionTasks.set(ext, [[task, ext]])
+        } else {
+          entries.push([task, ext])
+        }
       }
     }
-    this.fileEvents = files
+
+    this.fileEvents.clear()
+    const filesOrder = new Map<string, number>()
+    const result: { [ext: string]: string[] } = {}
+
+    const extensionEntries = Array.from(extensionTasks.entries())
+    const globResults = await Promise.all(
+      extensionEntries.map(async ([ext, taskEntries], index) => {
+        const pattern = ext.startsWith('/') ? ext.slice(1) : `**/*.${ext}`
+        const matches = await this.fs.glob(pattern, { nodir: true })
+        return { matches, taskEntries, index }
+      }),
+    )
+
+    for (const { matches, taskEntries, index } of globResults) {
+      for (const file of matches) {
+        if (this.ignore.includes(file)) continue
+        const existing = this.fileEvents.get(file)
+        const combined = existing === undefined ? [...taskEntries] : existing.concat(taskEntries)
+        this.fileEvents.set(file, combined)
+        const currentOrder = filesOrder.get(file)
+        filesOrder.set(file, currentOrder === undefined ? index : Math.max(index, currentOrder))
+      }
+    }
+
+    const sortedFiles = Array.from(filesOrder.entries()).sort(([, a], [, b]) => a - b)
+    for (const [file] of sortedFiles) {
+      const entries = this.fileEvents.get(file)
+      if (!entries) {
+        continue
+      }
+      const filtered: IFileEventEntry = []
+      for (const [task, eventType] of entries) {
+        const taskOptions = this.taskOptions.get(task.id)
+        if (taskOptions.ignore?.includes?.(file)) {
+          continue
+        }
+        const ext = this.fs.extension(file) as string
+        result[ext] ??= []
+        if (!result[ext].includes(file)) {
+          result[ext].push(file)
+        }
+        filtered.push([task, eventType])
+      }
+      if (filtered.length === 0) {
+        this.fileEvents.delete(file)
+      } else {
+        this.fileEvents.set(file, filtered)
+      }
+    }
+
     debug('Updated file-events map', this.fileEvents)
     return result
   }
@@ -204,17 +233,23 @@ export class Tasks {
     accumulator?: keyof IEventFuncIn<T, E>,
   ): Promise<Array<IEventFuncOut<T, E>> | IEventFuncOut<T, E>> {
     const events: Array<[ITask<any>, string]> = []
-    // @ts-expect-error
-    const file = payload.file as File | undefined
-    if (file !== undefined) {
-      const fileEvents = this.fileEvents[file.relative] ?? []
-      for (const fe of fileEvents) {
-        // no need to check for event type here
-        if (event in fe[0].events[fe[1]]) events.push(fe)
+    const file = (payload as { file?: File }).file
+    if (file) {
+      const fileEvents = this.fileEvents.get(file.relative) ?? []
+      for (const [task, eventType] of fileEvents) {
+        const taskEventGroup = task.events[eventType as keyof IEvents<any>] as
+          | Record<string, unknown>
+          | undefined
+        if (taskEventGroup && event in taskEventGroup) {
+          events.push([task, eventType])
+        }
       }
     } else {
       for (const task of this.tasks) {
-        if (type in task.events && event in task.events[type as any]) {
+        const taskEventGroup = task.events[type as keyof IEvents<any>] as
+          | Record<string, unknown>
+          | undefined
+        if (taskEventGroup && event in taskEventGroup) {
           events.push([task, type])
         }
       }
@@ -223,7 +258,7 @@ export class Tasks {
     for (const [task, et] of events) {
       try {
         const args = {
-          options: this.options[task.id],
+          options: this.taskOptions.get(task.id),
           event: {
             type: et,
             name: event,
@@ -258,7 +293,7 @@ export class Tasks {
    * Returns a list of enabled tasks
    */
   getActiveTasks(): Array<ITask<any>> {
-    return this.tasks.filter((task) => this.options[task.id].enabled)
+    return this.tasks.filter((task) => this.taskOptions.has(task.id))
   }
 }
 

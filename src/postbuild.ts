@@ -35,14 +35,12 @@ export class Postbuild {
   /**
    * Page paths built by Gatsby during this run
    */
-  private builtPaths: string[] = []
+  private builtPaths = new Set<string>()
 
   /**
    * Files being processed by the plugin
    */
-  private files: {
-    [path: string]: File[]
-  } = {}
+  private files = new Map<string, File[]>()
 
   /**
    * Dependencies
@@ -58,7 +56,7 @@ export class Postbuild {
   constructor(private readonly reporter: PluginReporter) {
     this.options = { ...DEFAULTS }
     this.fs = new Filesystem()
-    this.tasks = new Tasks(this.fs, this.options)
+    this.tasks = new Tasks(this.fs)
     this.manifest = {}
     this.manifestMap = new Map()
   }
@@ -124,8 +122,8 @@ export class Postbuild {
       })
     }
 
-    // Load tasks options
-    this.tasks.setOptions(this.options)
+    // Resolve tasks options
+    this.options = this.tasks.resolveOptions(this.options)
 
     // No need to run the plugin if there is no tasks enabled
     if (this.tasks.getActiveTasks().length === 0) {
@@ -144,9 +142,10 @@ export class Postbuild {
   }
 
   setBuildPaths(paths: string[]) {
-    this.builtPaths = this.builtPaths.concat(
-      paths.map((path) => (path !== '/' ? path.replace(/\/$/, '') : path)),
-    )
+    for (const pathCandidate of paths) {
+      const normalized = pathCandidate !== '/' ? pathCandidate.replace(/\/$/, '') : pathCandidate
+      this.builtPaths.add(normalized)
+    }
   }
 
   async run(gatsby: BuildArgs) {
@@ -176,6 +175,7 @@ export class Postbuild {
    */
   private async doRun(gatsby: BuildArgs, setStatus: (status: string) => void) {
     this.manifestMap = new Map(Object.entries(this.manifest))
+    this.files.clear()
     // Run on.postbuild events
     const payload = {
       file: undefined,
@@ -207,7 +207,8 @@ export class Postbuild {
     for (const ext in filenames) {
       const config = Object.assign({}, this.options.processing, this.options.extensions[ext])
       await this.tasks.run(ext as 'unknown', 'configure', { ...payload, config })
-      this.files[ext] = []
+      const bucket: File[] = []
+      this.files.set(ext, bucket)
       for (const file of filenames[ext]) {
         const fileObj = FileType.factory(ext, file, config, {
           filesystem: this.fs,
@@ -220,15 +221,15 @@ export class Postbuild {
           if (pagePath.startsWith('/_gatsby/')) {
             continue
           }
-          if (!this.builtPaths.includes(pagePath)) {
+          if (!this.builtPaths.has(pagePath)) {
             this.reporter.verbose(`Skipping "${pagePath}" as it's not built in this run`)
             setStatus(`Incremental build detected, skipping`)
             return
           }
         }
-        this.files[ext].push(fileObj)
+        bucket.push(fileObj)
       }
-      status.total += this.files[ext].length
+      status.total += bucket.length
       await this.process(ext, config, tick)
     }
 
@@ -255,7 +256,7 @@ export class Postbuild {
    * Processes files of a given extension using the given processing options
    */
   async process(ext: string, options: IOptionProcessing, tick: Function) {
-    const files = this.files[ext]
+    const files = this.files.get(ext)
     if (files === undefined) return
     debug(`Processing ${files.length} files with extension "${ext}" using`, options)
     const { strategy, concurrency } = options
@@ -298,6 +299,7 @@ export class Postbuild {
       tick('write')
       delete files[i]
     }
+    this.files.delete(ext)
   }
 }
 
