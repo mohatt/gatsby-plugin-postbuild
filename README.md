@@ -311,8 +311,8 @@ These events are emitted at certain run time points.
 
 [npm-url]: https://www.npmjs.com/package/gatsby-plugin-postbuild
 [npm-img]: https://img.shields.io/npm/v/gatsby-plugin-postbuild.svg?logo=npm
-[ci-url]: https://github.com/mohatt/gatsby-plugin-postbuild/actions/workflows/main.yml
-[ci-img]: https://img.shields.io/github/actions/workflow/status/mohatt/gatsby-plugin-postbuild/main.yml?branch=master&logo=github
+[ci-url]: https://github.com/mohatt/gatsby-plugin-postbuild/actions/workflows/ci.yml
+[ci-img]: https://img.shields.io/github/actions/workflow/status/mohatt/gatsby-plugin-postbuild/ci.yml?branch=master&logo=github
 [codecov-url]: https://codecov.io/github/mohatt/gatsby-plugin-postbuild
 [codecov-img]: https://img.shields.io/codecov/c/github/mohatt/gatsby-plugin-postbuild.svg?logo=codecov&logoColor=white
 [gatsby-url]: https://www.gatsbyjs.org/packages/gatsby-plugin-postbuild
