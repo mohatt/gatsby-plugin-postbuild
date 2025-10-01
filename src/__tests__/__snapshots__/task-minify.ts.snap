@@ -62,34 +62,34 @@ exports[`task: minify > works correctly > activity.setStatus 1`] = `
     "Loaded 10/11 Processed 9/11 Wrote 0/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 1/11",
+    "Loaded 10/11 Processed 10/11 Wrote 0/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 2/11",
+    "Loaded 10/11 Processed 10/11 Wrote 1/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 3/11",
+    "Loaded 10/11 Processed 10/11 Wrote 2/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 4/11",
+    "Loaded 10/11 Processed 10/11 Wrote 3/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 5/11",
+    "Loaded 10/11 Processed 10/11 Wrote 4/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 6/11",
+    "Loaded 10/11 Processed 10/11 Wrote 5/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 7/11",
+    "Loaded 10/11 Processed 10/11 Wrote 6/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 8/11",
+    "Loaded 10/11 Processed 10/11 Wrote 7/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 9/11",
+    "Loaded 10/11 Processed 10/11 Wrote 8/11",
   ],
   [
-    "Loaded 11/11 Processed 9/11 Wrote 9/11",
+    "Loaded 11/11 Processed 10/11 Wrote 8/11",
   ],
   [
     "Loaded 11/11 Processed 10/11 Wrote 9/11",
@@ -114,16 +114,16 @@ exports[`task: minify > works correctly > info 1`] = `
   [
     "[gatsby-plugin-postbuild]: Report
  update 404.html [4.81kB -22%]
- update 404/index.html [4.81kB -22%]
- update blog/blog-post-1/index.html [6kB -19%]
- update blog/blog-post-2/index.html [6kB -19%]
- update blog/blog-post-3/index.html [6kB -19%]
  update blog/index.html [8.84kB -14%]
- update blog/tag/tag1/index.html [8.13kB -16%]
- update blog/tag/tag2/index.html [8.13kB -16%]
+ update 404/index.html [4.81kB -22%]
+ update blog/blog-post-3/index.html [6kB -19%]
+ update blog/blog-post-2/index.html [6kB -19%]
+ update blog/blog-post-1/index.html [6kB -19%]
  update blog/tag/tag3/index.html [8.13kB -16%]
- update about/index.html [11.67kB -15%]
+ update blog/tag/tag2/index.html [8.13kB -16%]
  update index.html [5.43kB -21%]
+ update about/index.html [11.67kB -15%]
+ update blog/tag/tag1/index.html [8.13kB -16%]
  create postbuild.log.json [1.38kB]",
   ],
 ]

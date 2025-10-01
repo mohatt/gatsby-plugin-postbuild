@@ -12,13 +12,13 @@
   x-test-static: test-value
 /sw.js
   cache-control: public, max-age=0, must-revalidate
-/about
-  x-robots-tag: all
-  link: <https://www.abc.com>; rel=preconnect
-  link: </static/test-font.woff2>; rel=preload; as=font
-  cache-control: public, max-age=0, must-revalidate
 /
   x-robots-tag: noindex
   link: <https://www.abc.com>; rel=preconnect
   link: </static/avatar-smile-7b611c795c8ff5848180781f104d718c.png>; rel=prefetch; as=image
+  cache-control: public, max-age=0, must-revalidate
+/about
+  x-robots-tag: all
+  link: <https://www.abc.com>; rel=preconnect
+  link: </static/test-font.woff2>; rel=preload; as=font
   cache-control: public, max-age=0, must-revalidate

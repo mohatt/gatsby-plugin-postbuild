@@ -9,6 +9,15 @@
     "meta": {}
   },
   {
+    "file": "blog/index.html",
+    "tag": "update",
+    "size": [
+      10134,
+      10387
+    ],
+    "meta": {}
+  },
+  {
     "file": "404/index.html",
     "tag": "update",
     "size": [
@@ -18,7 +27,7 @@
     "meta": {}
   },
   {
-    "file": "blog/blog-post-1/index.html",
+    "file": "blog/blog-post-3/index.html",
     "tag": "update",
     "size": [
       7297,
@@ -36,7 +45,7 @@
     "meta": {}
   },
   {
-    "file": "blog/blog-post-3/index.html",
+    "file": "blog/blog-post-1/index.html",
     "tag": "update",
     "size": [
       7297,
@@ -45,16 +54,7 @@
     "meta": {}
   },
   {
-    "file": "blog/index.html",
-    "tag": "update",
-    "size": [
-      10134,
-      10387
-    ],
-    "meta": {}
-  },
-  {
-    "file": "blog/tag/tag1/index.html",
+    "file": "blog/tag/tag3/index.html",
     "tag": "update",
     "size": [
       9431,
@@ -72,11 +72,11 @@
     "meta": {}
   },
   {
-    "file": "blog/tag/tag3/index.html",
+    "file": "index.html",
     "tag": "update",
     "size": [
-      9431,
-      9684
+      6541,
+      6879
     ],
     "meta": {}
   },
@@ -90,11 +90,11 @@
     "meta": {}
   },
   {
-    "file": "index.html",
+    "file": "blog/tag/tag1/index.html",
     "tag": "update",
     "size": [
-      6541,
-      6879
+      9431,
+      9684
     ],
     "meta": {}
   },

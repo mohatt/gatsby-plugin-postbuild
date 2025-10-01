@@ -1,5 +1,4 @@
-import { Promise } from 'bluebird'
-import path from 'path'
+import path from 'node:path'
 import _ from 'lodash'
 import { DefaultTreeAdapterTypes as parse5, parse, serialize, defaultTreeAdapter } from 'parse5'
 import File, { FileConstructorArgs } from './base'
@@ -162,9 +161,10 @@ export class FileHtml extends File {
       }
       await cb(curr, prev, next)
       if ('childNodes' in curr) {
-        await Promise.each(curr.childNodes, (childNode, i) => {
-          return walker(childNode, curr.childNodes[i - 1], curr.childNodes[i + 1])
-        })
+        const childNodes = curr.childNodes as parse5.Node[]
+        for (let i = 0; i < childNodes.length; i++) {
+          await walker(childNodes[i], childNodes[i - 1], childNodes[i + 1])
+        }
       }
     }
     return walker(root)

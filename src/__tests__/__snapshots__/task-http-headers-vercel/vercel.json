@@ -61,23 +61,6 @@
       ]
     },
     {
-      "source": "/about",
-      "headers": [
-        {
-          "key": "x-robots-tag",
-          "value": "all"
-        },
-        {
-          "key": "link",
-          "value": "<https://www.abc.com>; rel=preconnect, </static/test-font.woff2>; rel=preload; as=font"
-        },
-        {
-          "key": "cache-control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
-    },
-    {
       "source": "/",
       "headers": [
         {
@@ -87,6 +70,23 @@
         {
           "key": "link",
           "value": "<https://www.abc.com>; rel=preconnect, </static/avatar-smile-7b611c795c8ff5848180781f104d718c.png>; rel=prefetch; as=image"
+        },
+        {
+          "key": "cache-control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/about",
+      "headers": [
+        {
+          "key": "x-robots-tag",
+          "value": "all"
+        },
+        {
+          "key": "link",
+          "value": "<https://www.abc.com>; rel=preconnect, </static/test-font.woff2>; rel=preload; as=font"
         },
         {
           "key": "cache-control",

@@ -1,4 +1,4 @@
-import path from 'path'
+import path from 'node:path'
 import type { BuildArgs } from 'gatsby'
 import type Tasks from '../tasks'
 import type { IExtensionOptions, IAssetsManifest } from '../interfaces'

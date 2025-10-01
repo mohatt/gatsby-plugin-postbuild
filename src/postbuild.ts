@@ -1,7 +1,7 @@
-import { Promise } from 'bluebird'
-import path from 'path'
+import path from 'node:path'
 import _ from 'lodash'
 import { WebpackAssetsManifest } from 'webpack-assets-manifest'
+import pLimit from 'p-limit'
 import type {
   PluginOptions,
   ParentSpanPluginArgs,
@@ -258,42 +258,46 @@ export class Postbuild {
     const files = this.files[ext]
     if (files === undefined) return
     debug(`Processing ${files.length} files with extension "${ext}" using`, options)
-    const strat = options.strategy
-    const conc = { concurrency: options.concurrency }
+    const { strategy, concurrency } = options
+    const runStage = async (fn: (file: File, index: number) => Promise<void>) => {
+      const limit = concurrency > 0 ? pLimit(concurrency) : undefined
+      const tasks = files.map((file, index) => {
+        if (!limit) {
+          return fn(file, index)
+        }
+        return limit(() => fn(file, index))
+      })
+      await Promise.all(tasks)
+    }
     // Process all files at one step all at the same time
-    if (strat === 'parallel') {
-      await Promise.map(
-        files,
-        (file, i) => {
-          return file
-            .read()
-            .then(() => {
-              tick('read')
-              return file.process()
-            })
-            .then(() => {
-              tick('process')
-              return file.write()
-            })
-            .then(() => {
-              tick('write')
-              delete files[i]
-            })
-        },
-        conc,
-      )
+    if (strategy === 'parallel') {
+      await runStage(async (file, i) => {
+        await file.read()
+        tick('read')
+        await file.process()
+        tick('process')
+        await file.write()
+        tick('write')
+        delete files[i]
+      })
       return
     }
 
     // Process files in 3 steps with the last step being run in sequential order
-    await Promise.map(files, (file) => file.read().then(() => tick('read')), conc)
-    await Promise.map(files, (file) => file.process().then(() => tick('process')), conc)
-    await Promise.each(files, (file, i) =>
-      file.write().then(() => {
-        tick('write')
-        delete files[i]
-      }),
-    )
+    await runStage(async (file) => {
+      await file.read()
+      tick('read')
+    })
+    await runStage(async (file) => {
+      await file.process()
+      tick('process')
+    })
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      await file.write()
+      tick('write')
+      delete files[i]
+    }
   }
 }
 

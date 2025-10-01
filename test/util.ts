@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import path from 'path'
+import path from 'node:path'
 import { vol, DirectoryJSON } from 'memfs'
 import { readDirToMap } from 'vitest-memfs/util'
 import type { IErrorMeta } from '@postbuild/common'

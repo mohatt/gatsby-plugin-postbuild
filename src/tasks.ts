@@ -1,4 +1,3 @@
-import { Promise } from 'bluebird'
 import _ from 'lodash'
 import type { PluginOptionsSchemaJoi, ObjectSchema } from 'gatsby-plugin-utils'
 import type { ITask, IEvents, IOptions, ITaskOptions } from './interfaces'
@@ -108,7 +107,7 @@ export class Tasks {
   /**
    * Returns a map of file extensions with file names to be processed
    */
-  getFilenames(): Promise<{ [ext: string]: string[] }> {
+  async getFilenames(): Promise<{ [ext: string]: string[] }> {
     const extensions = this.tasks.reduce((res: Tasks['fileEvents'], task) => {
       for (const ext in task.events) {
         if (ext === 'on') continue
@@ -119,36 +118,37 @@ export class Tasks {
     const files: Tasks['fileEvents'] = {}
     const filesOrder: { [file: string]: number } = {}
     const result: { [ext: string]: string[] } = {}
-    return Promise.map(Object.keys(extensions), (ext, i) =>
-      this.fs
-        .glob(ext.indexOf('/') === 0 ? ext.slice(1) : `**/*.${ext}`, { nodir: true })
-        .then((matchs) =>
-          matchs.forEach((f) => {
-            if (this.options.ignore.includes(f)) return
-            files[f] = (files[f] ||= []).concat(extensions[ext])
-            filesOrder[f] = Math.max(i, filesOrder[f] ?? 0)
-          }),
-        ),
-    ).then(() => {
-      const sortedFiles = Object.entries(filesOrder).sort(([, a], [, b]) => {
-        return a - b
-      })
-      for (const [f] of sortedFiles) {
-        files[f] = files[f].filter(([task, ext]) => {
-          if (this.options[task.id].ignore.includes(f)) return false
-          ext = this.fs.extension(f) as string
-          result[ext] ??= []
-          if (!result[ext].includes(f)) result[ext].push(f)
-          return true
+    const extList = Object.keys(extensions)
+    await Promise.all(
+      extList.map(async (ext, i) => {
+        const matches = await this.fs.glob(ext.indexOf('/') === 0 ? ext.slice(1) : `**/*.${ext}`, {
+          nodir: true,
         })
-        if (files[f].length === 0) {
-          delete files[f]
-        }
-      }
-      this.fileEvents = files
-      debug('Updated file-events map', this.fileEvents)
-      return result
+        matches.forEach((f) => {
+          if (this.options.ignore.includes(f)) return
+          files[f] = (files[f] ||= []).concat(extensions[ext])
+          filesOrder[f] = Math.max(i, filesOrder[f] ?? 0)
+        })
+      }),
+    )
+    const sortedFiles = Object.entries(filesOrder).sort(([, a], [, b]) => {
+      return a - b
     })
+    for (const [f] of sortedFiles) {
+      files[f] = files[f].filter(([task, ext]) => {
+        if (this.options[task.id].ignore.includes(f)) return false
+        ext = this.fs.extension(f) as string
+        result[ext] ??= []
+        if (!result[ext].includes(f)) result[ext].push(f)
+        return true
+      })
+      if (files[f].length === 0) {
+        delete files[f]
+      }
+    }
+    this.fileEvents = files
+    debug('Updated file-events map', this.fileEvents)
+    return result
   }
 
   /**
@@ -219,7 +219,8 @@ export class Tasks {
         }
       }
     }
-    return Promise.mapSeries(events, async ([task, et]) => {
+    const results: Array<IEventFuncOut<T, E>> = []
+    for (const [task, et] of events) {
       try {
         const args = {
           options: this.options[task.id],
@@ -236,7 +237,7 @@ export class Tasks {
           }
           payload[accumulator] = res
         }
-        return res
+        results.push(res)
       } catch (e) {
         throw new PluginError(
           `The task "${task.id}" encountered an error while running event ` +
@@ -244,12 +245,13 @@ export class Tasks {
           e,
         )
       }
-    }).then((res) => {
-      if (accumulator !== undefined) {
-        return res.length > 0 ? res.pop() : payload[accumulator]
-      }
-      return res
-    })
+    }
+    if (accumulator !== undefined) {
+      return results.length > 0
+        ? results[results.length - 1]
+        : (payload[accumulator] as IEventFuncOut<T, E>)
+    }
+    return results
   }
 
   /**

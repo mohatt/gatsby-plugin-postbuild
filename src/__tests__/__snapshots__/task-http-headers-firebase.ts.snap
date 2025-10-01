@@ -59,37 +59,37 @@ exports[`task: http-headers [firebase] > works correctly > activity.setStatus 1`
     "Loaded 10/11 Processed 8/11 Wrote 0/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 0/11",
+    "Loaded 10/11 Processed 8/11 Wrote 1/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 1/11",
+    "Loaded 10/11 Processed 8/11 Wrote 2/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 2/11",
+    "Loaded 10/11 Processed 8/11 Wrote 3/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 3/11",
+    "Loaded 10/11 Processed 8/11 Wrote 4/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 4/11",
+    "Loaded 10/11 Processed 8/11 Wrote 5/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 5/11",
+    "Loaded 10/11 Processed 8/11 Wrote 6/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 6/11",
+    "Loaded 10/11 Processed 8/11 Wrote 7/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 7/11",
+    "Loaded 10/11 Processed 8/11 Wrote 8/11",
   ],
   [
     "Loaded 10/11 Processed 9/11 Wrote 8/11",
   ],
   [
-    "Loaded 10/11 Processed 9/11 Wrote 9/11",
+    "Loaded 10/11 Processed 10/11 Wrote 8/11",
   ],
   [
-    "Loaded 11/11 Processed 9/11 Wrote 9/11",
+    "Loaded 11/11 Processed 10/11 Wrote 8/11",
   ],
   [
     "Loaded 11/11 Processed 10/11 Wrote 9/11",
@@ -114,16 +114,16 @@ exports[`task: http-headers [firebase] > works correctly > info 1`] = `
   [
     "[gatsby-plugin-postbuild]: Report
  update 404.html [6.11kB -1%]
- update 404/index.html [6.11kB -1%]
- update blog/blog-post-1/index.html [7.3kB -1%]
- update blog/blog-post-2/index.html [7.3kB -1%]
- update blog/blog-post-3/index.html [7.3kB -1%]
  update blog/index.html [10.13kB -2%]
- update blog/tag/tag1/index.html [9.43kB -2%]
- update blog/tag/tag2/index.html [9.43kB -2%]
+ update 404/index.html [6.11kB -1%]
+ update blog/blog-post-3/index.html [7.3kB -1%]
+ update blog/blog-post-2/index.html [7.3kB -1%]
+ update blog/blog-post-1/index.html [7.3kB -1%]
  update blog/tag/tag3/index.html [9.43kB -2%]
- update about/index.html [12.82kB -7%]
+ update blog/tag/tag2/index.html [9.43kB -2%]
  update index.html [6.54kB -4%]
+ update about/index.html [12.82kB -7%]
+ update blog/tag/tag1/index.html [9.43kB -2%]
  create firebase.json [2.42kB]
  create postbuild.log.json [1.48kB]",
   ],

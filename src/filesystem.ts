@@ -1,12 +1,10 @@
-import { Promise } from 'bluebird'
-import fs, { promises as fsAsync } from 'fs'
-import path from 'path'
-import glob, { IOptions as IGlobOptions } from 'glob'
+import fs, { promises as fsAsync } from 'node:fs'
+import path from 'node:path'
+import { glob, GlobOptionsWithFileTypesFalse as IGlobOptions } from 'glob'
 import chalk from 'chalk'
 import filesize from 'filesize'
 import { toInteger } from 'lodash'
 import { PluginError } from './common'
-const globAsync = Promise.promisify(glob) as typeof glob.__promisify__
 
 /**
  * Helpers for formatting console output
@@ -130,9 +128,10 @@ export class Filesystem {
    * Wraps glob by setting cwd and root paths to `/public` directory
    */
   glob(pattern: string, options?: IGlobOptions): Promise<string[]> {
-    return globAsync(pattern, {
+    return glob(pattern, {
       cwd: this.root,
       root: this.root,
+      withFileTypes: false,
       fs,
       ...options,
     })
@@ -180,7 +179,6 @@ export class Filesystem {
       throw new PluginError(`Unable to update file "${rel}": ${String(e.message)}`, e)
     }
     this.reporter.add(new FilesystemReport(rel, 'update', size, meta))
-    return Promise.resolve()
   }
 
   /**
