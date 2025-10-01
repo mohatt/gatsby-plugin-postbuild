@@ -1,0 +1,135 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`all tasks > works correctly > activity.panic 1`] = `[]`;
+
+exports[`all tasks > works correctly > activity.setStatus 1`] = `
+[
+  [
+    "Loaded 1/11 Processed 0/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 2/11 Processed 0/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 3/11 Processed 0/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 4/11 Processed 0/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 5/11 Processed 0/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 6/11 Processed 0/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 7/11 Processed 0/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 8/11 Processed 0/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 9/11 Processed 0/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 10/11 Processed 0/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 10/11 Processed 1/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 10/11 Processed 2/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 10/11 Processed 3/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 10/11 Processed 4/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 10/11 Processed 5/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 10/11 Processed 6/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 10/11 Processed 7/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 10/11 Processed 8/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 10/11 Processed 9/11 Wrote 0/11",
+  ],
+  [
+    "Loaded 10/11 Processed 9/11 Wrote 1/11",
+  ],
+  [
+    "Loaded 10/11 Processed 9/11 Wrote 2/11",
+  ],
+  [
+    "Loaded 10/11 Processed 9/11 Wrote 3/11",
+  ],
+  [
+    "Loaded 10/11 Processed 9/11 Wrote 4/11",
+  ],
+  [
+    "Loaded 10/11 Processed 9/11 Wrote 5/11",
+  ],
+  [
+    "Loaded 10/11 Processed 9/11 Wrote 6/11",
+  ],
+  [
+    "Loaded 10/11 Processed 9/11 Wrote 7/11",
+  ],
+  [
+    "Loaded 10/11 Processed 9/11 Wrote 8/11",
+  ],
+  [
+    "Loaded 10/11 Processed 9/11 Wrote 9/11",
+  ],
+  [
+    "Loaded 11/11 Processed 9/11 Wrote 9/11",
+  ],
+  [
+    "Loaded 11/11 Processed 10/11 Wrote 9/11",
+  ],
+  [
+    "Loaded 11/11 Processed 10/11 Wrote 10/11",
+  ],
+  [
+    "Loaded 11/11 Processed 11/11 Wrote 10/11",
+  ],
+  [
+    "Loaded 11/11 Processed 11/11 Wrote 11/11",
+  ],
+  [
+    "Done processing 11 files saving a total of 17.29kB",
+  ],
+]
+`;
+
+exports[`all tasks > works correctly > info 1`] = `
+[
+  [
+    "[gatsby-plugin-postbuild]: Report
+ update 404.html [4.81kB -22%]
+ update 404/index.html [4.81kB -22%]
+ update blog/blog-post-1/index.html [6kB -19%]
+ update blog/blog-post-2/index.html [6kB -19%]
+ update blog/blog-post-3/index.html [6kB -19%]
+ update blog/index.html [8.84kB -14%]
+ update blog/tag/tag1/index.html [8.13kB -16%]
+ update blog/tag/tag2/index.html [8.13kB -16%]
+ update blog/tag/tag3/index.html [8.13kB -16%]
+ update about/index.html [11.53kB -16%]
+ update index.html [5.24kB -23%]
+ create _headers [795B]
+ create postbuild.log.json [1.48kB]",
+  ],
+]
+`;
+
+exports[`all tasks > works correctly > panic 1`] = `[]`;
+
+exports[`all tasks > works correctly > verbose 1`] = `[]`;

@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`incremental build > works correctly > activity.panic 1`] = `[]`;
+
+exports[`incremental build > works correctly > activity.setStatus 1`] = `
+[
+  [
+    "Incremental build detected, skipping",
+  ],
+]
+`;
+
+exports[`incremental build > works correctly > info 1`] = `[]`;
+
+exports[`incremental build > works correctly > panic 1`] = `[]`;
+
+exports[`incremental build > works correctly > verbose 1`] = `
+[
+  [
+    "[gatsby-plugin-postbuild]: Skipping "/extra" as it's not built in this run",
+  ],
+]
+`;

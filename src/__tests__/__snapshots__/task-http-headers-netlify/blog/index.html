@@ -1,0 +1,257 @@
+<!DOCTYPE html><html class="test-site"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="generator" content="Gatsby 5.15.0">
+    <style data-href="/styles.6dbb5422e6cc00c590a9.css" data-identity="gatsby-global-css">
+      @import url(https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css);
+      #avatar {
+        background-image: url(/static/avatar-1d897a26b6f8b410c95349547439c7bd.png);
+        background-size: cover;
+        border: 1px solid #ccc;
+        border-radius: 50%;
+        display: inline-block;
+        height: 48px;
+        width: 48px;
+      }
+      @media (hover: hover) {
+        #avatar:hover {
+          background-image: url(/static/avatar-smile-7b611c795c8ff5848180781f104d718c.png);
+        }
+      }
+      .about-avatar {
+        background: #2f4f4f;
+        border-radius: 5px;
+      }
+      body {
+        color: #2f4f4f;
+      }
+      .foo {
+        color: blue;
+      }
+      .another-unused-rule,
+      .unused-rule {
+        color: green;
+      }
+      @keyframes blink {
+        0% {
+          opacity: 100%;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+    </style>
+    <style>
+      .gatsby-image-wrapper {
+        position: relative;
+        overflow: hidden;
+      }
+      .gatsby-image-wrapper picture.object-fit-polyfill {
+        position: static !important;
+      }
+      .gatsby-image-wrapper img {
+        bottom: 0;
+        height: 100%;
+        left: 0;
+        margin: 0;
+        max-width: none;
+        padding: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
+        object-fit: cover;
+      }
+      .gatsby-image-wrapper [data-main-image] {
+        opacity: 0;
+        transform: translateZ(0);
+        transition: opacity 0.25s linear;
+        will-change: opacity;
+      }
+      .gatsby-image-wrapper-constrained {
+        display: inline-block;
+        vertical-align: top;
+      }
+    </style>
+    <noscript><style>
+        .gatsby-image-wrapper noscript [data-main-image] {
+          opacity: 1 !important;
+        }
+        .gatsby-image-wrapper [data-placeholder-image] {
+          opacity: 0 !important;
+        }
+      </style></noscript>
+    <script type="module">
+      const e = 'undefined' != typeof HTMLImageElement && 'loading' in HTMLImageElement.prototype
+      e &&
+        document.body.addEventListener(
+          'load',
+          function (e) {
+            const t = e.target
+            if (void 0 === t.dataset.mainImage) return
+            if (void 0 === t.dataset.gatsbyImageSsr) return
+            let a = null,
+              n = t
+            for (; null === a && n; )
+              (void 0 !== n.parentNode.dataset.gatsbyImageWrapper && (a = n.parentNode),
+                (n = n.parentNode))
+            const o = a.querySelector('[data-placeholder-image]'),
+              r = new Image()
+            ;((r.src = t.currentSrc),
+              r
+                .decode()
+                .catch(() => {})
+                .then(() => {
+                  ;((t.style.opacity = 1),
+                    o && ((o.style.opacity = 0), (o.style.transition = 'opacity 500ms linear')))
+                }))
+          },
+          !0,
+        )
+    </script>
+    <script>
+      const currDate = new Date()
+      const unused = 'foo'
+
+      console.log('Global SSR Script', currDate)
+    </script>
+  </head>
+  <body>
+    <div id="___gatsby">
+      <div style="outline: none" tabindex="-1" id="gatsby-focus-wrapper">
+        <div class="container">
+          <header class="py-3">
+            <nav class="navbar navbar-expand navbar-dark bg-dark rounded">
+              <a id="avatar" class="navbar-brand" href="/"></a>
+              <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                <li class="nav-item">
+                  <a aria-current="page" class="nav-link active" href="/blog/">Blog</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="/about/">About</a></li>
+              </ul>
+            </nav>
+          </header>
+          <main class="p-5 bg-light">
+            <div class="mb-4 pb-2 border-bottom"><h1>Blog</h1></div>
+            <div>
+              <div>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus, vero,
+                  obcaecati, aut, error quam sapiente nemo saepe.
+                </p>
+              </div>
+              <div class="row">
+                <div class="col-md-9">
+                  <div class="card mb-4">
+                    <div class="card-body">
+                      <h2 class="card-title">Blog Post 2</h2>
+                      <p class="card-text">
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
+                        ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis
+                        parturient montes, nascetur ridiculus mus. Donec…
+                      </p>
+                      <a href="/blog/blog-post-2/">Read More →</a>
+                    </div>
+                    <div class="card-footer text-muted">Posted on January 1, 2017</div>
+                  </div>
+                  <div class="card mb-4">
+                    <div class="card-body">
+                      <h2 class="card-title">Blog Post 1</h2>
+                      <p class="card-text">
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
+                        ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis
+                        parturient montes, nascetur ridiculus mus. Donec…
+                      </p>
+                      <a href="/blog/blog-post-1/">Read More →</a>
+                    </div>
+                    <div class="card-footer text-muted">Posted on January 1, 2017</div>
+                  </div>
+                  <div class="card mb-4">
+                    <div class="card-body">
+                      <h2 class="card-title">Blog Post 3</h2>
+                      <p class="card-text">
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo
+                        ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis
+                        parturient montes, nascetur ridiculus mus. Donec…
+                      </p>
+                      <a href="/blog/blog-post-3/">Read More →</a>
+                    </div>
+                    <div class="card-footer text-muted">Posted on January 1, 2017</div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="card mb-4">
+                    <h5 class="card-header">Tags</h5>
+                    <div class="card-body">
+                      <ul class="list-unstyled mb-0">
+                        <li>
+                          <a href="/blog/tag/tag1/">tag1<!-- -->
+                            <label class="badge-pill badge-primary">2</label></a>
+                        </li>
+                        <li>
+                          <a href="/blog/tag/tag2/">tag2<!-- -->
+                            <label class="badge-pill badge-primary">2</label></a>
+                        </li>
+                        <li>
+                          <a href="/blog/tag/tag3/">tag3<!-- -->
+                            <label class="badge-pill badge-primary">2</label></a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <nav role="navigation" aria-label="Pagination Navigation">
+                <ul class="pagination">
+                  <li class="page-item page-item__prev disabled">
+                    <a class="page-link">← Previous</a>
+                  </li>
+                  <li class="page-item active">
+                    <a aria-current="page" class="page-link" href="/blog/">1</a>
+                  </li>
+                  <li class="page-item page-item__next disabled">
+                    <a class="page-link">Next →</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </main>
+          <footer class="text-muted my-5">
+            ©
+            <!-- -->2025<!-- -->,<!-- -->
+            Built with <a href="https://www.gatsbyjs.org">Gatsby</a> and
+            <a href="https://github.com/mohatt/gatsby-plugin-advanced-pages">Gatsby Advanced Pages</a>
+          </footer>
+        </div>
+      </div>
+      <div id="gatsby-announcer" style="
+          position: absolute;
+          top: 0;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
+        " aria-live="assertive" aria-atomic="true"></div>
+    </div>
+    <script id="gatsby-script-loader">
+      /*<![CDATA[*/ window.pagePath = '/blog/' /*]]>*/
+    </script>
+    <!-- slice-start id="_gatsby-scripts-1" -->
+    <script id="gatsby-chunk-mapping">
+      window.___chunkMapping =
+        '{"app":["/app-1350f58c5eedc68660be.js"],"component---src-pages-404-js":["/component---src-pages-404-js-573c07b3a873f9e300be.js"],"component---src-templates-about-js":["/component---src-templates-about-js-93824b7622487298aa2d.js"],"component---src-templates-blog-js":["/component---src-templates-blog-js-96cdd35ec496ee17543b.js"],"component---src-templates-home-js":["/component---src-templates-home-js-9df2c5697c4d8c03f0dd.js"],"component---src-templates-post-js":["/component---src-templates-post-js-edc846fbd10afae47296.js"]}'
+    </script>
+    <script>
+      window.___webpackCompilationHash = 'bdbc00fbcb8e8ddd141c'
+    </script>
+    <script src="/webpack-runtime-5b0b0492e349ffc7f396.js" async=""></script>
+    <script src="/app-1350f58c5eedc68660be.js" async=""></script>
+    <!-- slice-end id="_gatsby-scripts-1" -->
+  
+
+</body></html>

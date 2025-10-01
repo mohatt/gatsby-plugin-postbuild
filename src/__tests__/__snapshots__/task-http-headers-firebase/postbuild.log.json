@@ -1,0 +1,109 @@
+[
+  {
+    "file": "404.html",
+    "tag": "update",
+    "size": [
+      6110,
+      6200
+    ],
+    "meta": {}
+  },
+  {
+    "file": "404/index.html",
+    "tag": "update",
+    "size": [
+      6106,
+      6196
+    ],
+    "meta": {}
+  },
+  {
+    "file": "blog/blog-post-1/index.html",
+    "tag": "update",
+    "size": [
+      7297,
+      7443
+    ],
+    "meta": {}
+  },
+  {
+    "file": "blog/blog-post-2/index.html",
+    "tag": "update",
+    "size": [
+      7297,
+      7443
+    ],
+    "meta": {}
+  },
+  {
+    "file": "blog/blog-post-3/index.html",
+    "tag": "update",
+    "size": [
+      7297,
+      7443
+    ],
+    "meta": {}
+  },
+  {
+    "file": "blog/index.html",
+    "tag": "update",
+    "size": [
+      10134,
+      10387
+    ],
+    "meta": {}
+  },
+  {
+    "file": "blog/tag/tag1/index.html",
+    "tag": "update",
+    "size": [
+      9431,
+      9684
+    ],
+    "meta": {}
+  },
+  {
+    "file": "blog/tag/tag2/index.html",
+    "tag": "update",
+    "size": [
+      9431,
+      9684
+    ],
+    "meta": {}
+  },
+  {
+    "file": "blog/tag/tag3/index.html",
+    "tag": "update",
+    "size": [
+      9431,
+      9684
+    ],
+    "meta": {}
+  },
+  {
+    "file": "about/index.html",
+    "tag": "update",
+    "size": [
+      12824,
+      13869
+    ],
+    "meta": {}
+  },
+  {
+    "file": "index.html",
+    "tag": "update",
+    "size": [
+      6541,
+      6879
+    ],
+    "meta": {}
+  },
+  {
+    "file": "firebase.json",
+    "tag": "create",
+    "size": [
+      2418
+    ],
+    "meta": {}
+  }
+]
