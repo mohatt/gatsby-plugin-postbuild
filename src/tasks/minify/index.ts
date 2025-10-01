@@ -40,7 +40,8 @@ class Container {
       preset: cssnanoPreset,
     })
     this.minifiers.style = {
-      minify: (source) => cssnanoProcessor.process(source).then((res) => res.css),
+      minify: (source) =>
+        cssnanoProcessor.process(source, { from: undefined }).then((res) => res.css),
       cache: new Map(),
     }
   }
