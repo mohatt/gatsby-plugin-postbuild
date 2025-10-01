@@ -124,7 +124,7 @@ exports[`task: http-headers [netlify] > works correctly > info 1`] = `
  update index.html [6.54kB -4%]
  update about/index.html [12.82kB -7%]
  update blog/tag/tag1/index.html [9.43kB -2%]
- create _headers [795B]
+ create _headers [1kB]
  create postbuild.log.json [1.48kB]",
   ],
 ]

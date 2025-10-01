@@ -47,7 +47,7 @@ export class Postbuild {
    */
   private readonly fs: Filesystem
   private readonly tasks: Tasks
-  private readonly manifest: { [key: string]: string }
+  private readonly manifest: Record<string, string>
   private manifestMap: IAssetsManifest
 
   /**

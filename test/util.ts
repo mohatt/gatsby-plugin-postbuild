@@ -4,7 +4,7 @@ import { vol, DirectoryJSON } from 'memfs'
 import { readDirToMap } from 'vitest-memfs/util'
 import type { IErrorMeta } from '@postbuild/common'
 import type { IUserOptions } from '@postbuild/interfaces'
-import { onPluginInit, onPostBuild } from '@postbuild/gatsby-node'
+import { onPluginInit, onCreateWebpackConfig, onPostBuild } from '@postbuild/gatsby-node'
 
 // Virtual Project Root
 export const projectRoot = '/virtual/project'
@@ -98,6 +98,13 @@ export async function testE2E(name: string, options?: IUserOptions, positive = t
 
   const args = createGatsbyArgs(Object.keys(pages))
   await onPluginInit(args as any, { ...options, plugins: [] })
+
+  const webpackArgs = {
+    stage: 'build-javascript',
+    actions: { setWebpackConfig: vi.fn() },
+  }
+  onCreateWebpackConfig(webpackArgs as any)
+
   await onPostBuild(args as any)
   const {
     reporter: { activity, verbose, panic, info },

@@ -124,7 +124,7 @@ exports[`all tasks > works correctly > info 1`] = `
  update index.html [5.24kB -23%]
  update about/index.html [11.53kB -16%]
  update blog/tag/tag1/index.html [8.13kB -16%]
- create _headers [795B]
+ create _headers [1kB]
  create postbuild.log.json [1.48kB]",
   ],
 ]

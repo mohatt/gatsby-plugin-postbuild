@@ -68,6 +68,32 @@
         ]
       },
       {
+        "source": "test-asset--01-xxx.js",
+        "headers": [
+          {
+            "key": "cache-control",
+            "value": "public, max-age=31536000, immutable"
+          },
+          {
+            "key": "x-test-asset",
+            "value": "test-value"
+          }
+        ]
+      },
+      {
+        "source": "test-asset--02-xxx.css",
+        "headers": [
+          {
+            "key": "cache-control",
+            "value": "public, max-age=31536000, immutable"
+          },
+          {
+            "key": "x-test-asset",
+            "value": "test-value"
+          }
+        ]
+      },
+      {
         "source": "/",
         "headers": [
           {

@@ -12,6 +12,12 @@
   x-test-static: test-value
 /sw.js
   cache-control: public, max-age=0, must-revalidate
+/test-asset--01-xxx.js
+  cache-control: public, max-age=31536000, immutable
+  x-test-asset: test-value
+/test-asset--02-xxx.css
+  cache-control: public, max-age=31536000, immutable
+  x-test-asset: test-value
 /
   x-robots-tag: noindex
   link: <https://www.abc.com>; rel=preconnect
