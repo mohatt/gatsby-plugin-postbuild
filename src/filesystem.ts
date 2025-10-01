@@ -1,12 +1,11 @@
 import { Promise } from 'bluebird'
-import { promises as fs } from 'fs'
+import fs, { promises as fsAsync } from 'fs'
 import path from 'path'
 import glob, { IOptions as IGlobOptions } from 'glob'
 import chalk from 'chalk'
 import filesize from 'filesize'
 import { toInteger } from 'lodash'
 import { PluginError } from './common'
-import type { IOptions } from './interfaces'
 const globAsync = Promise.promisify(glob) as typeof glob.__promisify__
 
 /**
@@ -71,10 +70,7 @@ export class FilesystemReport {
 export class FilesystemReporter {
   private readonly reports: FilesystemReport[] = []
   private byetsSaved: number = 0
-  private readonly options: IOptions
-  constructor(options: IOptions) {
-    this.options = options
-  }
+  constructor() {}
 
   /**
    * Adds a new report and prints a summary to console if enabled
@@ -84,12 +80,6 @@ export class FilesystemReporter {
     if (report.size[1] !== undefined) {
       this.byetsSaved += report.size[0] - report.size[1]
     }
-    const { reporting } = this.options
-    if (reporting === false || (typeof reporting === 'object' && !reporting.console)) return
-    if (this.reports.length === 1) {
-      console.log(colorize.title('Postbuild report'))
-    }
-    console.log(' ' + report.getConsoleOutput())
   }
 
   /**
@@ -120,15 +110,11 @@ export class Filesystem {
   root: string = ''
 
   /** @internal */
-  private readonly options: IOptions
-
-  /** @internal */
   readonly reporter: FilesystemReporter
 
   /** @internal */
-  constructor(options: IOptions, reporter?: FilesystemReporter) {
-    this.options = options
-    this.reporter = reporter ?? new FilesystemReporter(options)
+  constructor() {
+    this.reporter = new FilesystemReporter()
   }
 
   /**
@@ -147,6 +133,7 @@ export class Filesystem {
     return globAsync(pattern, {
       cwd: this.root,
       root: this.root,
+      fs,
       ...options,
     })
   }
@@ -157,8 +144,8 @@ export class Filesystem {
   async read(rel: string): Promise<string> {
     try {
       const abs = this.getPublicPath(rel)
-      await fs.access(abs)
-      return await fs.readFile(abs, 'utf-8')
+      await fsAsync.access(abs)
+      return await fsAsync.readFile(abs, 'utf-8')
     } catch (e) {
       throw new PluginError(`Unable to read file "${rel}": ${String(e.message)}`, e)
     }
@@ -170,8 +157,8 @@ export class Filesystem {
   async create(rel: string, data: string, meta?: IFilesystemReportMeta): Promise<void> {
     const abs = this.getPublicPath(rel)
     try {
-      await fs.access(path.dirname(abs))
-      await fs.writeFile(abs, data)
+      await fsAsync.access(path.dirname(abs))
+      await fsAsync.writeFile(abs, data)
     } catch (e) {
       throw new PluginError(`Unable to create file "${rel}": ${String(e.message)}`, e)
     }
@@ -186,9 +173,9 @@ export class Filesystem {
     let size: [number, number]
     try {
       // ensure we're not creating any new files
-      await fs.access(abs)
-      size = [Buffer.byteLength(data), (await fs.stat(abs)).size]
-      await fs.writeFile(abs, data)
+      await fsAsync.access(abs)
+      size = [Buffer.byteLength(data), (await fsAsync.stat(abs)).size]
+      await fsAsync.writeFile(abs, data)
     } catch (e) {
       throw new PluginError(`Unable to update file "${rel}": ${String(e.message)}`, e)
     }

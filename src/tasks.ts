@@ -39,9 +39,14 @@ type IEventFuncOut<
  */
 export class Tasks {
   /**
-   * Tasks collection
+   * Active tasks collection
    */
   private tasks: Array<ITask<any>> = []
+
+  /**
+   * Registered tasks collection
+   */
+  private taskRegistry: Array<ITask<any>> = []
 
   /**
    * Map of filenames and task events that need them
@@ -51,7 +56,7 @@ export class Tasks {
   } = {}
 
   private readonly fs: Filesystem
-  private readonly options: IOptions
+  private options: IOptions
   constructor(fs: Filesystem, options: IOptions) {
     this.fs = fs
     this.options = options
@@ -62,7 +67,7 @@ export class Tasks {
    * an object or a module file to require
    */
   register<O extends ITaskOptions = any>(task: ITask<O>): void {
-    if (this.tasks.some((t) => t.id === task.id)) {
+    if (this.taskRegistry.some((t) => t.id === task.id)) {
       throw new Error(`Can't register task "${task.id}" with duplicate id`)
     }
 
@@ -71,15 +76,16 @@ export class Tasks {
     }
 
     debug('Registered a new task', task)
-    this.tasks.unshift(task)
+    this.taskRegistry.unshift(task)
   }
 
   /**
    * Sets the user-defined options for all tasks defined
    * Should be called before running any task events
    */
-  setOptions(): void {
-    this.tasks = this.tasks.filter(({ id, options }) => {
+  setOptions(options: IOptions): void {
+    this.options = options
+    this.tasks = this.taskRegistry.filter(({ id, options }) => {
       const td = {
         enabled: true,
         ignore: [],
@@ -88,7 +94,7 @@ export class Tasks {
       if (this.options[id] === undefined) {
         this.options[id] = td
       } else {
-        _.defaultsDeep(this.options[id], td)
+        this.options[id] = _.defaultsDeep({}, this.options[id], td)
       }
       // delete disabled tasks
       if (!this.options[id].enabled) {
@@ -149,7 +155,7 @@ export class Tasks {
    * Returns a map of task ids and their options schemas
    */
   getOptionsSchemas(joi: PluginOptionsSchemaJoi): { [task: string]: ObjectSchema } {
-    return this.tasks.reduce((res: { [task: string]: ObjectSchema }, task) => {
+    return this.taskRegistry.reduce((res: { [task: string]: ObjectSchema }, task) => {
       const tos = task.options?.schema
       const schema = tos === undefined ? joi.object() : tos.call(task.options, joi)
       res[task.id] = schema.append({

@@ -3,7 +3,7 @@ import type { ITaskApiOptions, ITaskOptions } from '@postbuild'
 /**
  * Task options interface
  */
-export type IOptions = ITaskOptions & {
+export type IMinifyTaskOptions = ITaskOptions & {
   script: object | boolean
   style: [string, object] | object | Function | boolean
 }
@@ -11,7 +11,7 @@ export type IOptions = ITaskOptions & {
 /**
  * Options API exports
  */
-export const options: ITaskApiOptions<IOptions> = {
+export const options: ITaskApiOptions<IMinifyTaskOptions> = {
   defaults: {
     enabled: false,
     ignore: [],

@@ -1,6 +1,5 @@
-import { Promise } from 'bluebird'
 import path from 'path'
-import type { NodePluginArgs } from 'gatsby'
+import type { BuildArgs } from 'gatsby'
 import type Tasks from '../tasks'
 import type { IExtensionOptions, IAssetsManifest } from '../interfaces'
 import type { Filesystem, IFilesystemReportMeta } from '../filesystem'
@@ -10,7 +9,7 @@ export interface FileConstructorArgs {
   filesystem: Filesystem
   tasks: Tasks
   assets: IAssetsManifest
-  gatsby: NodePluginArgs
+  gatsby: BuildArgs
 }
 
 /**
@@ -62,7 +61,7 @@ export default abstract class File {
     file: F
     filesystem: Filesystem
     assets: IAssetsManifest
-    gatsby: NodePluginArgs
+    gatsby: BuildArgs
   }
 
   /**

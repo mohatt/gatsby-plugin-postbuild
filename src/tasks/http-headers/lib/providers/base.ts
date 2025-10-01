@@ -1,6 +1,6 @@
 import { SUPPORTS } from './index'
 import type { PathPlaceholder } from '../builder'
-import type { IPathHeadersMap, IOptions } from '../../options'
+import type { IPathHeadersMap, IHttpHeadersTaskOptions } from '../../options'
 import { Filesystem } from '@postbuild/filesystem'
 
 export type IPathPlaceholders = {
@@ -15,14 +15,14 @@ export interface IProviderArtifact {
 export abstract class Provider {
   protected abstract filename: string
   protected abstract placeholders: IPathPlaceholders
-  protected readonly options: IOptions
+  protected readonly options: IHttpHeadersTaskOptions
   protected readonly fs: Filesystem
-  constructor(options: IOptions, fs: Filesystem) {
+  constructor(options: IHttpHeadersTaskOptions, fs: Filesystem) {
     this.options = options
     this.fs = fs
   }
 
-  static factory = (options: IOptions, fs: Filesystem): Provider => {
+  static factory = (options: IHttpHeadersTaskOptions, fs: Filesystem): Provider => {
     if (!(options.provider in SUPPORTS)) {
       throw new TypeError(`Invalid headers file provider "${options.provider}"`)
     }

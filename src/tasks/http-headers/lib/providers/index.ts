@@ -3,16 +3,14 @@ import FirebaseProvider from './firebase'
 import NetlifyProvider from './netlify'
 import VercelProvider from './vercel'
 
-export enum ProviderSymbol {
-  Netlify = 'netlify',
-  Vercel = 'vercel',
-  Firebase = 'firebase',
-}
+export type ProviderType = 'netlify' | 'vercel' | 'firebase'
 
-export const SUPPORTS: { [ext: string]: typeof Provider } = {
-  [ProviderSymbol.Netlify]: NetlifyProvider,
-  [ProviderSymbol.Vercel]: VercelProvider,
-  [ProviderSymbol.Firebase]: FirebaseProvider,
+export const PROVIDER_TYPES: ProviderType[] = ['netlify', 'vercel', 'firebase']
+
+export const SUPPORTS: { [k in ProviderType]: typeof Provider } = {
+  netlify: NetlifyProvider,
+  vercel: VercelProvider,
+  firebase: FirebaseProvider,
 }
 
 export { Provider }

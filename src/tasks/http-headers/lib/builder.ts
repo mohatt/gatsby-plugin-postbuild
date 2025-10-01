@@ -3,7 +3,7 @@ import Link from './link'
 import Meta from './meta'
 import Provider from './providers'
 import type { Filesystem, IAssetsManifest } from '@postbuild'
-import type { IOptions, IHeadersMap, IPathHeadersMap } from '../options'
+import type { IHttpHeadersTaskOptions, IHeadersMap, IPathHeadersMap } from '../options'
 
 export enum PathPlaceholder {
   All = '[*]',
@@ -66,11 +66,16 @@ export default class Builder {
   } = {}
 
   readonly provider: Provider
-  readonly options: IOptions
+  readonly options: IHttpHeadersTaskOptions
   readonly assets: IAssetsManifest
   readonly fs: Filesystem
   readonly pathPrefix: string
-  constructor(options: IOptions, assets: IAssetsManifest, fs: Filesystem, pathPrefix: string) {
+  constructor(
+    options: IHttpHeadersTaskOptions,
+    assets: IAssetsManifest,
+    fs: Filesystem,
+    pathPrefix: string,
+  ) {
     this.provider = Provider.factory(options, fs)
     this.options = options
     this.assets = assets

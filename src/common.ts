@@ -29,46 +29,47 @@ export const createDebug = (namespace = ''): Function => {
 }
 
 /**
- * Manages Gatsby's reporter instance, providing functionalities for structured error logging,
- * warnings, and instance management.
- *
+ * Manages Gatsby's reporter instance, providing structured logging,
+ * error handling, and lifecycle management for plugin diagnostics.
  * @internal
  */
-export const reporter = (() => {
-  let ref: Reporter | undefined
+export class PluginReporter {
+  private _ref?: Reporter
 
-  // Initializes reporter
   /**
    * Initializes and caches the Gatsby reporter instance.
    *
-   * If `setErrorMap` is available, it registers custom error messages
+   * If `setErrorMap` is available, registers custom error messages
    * for better debugging in Gatsby's CLI.
    */
-  const initialize = (instance: Reporter): Reporter => {
-    instance.setErrorMap({
-      ['1400' satisfies PluginErrorMeta['id']]: {
-        text: (context: PluginErrorMeta['context']) => context.message,
+  initialize(instance: Reporter) {
+    instance.setErrorMap?.({
+      ['1400' satisfies IErrorMeta['id']]: {
+        text: (context: IErrorMeta['context']) => context.message,
         category: 'THIRD_PARTY',
         level: 'ERROR',
         type: 'PLUGIN',
       },
     })
 
-    ref = instance
-    return instance
+    this._ref = instance
   }
 
   /**
    * Retrieves the cached reporter instance.
+   * Throws if called before initialization.
    */
-  const get = (): Reporter => {
-    return ref
+  get ref() {
+    if (!this._ref) {
+      throw new Error(`[${PLUGIN}] Reporter not initialized`)
+    }
+    return this._ref
   }
 
-  const createError = (
-    api: keyof GatsbyNode,
-    err: string | PluginError | Error,
-  ): PluginErrorMeta => {
+  /**
+   * Builds a structured error meta object for Gatsby.
+   */
+  createError(api: keyof GatsbyNode, err: string | PluginError | Error): IErrorMeta {
     const prefix = `The plugin threw an error during "${api}" hook`
 
     let title: string | undefined
@@ -95,43 +96,44 @@ export const reporter = (() => {
   /**
    * Logs an error and terminates the build process.
    *
-   * - Uses Gatsby's `panic()` method to log structured errors.
-   * - If an `Error` object is provided, includes it in the error report.
-   * - Otherwise, creates a new error instance from the given message.
-   *
-   * @param api The Gatsby Node API that caused the error.
-   * @param err The error message or PluginError object to display.
-   *
-   * @throws - This function never returns; it always terminates execution.
+   * Uses Gatsby's `panic()` to log structured errors.
+   * Throws if reporter not initialized.
    */
-  const error = (api: keyof GatsbyNode, err: string | PluginError | Error): never => {
-    const meta = createError(api, err)
-    if (!ref) {
-      throw err
-    }
-    return ref.panic(meta)
+  error(api: keyof GatsbyNode, err: string | PluginError | Error): never {
+    const meta = this.createError(api, err)
+    const reporter = this._ref
+    if (!reporter) throw err
+    return reporter.panic(meta)
   }
 
   /**
    * Logs a warning message in the Gatsby CLI.
-   *
-   * @param message The warning message to display.
    */
-  const warning = (message: string): void => {
+  warning(message: string) {
     const prefix = `"${PLUGIN}" might not be working properly`
     const warning = `${prefix}:\n ${message}`
-    if (!ref) {
-      throw new Error(warning)
-    }
-    ref.warn(warning)
+    const reporter = this._ref
+    if (!reporter) throw new Error(warning)
+    reporter.warn(warning)
   }
 
-  const verbose = (message: string): void => {
-    ref.verbose(`[${PLUGIN}]: ${message}`)
+  /**
+   * Logs an info message in the Gatsby CLI.
+   */
+  info(message: string) {
+    this._ref?.info(`[${PLUGIN}]: ${message}`)
   }
 
-  return { initialize, get, error, createError, warning, verbose }
-})()
+  /**
+   * Logs a verbose message in the Gatsby CLI.
+   */
+  verbose(message: string) {
+    this._ref?.verbose(`[${PLUGIN}]: ${message}`)
+  }
+}
+
+// Singleton reporter style
+export const reporter = new PluginReporter()
 
 /**
  * Wraps a Gatsby API function with error handling.
@@ -167,7 +169,7 @@ export const createPluginExport = <T extends keyof GatsbyNode, F extends GatsbyN
 /**
  * The main plugin error representation in Gatsby's error map.
  */
-export interface PluginErrorMeta {
+export interface IErrorMeta {
   id: '1400'
   context: {
     message: string

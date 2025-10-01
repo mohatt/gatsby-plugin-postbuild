@@ -2,14 +2,25 @@ import { Promise } from 'bluebird'
 import path from 'path'
 import _ from 'lodash'
 import { WebpackAssetsManifest } from 'webpack-assets-manifest'
-import type { PluginOptions, NodePluginArgs } from 'gatsby'
+import type {
+  PluginOptions,
+  ParentSpanPluginArgs,
+  BuildArgs,
+  CreateWebpackConfigArgs,
+} from 'gatsby'
 import type { PluginOptionsSchemaJoi, ObjectSchema } from 'gatsby-plugin-utils'
-import type { ITask, IOptions, IOptionProcessing, IAssetsManifest } from './interfaces'
+import type {
+  ITask,
+  IOptions,
+  IOptionProcessing,
+  IAssetsManifest,
+  IUserOptions,
+} from './interfaces'
 import Filesystem from './filesystem'
 import Tasks from './tasks'
 import { File, FileHtml, FileType } from './files'
 import { DEFAULTS, schema } from './options'
-import { reporter, debug } from './common'
+import { debug, PLUGIN, PluginReporter } from './common'
 
 /**
  * Handles core plugin functionality
@@ -19,7 +30,7 @@ export class Postbuild {
   /**
    * Plugin options
    */
-  private readonly options: IOptions
+  private options: IOptions
 
   /**
    * Page paths built by Gatsby during this run
@@ -44,10 +55,10 @@ export class Postbuild {
   /**
    * Loads dependencies and sets default options
    */
-  constructor(tasks?: Tasks, fs?: Filesystem) {
+  constructor(private readonly reporter: PluginReporter) {
     this.options = { ...DEFAULTS }
-    this.fs = fs ?? new Filesystem(this.options)
-    this.tasks = tasks ?? new Tasks(this.fs, this.options)
+    this.fs = new Filesystem()
+    this.tasks = new Tasks(this.fs, this.options)
     this.manifest = {}
     this.manifestMap = new Map()
   }
@@ -55,14 +66,14 @@ export class Postbuild {
   /**
    * Registers core tasks
    */
-  init(tasks: ITask<any>[]): void {
+  init(tasks: ITask<any>[]) {
     tasks.forEach((task) => this.tasks.register(task))
   }
 
   /**
    * Returns the webpack config object for the given stage
    */
-  getWebpackConfig(stage: string): Object {
+  getWebpackConfig(stage: CreateWebpackConfigArgs['stage']) {
     if (stage !== 'build-javascript') {
       return {}
     }
@@ -95,15 +106,15 @@ export class Postbuild {
   /**
    * Loads user-defined options, environment constants and task options
    */
-  async bootstrap(gatsby: NodePluginArgs, pluginOptions: PluginOptions): Promise<void> {
+  async bootstrap(gatsby: ParentSpanPluginArgs, pluginOptions: PluginOptions & IUserOptions) {
     // Merge user-defined options with defaults
-    _.merge(this.options, pluginOptions)
+    this.options = _.merge({}, DEFAULTS, pluginOptions)
 
     // Configure fs root
     this.fs.setRoot(path.join(gatsby.store.getState().program.directory, 'public'))
 
     // Initialize reporter
-    reporter.initialize(gatsby.reporter)
+    this.reporter.initialize(gatsby.reporter)
 
     // Register user task if events is set
     if (!_.isEmpty(this.options.events)) {
@@ -114,7 +125,7 @@ export class Postbuild {
     }
 
     // Load tasks options
-    this.tasks.setOptions()
+    this.tasks.setOptions(this.options)
 
     // No need to run the plugin if there is no tasks enabled
     if (this.tasks.getActiveTasks().length === 0) {
@@ -138,12 +149,32 @@ export class Postbuild {
     )
   }
 
+  async run(gatsby: BuildArgs) {
+    if (!this.options.enabled) return
+    const activity = gatsby.reporter.activityTimer(PLUGIN, {
+      parentSpan: gatsby.tracing.parentSpan as any,
+    })
+    activity.start()
+    try {
+      await this.doRun(gatsby, activity.setStatus)
+    } catch (e) {
+      activity.panic(this.reporter.createError('onPostBuild', e))
+    }
+    activity.end()
+
+    const { reporting } = this.options
+    if (reporting === false || (typeof reporting === 'object' && !reporting.console)) return
+    const reports = this.fs.reporter.getReports()
+    if (!reports.length) return
+    this.reporter.info(
+      ['Report'].concat(reports.map((report) => report.getConsoleOutput())).join('\n '),
+    )
+  }
+
   /**
    * Searches for and processes all files defined by all tasks
    */
-  async run(gatsby: NodePluginArgs, setStatus: (s: string) => void): Promise<void> {
-    if (!this.options.enabled) return
-
+  private async doRun(gatsby: BuildArgs, setStatus: (status: string) => void) {
     this.manifestMap = new Map(Object.entries(this.manifest))
     // Run on.postbuild events
     const payload = {
@@ -190,7 +221,7 @@ export class Postbuild {
             continue
           }
           if (!this.builtPaths.includes(pagePath)) {
-            reporter.verbose(`Skipping "${pagePath}" as it's not built in this run`)
+            this.reporter.verbose(`Skipping "${pagePath}" as it's not built in this run`)
             setStatus(`Incremental build detected, skipping`)
             return
           }
@@ -223,7 +254,7 @@ export class Postbuild {
   /**
    * Processes files of a given extension using the given processing options
    */
-  async process(ext: string, options: IOptionProcessing, tick: Function): Promise<void> {
+  async process(ext: string, options: IOptionProcessing, tick: Function) {
     const files = this.files[ext]
     if (files === undefined) return
     debug(`Processing ${files.length} files with extension "${ext}" using`, options)

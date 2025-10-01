@@ -1,17 +1,14 @@
-import { Promise } from 'bluebird'
 import { minify } from 'terser'
 import cssnano from 'cssnano'
-import HtmlContext from './context'
+import HtmlContext, { Minifier } from './context'
 import { FileHtml, ITask } from '@postbuild'
-import { options, IOptions } from './options'
+import { options, IMinifyTaskOptions } from './options'
 import type { ITaskApiEvents } from '@postbuild'
 
-/**
- * Represents a minifier for a specific source type (eg. script)
- */
-export interface Minifier {
-  minify: (source: string) => Promise<string>
-  cache: Map<string, string>
+declare module 'gatsby-plugin-postbuild' {
+  interface IOptions {
+    minify: IMinifyTaskOptions
+  }
 }
 
 /**
@@ -20,13 +17,13 @@ export interface Minifier {
 class Container {
   readonly contexts: Map<string, HtmlContext> = new Map()
   readonly minifiers: Record<string, Minifier> = {}
-  readonly options: IOptions
-  constructor(options: IOptions) {
+  readonly options: IMinifyTaskOptions
+  constructor(options: IMinifyTaskOptions) {
     this.options = options
     this.createMinifiers()
   }
 
-  createMinifiers(): void {
+  private createMinifiers(): void {
     const terserOptions = typeof this.options.script !== 'boolean' ? this.options.script : {}
     this.minifiers.script = {
       minify: (source) =>
@@ -62,7 +59,7 @@ class Container {
 }
 
 let di: Container
-export const events: ITaskApiEvents<IOptions> = {
+export const events: ITaskApiEvents<IMinifyTaskOptions> = {
   on: {
     postbuild: ({ options }) => {
       di = new Container(options)
@@ -87,7 +84,7 @@ export const events: ITaskApiEvents<IOptions> = {
   },
 }
 
-const task: ITask<IOptions> = {
+const task: ITask<IMinifyTaskOptions> = {
   id: 'minify',
   events,
   options,

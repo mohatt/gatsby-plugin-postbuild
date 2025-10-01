@@ -1,5 +1,5 @@
 import type { ITaskApiOptions, ITaskOptions } from '@postbuild'
-import { ProviderSymbol } from './lib/providers'
+import { PROVIDER_TYPES, ProviderType } from './lib/providers'
 import type Link from './lib/link'
 import type Meta from './lib/meta'
 
@@ -34,8 +34,8 @@ export interface IPathHeadersMap {
 /**
  * Task options interface
  */
-export type IOptions = ITaskOptions & {
-  provider: ProviderSymbol
+export type IHttpHeadersTaskOptions = ITaskOptions & {
+  provider: ProviderType
   headers: IPathHeadersMap
   security: boolean
   caching: boolean
@@ -48,11 +48,11 @@ export type IOptions = ITaskOptions & {
 /**
  * Options API exports
  */
-export const options: ITaskApiOptions<IOptions> = {
+export const options: ITaskApiOptions<IHttpHeadersTaskOptions> = {
   defaults: {
     enabled: false,
     ignore: [],
-    provider: ProviderSymbol.Netlify,
+    provider: 'netlify',
     headers: {},
     security: true,
     caching: true,
@@ -66,7 +66,7 @@ export const options: ITaskApiOptions<IOptions> = {
     return joi.object({
       provider: joi
         .string()
-        .valid(...Object.values(ProviderSymbol))
+        .valid(...PROVIDER_TYPES)
         .description('Headers file provider.'),
       headers: joi
         .object()

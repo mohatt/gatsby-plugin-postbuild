@@ -3,7 +3,13 @@ import type { ITask, ITaskApiEvents } from '@postbuild'
 import Builder from './lib/builder'
 import Link from './lib/link'
 import Meta from './lib/meta'
-import { options, IOptions } from './options'
+import { options, IHttpHeadersTaskOptions } from './options'
+
+declare module 'gatsby-plugin-postbuild' {
+  interface IOptions {
+    'http-headers': IHttpHeadersTaskOptions
+  }
+}
 
 /**
  * Headers file builder
@@ -19,7 +25,7 @@ function isInHead(node: parse5.ChildNode): boolean {
   return false
 }
 
-export const events: ITaskApiEvents<IOptions> = {
+export const events: ITaskApiEvents<IHttpHeadersTaskOptions> = {
   on: {
     postbuild: ({ options, filesystem, gatsby, assets }) => {
       builder = new Builder(options, assets, filesystem, gatsby.pathPrefix)
@@ -81,7 +87,7 @@ export const events: ITaskApiEvents<IOptions> = {
   },
 }
 
-const task: ITask<IOptions> = {
+const task: ITask<IHttpHeadersTaskOptions> = {
   id: 'http-headers',
   events,
   options,

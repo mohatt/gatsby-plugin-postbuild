@@ -8,8 +8,6 @@ events emitted by [file transformers](#file-transformers).
 
 The plugin comes with these tasks out of the box:
 
-- [Purgecss](https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/src/tasks/purgecss)  
-  Optimizes HTML/CSS files by removing unused CSS selectors.
 - [HTTP Headers](https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/src/tasks/http-headers)  
   Automatically generates headers configuration file for different hosting providers
 - [Minify](https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/src/tasks/minify)  

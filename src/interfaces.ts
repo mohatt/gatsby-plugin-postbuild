@@ -1,8 +1,13 @@
-import type { NodePluginArgs } from 'gatsby'
+import type { BuildArgs, ParentSpanPluginArgs } from 'gatsby'
 import type { PluginOptionsSchemaJoi, ObjectSchema } from 'gatsby-plugin-utils'
 import type { DefaultTreeAdapterTypes as parse5 } from 'parse5'
 import type Filesystem from './filesystem'
 import type { File, FileGeneric, FileHtml } from './files'
+
+// Creates a recursive partial version of `T`
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+}
 
 // Available processing strategies
 export type IOptionProcessingStrategy = 'sequential' | 'parallel'
@@ -23,7 +28,7 @@ export type IExtensionOptions<
 /**
  * Plugin options interface
  */
-export type IOptions = {
+export interface IOptions {
   enabled: boolean
   reporting:
     | {
@@ -37,9 +42,13 @@ export type IOptions = {
   extensions: {
     [ext: string]: Partial<IExtensionOptions>
   }
-} & {
-  [task: string]: ITaskOptions
 }
+
+/**
+ * Represents the user-facing plugin options.
+ * This type allows partial definitions, meaning users can specify only the options they need.
+ */
+export type IUserOptions = DeepPartial<IOptions>
 
 /**
  * Generic type for async/sync functions
@@ -163,7 +172,7 @@ export type IPostbuildArg<
   /**
    * Reference to Gatsby node helpers object
    */
-  gatsby: NodePluginArgs
+  gatsby: BuildArgs | ParentSpanPluginArgs
 } & {
   [K in keyof P]: P[K]
 }
