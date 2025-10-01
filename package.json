@@ -59,7 +59,6 @@
     "lodash": "^4.17.21",
     "p-limit": "^7.1.1",
     "parse5": "^7.3.0",
-    "purgecss": "^6.0.0",
     "terser": "^5.43.1",
     "webpack-assets-manifest": "^6.2.2"
   },
