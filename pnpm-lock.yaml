@@ -67,8 +67,8 @@ importers:
         specifier: 5.14.6
         version: 5.14.6(type-fest@4.41.0)(typescript@5.1.6)
       memfs:
-        specifier: 4.47.0
-        version: 4.47.0
+        specifier: 4.48.1
+        version: 4.48.1
       pkgroll:
         specifier: 2.15.4
         version: 2.15.4(typescript@5.1.6)
@@ -95,7 +95,7 @@ importers:
         version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.129)(@vitest/ui@3.2.4)(terser@5.43.1)(yaml@2.8.1)
       vitest-memfs:
         specifier: 1.5.1
-        version: 1.5.1(memfs@4.47.0)(tslib@2.8.1)(vitest@3.2.4)
+        version: 1.5.1(memfs@4.48.1)(tslib@2.8.1)(vitest@3.2.4)
 
 packages:
 
@@ -4769,8 +4769,8 @@ packages:
     resolution: {integrity: sha512-UERzLsxzllchadvbPs5aolHh65ISpKpM+ccLbOJ8/vvpBKmAWf+la7dXFy7Mr0ySHbdHrFv5kGFCUHHe6GFEmw==}
     engines: {node: '>= 4.0.0'}
 
-  memfs@4.47.0:
-    resolution: {integrity: sha512-Xey8IZA57tfotV/TN4d6BmccQuhFP+CqRiI7TTNdipZdZBzF2WnzUcH//Cudw6X4zJiUbo/LTuU/HPA/iC/pNg==}
+  memfs@4.48.1:
+    resolution: {integrity: sha512-vWO+1ROkhOALF1UnT9aNOOflq5oFDlqwTXaPg6duo07fBLxSH0+bcF0TY1lbA1zTNKyGgDxgaDdKx5MaewLX5A==}
 
   memoizee@0.4.17:
     resolution: {integrity: sha512-DGqD7Hjpi/1or4F/aYAspXKNm5Yili0QDAFAY4QYvpqpgiY6+1jOfqpmByzjxbWd/T9mChbCArXAbDAsTm5oXA==}
@@ -12925,7 +12925,7 @@ snapshots:
     dependencies:
       fs-monkey: 1.1.0
 
-  memfs@4.47.0:
+  memfs@4.48.1:
     dependencies:
       '@jsonjoy.com/json-pack': 1.11.0(tslib@2.8.1)
       '@jsonjoy.com/util': 1.9.0(tslib@2.8.1)
@@ -15149,12 +15149,12 @@ snapshots:
       terser: 5.43.1
       yaml: 2.8.1
 
-  vitest-memfs@1.5.1(memfs@4.47.0)(tslib@2.8.1)(vitest@3.2.4):
+  vitest-memfs@1.5.1(memfs@4.48.1)(tslib@2.8.1)(vitest@3.2.4):
     dependencies:
       glob-to-regex.js: 1.0.1(tslib@2.8.1)
       is-binary-path: 3.0.0
       is-glob: 4.0.0
-      memfs: 4.47.0
+      memfs: 4.48.1
       p-limit: 7.1.1
       vitest: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.129)(@vitest/ui@3.2.4)(terser@5.43.1)(yaml@2.8.1)
     transitivePeerDependencies:
