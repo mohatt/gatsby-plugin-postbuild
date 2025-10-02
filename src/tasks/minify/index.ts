@@ -12,75 +12,80 @@ declare module 'gatsby-plugin-postbuild' {
 }
 
 /**
- * Holds refrences to required dependencies
+ * Holds references to required dependencies
  */
-class Container {
-  readonly contexts: Map<string, HtmlContext> = new Map()
-  readonly minifiers: Record<string, Minifier> = {}
+class MinifyRuntime {
+  private readonly contexts = new Map<string, HtmlContext>()
+  readonly minifiers = new Map<string, Minifier>()
   readonly options: IMinifyTaskOptions
+
   constructor(options: IMinifyTaskOptions) {
     this.options = options
     this.createMinifiers()
   }
 
-  private createMinifiers(): void {
+  private createMinifiers() {
     const terserOptions = typeof this.options.script !== 'boolean' ? this.options.script : {}
-    this.minifiers.script = {
-      minify: (source) =>
-        minify(source, terserOptions).then((res) => {
-          if (res.code !== undefined) {
-            return res.code
-          }
-          return ''
-        }),
+    this.minifiers.set('script', {
+      minify: async (source) => {
+        const result = await minify(source, terserOptions)
+        return result.code ?? ''
+      },
       cache: new Map(),
-    }
+    })
+
     const cssnanoPreset = typeof this.options.style !== 'boolean' ? this.options.style : 'default'
     const cssnanoProcessor = cssnano({
       preset: cssnanoPreset,
     })
-    this.minifiers.style = {
-      minify: (source) =>
-        cssnanoProcessor.process(source, { from: undefined }).then((res) => res.css),
+    this.minifiers.set('style', {
+      minify: async (source) => {
+        const result = await cssnanoProcessor.process(source, { from: undefined })
+        return result.css
+      },
       cache: new Map(),
-    }
+    })
   }
 
-  createContext(file: FileHtml): void {
+  createContext(file: FileHtml) {
     this.contexts.set(file.relative, new HtmlContext(file, this.options))
   }
 
-  getContext(file: FileHtml): HtmlContext {
-    return this.contexts.get(file.relative) as HtmlContext
+  getContext(file: FileHtml) {
+    return this.contexts.get(file.relative)
   }
 
-  deleteContext(file: FileHtml): void {
+  deleteContext(file: FileHtml) {
     this.contexts.delete(file.relative)
   }
 }
 
-let di: Container
+let runtime: MinifyRuntime | undefined
 export const events: ITaskApiEvents<IMinifyTaskOptions> = {
   on: {
     postbuild: ({ options }) => {
-      di = new Container(options)
+      runtime = new MinifyRuntime(options)
+    },
+    shutdown: () => {
+      runtime = undefined
     },
   },
   html: {
     tree: ({ file }) => {
-      di.createContext(file)
+      runtime.createContext(file)
     },
     node: ({ node, file }) => {
-      di.getContext(file).processNode(node)
+      runtime.getContext(file).processNode(node)
     },
-    serialize: ({ file }) => {
-      return di
-        .getContext(file)
-        .minify(di.minifiers)
-        .catch((e: string) => {
-          throw new Error(`Failed minifying "${file.relative}": ${e}`)
-        })
-        .then(() => di.deleteContext(file))
+    serialize: async ({ file }) => {
+      const context = runtime.getContext(file)
+      try {
+        await context.minify(runtime.minifiers)
+      } catch (e: any) {
+        throw new Error(`Failed minifying "${file.relative}": ${e}`)
+      } finally {
+        runtime.deleteContext(file)
+      }
     },
   },
 }

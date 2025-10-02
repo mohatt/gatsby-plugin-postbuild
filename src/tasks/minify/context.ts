@@ -65,7 +65,7 @@ export default class HtmlContext {
    * Minifies all style/script nodes then writes the final
    * optimized html file
    */
-  async minify(minifiers: Record<string, Minifier>) {
+  async minify(minifiers: Map<string, Minifier>) {
     await Promise.all(
       this.assets.map(async (text, i) => {
         const node = text.parentNode as parse5.Element
@@ -73,8 +73,9 @@ export default class HtmlContext {
         const id = node.attrs
           .find((a) => a.name === 'id' || a.name === 'data-identity')
           ?.value.trim()
-        const minifier = minifiers[type]
-        if (minifier.cache.has(id)) {
+        const minifier = minifiers.get(type)
+        if (!minifier) return
+        if (id && minifier.cache.has(id)) {
           const cached = minifier.cache.get(id)
           if (cached === '') {
             this.removable.push(node)

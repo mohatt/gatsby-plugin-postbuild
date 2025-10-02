@@ -14,9 +14,9 @@ declare module 'gatsby-plugin-postbuild' {
 /**
  * Headers file builder
  */
-let builder: Builder
+let builder: Builder | undefined
 
-function isInHead(node: parse5.ChildNode): boolean {
+function isInHead(node: parse5.ChildNode) {
   let parent = node?.parentNode
   while (parent) {
     if (parent.nodeName === 'head') return true
@@ -30,8 +30,12 @@ export const events: ITaskApiEvents<IHttpHeadersTaskOptions> = {
     postbuild: ({ options, filesystem, gatsby, assets }) => {
       builder = new Builder(options, assets, filesystem, gatsby.pathPrefix)
     },
-    shutdown: () => {
-      return builder.build()
+    shutdown: async () => {
+      try {
+        await builder.build()
+      } finally {
+        builder = undefined
+      }
     },
   },
   html: {
@@ -42,9 +46,9 @@ export const events: ITaskApiEvents<IHttpHeadersTaskOptions> = {
           ?.value.trim()
           .toLowerCase()
           .split(' ')
-        if (rels === undefined || rels.length === 0) return
+        if (!rels?.length) return
         let href = node.attrs.find((a) => a.name === 'href')?.value.trim()
-        if (href === undefined || href === '') return
+        if (!href) return
 
         // Strip out pathPrefix from paths since its irrelevant when deploying to Netlify
         href = builder.normalizeHref(href)
@@ -75,13 +79,9 @@ export const events: ITaskApiEvents<IHttpHeadersTaskOptions> = {
 
       if (node.nodeName === 'meta' && isInHead(node)) {
         const meta = Meta.create(node.attrs)
-        if (meta) {
-          builder.addPageMeta(builder.normalizeHref(file.pagePath), meta)
-
-          if (options.removeMetaTags) {
-            file.adaptor.detachNode(node)
-          }
-        }
+        if (!meta) return
+        builder.addPageMeta(builder.normalizeHref(file.pagePath), meta)
+        if (options.removeMetaTags) file.adaptor.detachNode(node)
       }
     },
   },

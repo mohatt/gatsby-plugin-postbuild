@@ -207,7 +207,7 @@ export class Postbuild {
     // Group files per extension and process them in series
     const filenames = await this.tasks.getFilenames()
     for (const ext in filenames) {
-      const config = Object.assign({}, this.options.processing, this.options.extensions[ext])
+      const config = { ...this.options.processing, ...this.options.extensions[ext] }
       await this.tasks.run(ext as 'unknown', 'configure', { ...payload, config })
       const bucket: File[] = []
       this.files.set(ext, bucket)
@@ -259,30 +259,27 @@ export class Postbuild {
    */
   private async process(ext: string, options: IOptionProcessing, tick: Function) {
     const files = this.files.get(ext)
-    if (files === undefined) return
+    if (!files.length) return
     debug(`Processing ${files.length} files with extension "${ext}" using`, options)
     const { strategy, concurrency } = options
     const runStage = async (fn: (file: File, index: number) => Promise<void>) => {
       const limit = concurrency > 0 ? this.pLimit(concurrency) : undefined
       const tasks = files.map((file, index) => {
-        if (!limit) {
-          return fn(file, index)
-        }
-        return limit(() => fn(file, index))
+        return limit ? limit(() => fn(file, index)) : fn(file, index)
       })
       await Promise.all(tasks)
     }
     // Process all files at one step all at the same time
     if (strategy === 'parallel') {
-      await runStage(async (file, i) => {
+      await runStage(async (file) => {
         await file.read()
         tick('read')
         await file.process()
         tick('process')
         await file.write()
         tick('write')
-        delete files[i]
       })
+      this.files.delete(ext)
       return
     }
 
@@ -295,11 +292,9 @@ export class Postbuild {
       await file.process()
       tick('process')
     })
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]
+    for (const file of files) {
       await file.write()
       tick('write')
-      delete files[i]
     }
     this.files.delete(ext)
   }

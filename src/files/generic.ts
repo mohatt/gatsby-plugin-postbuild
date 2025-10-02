@@ -10,21 +10,11 @@ export default class FileGeneric extends File {
    *
    * @internal
    */
-  read(): Promise<void> {
-    return this.file
-      .read()
-      .then((raw) =>
-        this.emit(
-          'unknown',
-          'content',
-          {
-            ...this.emitPayload<FileGeneric>(),
-            raw,
-          },
-          'raw',
-        ),
-      )
-      .then((data) => this.file.update(data))
+  async read() {
+    const raw = await this.file.read()
+    const payload = this.emitPayload<FileGeneric>()
+    const data = await this.emit('unknown', 'content', { ...payload, raw }, 'raw')
+    await this.file.update(data)
   }
 
   /**
@@ -32,8 +22,8 @@ export default class FileGeneric extends File {
    *
    * @internal
    */
-  process(): Promise<void> {
-    return Promise.resolve()
+  async process() {
+    // no-op: generic files are handled during read/write
   }
 
   /**
@@ -41,7 +31,7 @@ export default class FileGeneric extends File {
    *
    * @internal
    */
-  write(): Promise<void> {
-    return Promise.resolve()
+  async write() {
+    // no-op: updates happen during read()
   }
 }

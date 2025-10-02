@@ -62,10 +62,9 @@ export class Tasks {
   }
 
   /**
-   * Registers a new task, task exports needs to be either
-   * an object or a module file to require
+   * Registers a new task
    */
-  register<O extends ITaskOptions = any>(task: ITask<O>): void {
+  register<O extends ITaskOptions = any>(task: ITask<O>) {
     if (this.taskRegistry.some((t) => t.id === task.id)) {
       throw new Error(`Can't register task "${task.id}" with duplicate id`)
     }
@@ -82,7 +81,7 @@ export class Tasks {
    * Sets the user-defined options for all tasks defined
    * Should be called before running any task events
    */
-  resolveOptions(options: IOptions) {
+  resolveOptions(options: IOptions): IOptions {
     this.ignore = options.ignore ?? []
     const resolvedOptions = { ...options }
     this.taskOptions.clear()
@@ -112,7 +111,7 @@ export class Tasks {
   /**
    * Returns a map of file extensions with file names to be processed
    */
-  async getFilenames(): Promise<{ [ext: string]: string[] }> {
+  async getFilenames(): Promise<Record<string, string[]>> {
     const extensionTasks: Tasks['fileEvents'] = new Map()
     for (const task of this.tasks) {
       for (const ext of Object.keys(task.events as Record<string, unknown>)) {
@@ -128,7 +127,7 @@ export class Tasks {
 
     this.fileEvents.clear()
     const filesOrder = new Map<string, number>()
-    const result: { [ext: string]: string[] } = {}
+    const result: Record<string, string[]> = Object.create(null)
 
     const extensionEntries = Array.from(extensionTasks.entries())
     const globResults = await Promise.all(

@@ -77,39 +77,26 @@ export class FileHtml extends File {
    * Reads the file then compiles its html to ast
    * @internal
    */
-  read(): Promise<void> {
+  async read() {
+    const rawHtml = await this.file.read()
     const payload = this.emitPayload<FileHtml>()
-    return this.file
-      .read()
-      .then((html) =>
-        this.emit(
-          'html',
-          'parse',
-          {
-            ...payload,
-            html,
-          },
-          'html',
-        ),
-      )
-      .then((html) => {
-        this.tree = parse(html)
-        return this.emit('html', 'tree', payload)
-      }) as Promise<void>
+    const parsedHtml = await this.emit('html', 'parse', { ...payload, html: rawHtml }, 'html')
+    this.tree = parse(parsedHtml)
+    await this.emit('html', 'tree', payload)
   }
 
   /**
    * Invokes html.node events on all nodes
    * @internal
    */
-  process(): Promise<void> {
-    return this.walk((node, previousNode, nextNode) => {
-      return this.emit('html', 'node', {
+  async process() {
+    await this.walk(async (node, previousNode, nextNode) => {
+      await this.emit('html', 'node', {
         ...this.emitPayload<FileHtml>(),
         node,
         previousNode,
         nextNode,
-      }) as unknown as Promise<void>
+      })
     })
   }
 
@@ -117,22 +104,12 @@ export class FileHtml extends File {
    * Serializes the tree back to html and writes the file
    * @internal
    */
-  write(): Promise<void> {
+  async write() {
     const payload = this.emitPayload<FileHtml>()
-    return this.emit('html', 'serialize', payload)
-      .then(() => {
-        const html = serialize(this.tree)
-        return this.emit(
-          'html',
-          'write',
-          {
-            ...payload,
-            html,
-          },
-          'html',
-        )
-      })
-      .then((html) => this.file.update(html))
+    await this.emit('html', 'serialize', payload)
+    const html = serialize(this.tree)
+    const processedHtml = await this.emit('html', 'write', { ...payload, html }, 'html')
+    await this.file.update(processedHtml)
   }
 
   /**
