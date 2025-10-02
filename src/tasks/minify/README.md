@@ -1,6 +1,12 @@
 # Minify
 
-A Postbuild task that minifies HTML inline scripts and styles using [terser][terser] and [cssnano][cssnano].
+Optimise Gatsby's generated HTML by minifying inline assets using [terser][terser] and [cssnano][cssnano].
+
+## Highlights
+
+- Minifies inline `<script>` tags with [terser][terser].
+- Minifies inline `<style>` tags with [cssnano][cssnano].
+- Removes HTML comments and `<meta name="generator">` tags.
 
 ## Usage
 
@@ -23,11 +29,11 @@ plugins: [
 
 ### Custom minification options
 
-Use `script` option to customize [terser][terser] options or `false` to disable minifying inline scripts
+Use the `script` option to customize [terser][terser] options or `false` to disable minifying inline scripts:
 
 ```javascript
 options: {
-  'minify': {
+  minify: {
     script: {
       toplevel: true
     }
@@ -35,16 +41,19 @@ options: {
 }
 ```
 
-Use `style` option to customize [cssnano][cssnano] preset or `false` to disable minifying inline styles
+Use the `style` option to customize the [cssnano][cssnano] preset or `false` to disable minifying inline styles:
 
 ```javascript
 options: {
-  'minify': {
-    style: ['default', {
-      discardComments: {
-        removeAllButFirst: true
-      }
-    }]
+  minify: {
+    style: [
+      'default',
+      {
+        discardComments: {
+          removeAllButFirst: true,
+        },
+      },
+    ]
   }
 }
 ```
