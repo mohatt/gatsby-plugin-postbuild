@@ -39,7 +39,7 @@
     "gatsby-node.js"
   ],
   "scripts": {
-    "build": "pkgroll --clean-dist --sourcemap --target node18 --env.VITEST=false",
+    "build": "pkgroll --clean-dist --target node18",
     "format": "prettier --write .",
     "lint": "prettier --check .",
     "prepare": "NODE_ENV=production pnpm build",
