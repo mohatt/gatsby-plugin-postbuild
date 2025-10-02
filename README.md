@@ -4,8 +4,6 @@
 
 Run structured post-processing on Gatsby's build output using simple, configurable postbuild tasks. Useful for keeping build-time tweaks out of the main source.
 
-A Postbuild task is a group of functions that hook into events emitted by the available [file transformers](#file-transformers).
-
 The plugin comes with these tasks out of the box:
 
 - [HTTP Headers](https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/src/tasks/http-headers)  
@@ -85,6 +83,8 @@ plugins: [
 ## Options
 
 ### Define your own task
+
+A Postbuild task is a group of functions that hook into events emitted by the available [file transformers](#file-transformers).
 
 Define inline Postbuild tasks with the `events` option. Keys map to an extension (such as `html`) or a glob (`/icons/*.svg`). Provided functions receive a single argument describing the file, event, and helpers.
 
