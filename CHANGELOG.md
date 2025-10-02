@@ -1,3 +1,11 @@
+## [4.1.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v4.1.0...v4.1.1) (2025-10-02)
+
+
+### Bug Fixes
+
+* **build:** omit sourcemaps from build artifacts ([eea135a](https://github.com/mohatt/gatsby-plugin-postbuild/commit/eea135a07ea7012b0cceb714066503a01d2218fc))
+* **tasks:** include type augmentations for bundled tasks ([6b42d7f](https://github.com/mohatt/gatsby-plugin-postbuild/commit/6b42d7f8c5d10032313932875b28bcd839cac556))
+
 # [4.1.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v4.0.1...v4.1.0) (2025-10-02)
 
 
