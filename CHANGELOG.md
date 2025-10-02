@@ -1,3 +1,19 @@
+# [4.1.0](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v4.0.1...v4.1.0) (2025-10-02)
+
+
+### Bug Fixes
+
+* **minify:** suppress cssnano warning ([ef0d05a](https://github.com/mohatt/gatsby-plugin-postbuild/commit/ef0d05a5195cc234bffa91e49e4c58c89d4e860b))
+* **plugin:** lazy-load `p-limit` esm import for compatibility ([eed86f0](https://github.com/mohatt/gatsby-plugin-postbuild/commit/eed86f097a958b828a7899ac09411057c7d251fb))
+* **plugin:** modernize async handling and optimize data structures ([322e3f4](https://github.com/mohatt/gatsby-plugin-postbuild/commit/322e3f4272061f6d2bb84fb3c4ea0d795ba71a70))
+* **plugin:** optimize data structures and task handling ([1d0263d](https://github.com/mohatt/gatsby-plugin-postbuild/commit/1d0263d8d9f317502c96e79493a46e67429f2de4))
+
+
+### Features
+
+* **plugin:** remove `purgecss` task and its related files ([783c7bc](https://github.com/mohatt/gatsby-plugin-postbuild/commit/783c7bc3c3be4d3ae8fa19f8417a3bbde0419d2f))
+* **plugin:** swap `bluebird` for `p-limit` and optimize file processing flow ([f4ad66a](https://github.com/mohatt/gatsby-plugin-postbuild/commit/f4ad66adbc13226cade8f5bc885fc6aa537972d3))
+
 ## [4.0.1](https://github.com/mohatt/gatsby-plugin-postbuild/compare/v4.0.0...v4.0.1) (2025-09-16)
 
 
