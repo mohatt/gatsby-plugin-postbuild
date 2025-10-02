@@ -3,11 +3,7 @@ import { defineConfig, defaultExclude } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    expandSnapshotDiff: true,
     globals: true,
-    unstubEnvs: true,
-    unstubGlobals: true,
-    name: 'unit',
     include: ['**/*.test.?(c|m)[jt]s?(x)', '**/__tests__/*.?(c|m)[jt]s?(x)'],
     exclude: [...defaultExclude, '**/__fixtures__'],
     globalSetup: ['./test/setup.ts'],

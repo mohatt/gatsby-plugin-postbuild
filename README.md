@@ -9,9 +9,9 @@ A Postbuild task is a group of functions that hook into events emitted by the av
 The plugin comes with these tasks out of the box:
 
 - [HTTP Headers](https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/src/tasks/http-headers)  
-  Generate provider-specific header config files and translate resource hints or meta tags into HTTP headers.
+  Generate provider-specific header config files from Gatsby's build output and translate resource hints or meta tags into HTTP headers.
 - [Minify](https://github.com/mohatt/gatsby-plugin-postbuild/blob/master/src/tasks/minify)  
-  Minify HTML, inline scripts and styles using [terser](https://github.com/terser/terser) and [cssnano](https://github.com/cssnano/cssnano).
+  Optimise Gatsby's generated HTML by minifying inline assets using [terser](https://github.com/terser/terser) and [cssnano](https://github.com/cssnano/cssnano).
 
 ---
 
