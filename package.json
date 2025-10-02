@@ -57,7 +57,7 @@
     "gatsby-plugin-utils": "^4.10.0",
     "glob": "^10.4.5",
     "lodash": "^4.17.21",
-    "p-limit": "^7.1.1",
+    "p-limit": "^6.2.0",
     "parse5": "^7.3.0",
     "terser": "^5.43.1",
     "webpack-assets-manifest": "^6.2.2"

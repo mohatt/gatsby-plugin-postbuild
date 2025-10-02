@@ -1,7 +1,6 @@
 import path from 'node:path'
 import _ from 'lodash'
 import { WebpackAssetsManifest } from 'webpack-assets-manifest'
-import pLimit from 'p-limit'
 import type {
   PluginOptions,
   ParentSpanPluginArgs,
@@ -49,6 +48,7 @@ export class Postbuild {
   private readonly tasks: Tasks
   private readonly manifest: Record<string, string>
   private manifestMap: IAssetsManifest
+  private pLimit?: (typeof import('p-limit'))['default']
 
   /**
    * Loads dependencies and sets default options
@@ -155,6 +155,8 @@ export class Postbuild {
     })
     activity.start()
     try {
+      const { default: pLimit } = await import('p-limit') // why? p-limit is pure ESM
+      this.pLimit = pLimit
       await this.doRun(gatsby, activity.setStatus)
     } catch (e) {
       activity.panic(this.reporter.createError('onPostBuild', e))
@@ -255,13 +257,13 @@ export class Postbuild {
   /**
    * Processes files of a given extension using the given processing options
    */
-  async process(ext: string, options: IOptionProcessing, tick: Function) {
+  private async process(ext: string, options: IOptionProcessing, tick: Function) {
     const files = this.files.get(ext)
     if (files === undefined) return
     debug(`Processing ${files.length} files with extension "${ext}" using`, options)
     const { strategy, concurrency } = options
     const runStage = async (fn: (file: File, index: number) => Promise<void>) => {
-      const limit = concurrency > 0 ? pLimit(concurrency) : undefined
+      const limit = concurrency > 0 ? this.pLimit(concurrency) : undefined
       const tasks = files.map((file, index) => {
         if (!limit) {
           return fn(file, index)
