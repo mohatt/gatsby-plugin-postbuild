@@ -50,7 +50,7 @@
     "typecheck": "tsc -p . --noEmit"
   },
   "dependencies": {
-    "chalk": "^4.1.1",
+    "chalk": "^5.0.0",
     "cssnano": "^7.1.0",
     "debug": "^4.4.0",
     "filesize": "^8.0.0",
