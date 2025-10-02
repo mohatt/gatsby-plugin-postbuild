@@ -34,7 +34,7 @@ export interface IPathHeadersMap {
 /**
  * Task options interface
  */
-export type IHttpHeadersTaskOptions = ITaskOptions & {
+export interface IHttpHeadersTaskOptions extends ITaskOptions {
   provider: ProviderType
   headers: IPathHeadersMap
   security: boolean
@@ -98,4 +98,10 @@ export const options: ITaskApiOptions<IHttpHeadersTaskOptions> = {
         .description('Removes the HTML meta tags processed by the task.'),
     })
   },
+}
+
+declare module 'gatsby-plugin-postbuild' {
+  interface IOptions {
+    'http-headers': IHttpHeadersTaskOptions
+  }
 }

@@ -1,10 +1,11 @@
+import type { MinifyOptions as TerserOptions } from 'terser'
 import type { ITaskApiOptions, ITaskOptions } from '@postbuild'
 
 /**
  * Task options interface
  */
-export type IMinifyTaskOptions = ITaskOptions & {
-  script: object | boolean
+export interface IMinifyTaskOptions extends ITaskOptions {
+  script: TerserOptions | boolean
   style: [string, object] | object | Function | boolean
 }
 
@@ -35,4 +36,10 @@ export const options: ITaskApiOptions<IMinifyTaskOptions> = {
         .description('Options passed to css minifier.'),
     })
   },
+}
+
+declare module 'gatsby-plugin-postbuild' {
+  interface IOptions {
+    minify: IMinifyTaskOptions
+  }
 }

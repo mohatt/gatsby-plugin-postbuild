@@ -5,15 +5,6 @@ import { FileHtml, ITask } from '@postbuild'
 import { options, IMinifyTaskOptions } from './options'
 import type { ITaskApiEvents } from '@postbuild'
 
-declare module 'gatsby-plugin-postbuild' {
-  interface IOptions {
-    minify: IMinifyTaskOptions
-  }
-}
-
-/**
- * Holds references to required dependencies
- */
 class MinifyRuntime {
   private readonly contexts = new Map<string, HtmlContext>()
   readonly minifiers = new Map<string, Minifier>()
@@ -61,6 +52,7 @@ class MinifyRuntime {
 }
 
 let runtime: MinifyRuntime | undefined
+
 export const events: ITaskApiEvents<IMinifyTaskOptions> = {
   on: {
     postbuild: ({ options }) => {

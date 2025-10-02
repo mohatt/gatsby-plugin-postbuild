@@ -5,15 +5,7 @@ import Link from './lib/link'
 import Meta from './lib/meta'
 import { options, IHttpHeadersTaskOptions } from './options'
 
-declare module 'gatsby-plugin-postbuild' {
-  interface IOptions {
-    'http-headers': IHttpHeadersTaskOptions
-  }
-}
-
-/**
- * Headers file builder
- */
+// Headers file builder
 let builder: Builder | undefined
 
 function isInHead(node: parse5.ChildNode) {
@@ -25,7 +17,7 @@ function isInHead(node: parse5.ChildNode) {
   return false
 }
 
-export const events: ITaskApiEvents<IHttpHeadersTaskOptions> = {
+const events: ITaskApiEvents<IHttpHeadersTaskOptions> = {
   on: {
     postbuild: ({ options, filesystem, gatsby, assets }) => {
       builder = new Builder(options, assets, filesystem, gatsby.pathPrefix)
