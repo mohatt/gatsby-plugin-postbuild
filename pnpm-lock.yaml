@@ -18,8 +18,8 @@ importers:
         specifier: ^4.4.0
         version: 4.4.1
       filesize:
-        specifier: ^8.0.0
-        version: 8.0.7
+        specifier: ^11.0.0
+        version: 11.0.13
       gatsby-plugin-utils:
         specifier: ^4.10.0
         version: 4.14.0(gatsby@5.14.6(type-fest@4.41.0)(typescript@5.1.6))(graphql@16.11.0)
@@ -3591,6 +3591,10 @@ packages:
   file-type@16.5.4:
     resolution: {integrity: sha512-/yFHK0aGjFEgDJjEKP0pWCplsPFPhwyfwevf/pVxiN0tmE4L9LmwWxWukdJSHdoCli4VgQLehjJtwQBnqmsKcw==}
     engines: {node: '>=10'}
+
+  filesize@11.0.13:
+    resolution: {integrity: sha512-mYJ/qXKvREuO0uH8LTQJ6v7GsUvVOguqxg2VTwQUkyTPXXRRWPdjuUPVqdBrJQhvci48OHlNGRnux+Slr2Rnvw==}
+    engines: {node: '>= 10.8.0'}
 
   filesize@8.0.7:
     resolution: {integrity: sha512-pjmC+bkIF8XI7fWaH8KxHcZL3DPybs1roSKP4rKDvy20tAWwIObE4+JIseG2byfGKhud5ZnM4YSGKBz7Sh0ndQ==}
@@ -11445,6 +11449,8 @@ snapshots:
       readable-web-to-node-stream: 3.0.4
       strtok3: 6.3.0
       token-types: 4.2.1
+
+  filesize@11.0.13: {}
 
   filesize@8.0.7: {}
 
