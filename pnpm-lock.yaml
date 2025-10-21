@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       chalk:
-        specifier: ^4.1.1
-        version: 4.1.2
+        specifier: ^5.0.0
+        version: 5.5.0
       cssnano:
         specifier: ^7.1.0
         version: 7.1.0(postcss@8.4.38)
