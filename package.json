@@ -90,8 +90,12 @@
     "node": ">=18"
   },
   "renovate": {
+    "enabled": true,
     "extends": [
-      "config:js-lib"
-    ]
+      "config:recommended"
+    ],
+    "major": {
+      "enabled": false
+    }
   }
 }
